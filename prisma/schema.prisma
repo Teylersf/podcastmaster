@@ -1,0 +1,159 @@
+// Prisma schema for Free Podcast Mastering
+// Using Neon PostgreSQL database
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+// Stores mastering job notifications
+model JobNotification {
+  id          String    @id @default(cuid())
+  jobId       String    @unique // The mastering job ID from the backend
+  email       String    // User's email for notification
+  status      String    @default("pending") // pending, completed, sent, failed
+  downloadUrl String?   // URL to download the mastered file
+  emailSentAt DateTime? // When the notification email was sent
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([jobId])
+  @@index([email])
+  @@index([status])
+}
+
+// Track email sends for analytics
+model EmailLog {
+  id        String   @id @default(cuid())
+  to        String   // Recipient email
+  subject   String   // Email subject
+  type      String   // Type: completion, reminder, etc.
+  resendId  String?  // Resend email ID for tracking
+  status    String   @default("sent") // sent, failed, bounced
+  createdAt DateTime @default(now())
+
+  @@index([to])
+  @@index([type])
+}
+
+// Track usage for rate limiting (by user ID for signed-in, IP for guests)
+model UsageLog {
+  id        String   @id @default(cuid())
+  userId    String?  // Stack Auth user ID (for signed-in users)
+  ipAddress String?  // Hashed IP address (for guest users)
+  jobId     String   // The mastering job ID
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([ipAddress])
+  @@index([createdAt])
+}
+
+// User subscriptions (linked to Stack Auth user ID)
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String    @unique // Stack Auth user ID
+  stripeCustomerId     String?   @unique // Stripe customer ID
+  stripeSubscriptionId String?   @unique // Stripe subscription ID
+  stripePriceId        String?   // Stripe price ID
+  status               String    @default("inactive") // active, canceled, past_due, inactive
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  // Relations
+  files SubscriberFile[]
+
+  @@index([userId])
+  @@index([stripeCustomerId])
+  @@index([status])
+}
+
+// Files stored for subscribers in Vercel Blob
+model SubscriberFile {
+  id             String   @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  
+  fileName       String   // Original file name
+  fileSize       Int      // Size in bytes
+  blobUrl        String   // Vercel Blob URL
+  blobPathname   String   // Blob storage path
+  fileType       String   // "input" or "output"
+  jobId          String?  // Associated mastering job ID
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([subscriptionId])
+  @@index([jobId])
+}
+
+// Temporary files for free users (expires after 24 hours on R2)
+model FreeUserFile {
+  id          String   @id @default(cuid())
+  userId      String   // Stack Auth user ID (for signed-in free users)
+  jobId       String   @unique // Mastering job ID
+  fileName    String   // Original file name
+  fileSize    Int      // Size in bytes
+  downloadUrl String?  // R2 download URL (set when mastering completes)
+  status      String   @default("processing") // processing, completed, expired
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime // 24 hours after creation
+
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+// Track mastering jobs for premium users (so webhook can save to Blob)
+model PremiumUserJob {
+  id          String   @id @default(cuid())
+  userId      String   // Stack Auth user ID
+  jobId       String   @unique // Mastering job ID
+  fileName    String   // Original file name
+  fileSize    Int      // Size in bytes
+  status      String   @default("processing") // processing, completed, failed
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([jobId])
+  @@index([status])
+}
+
+// One-time purchase for 24-bit HQ export ($1)
+model HQPurchase {
+  id                     String   @id @default(cuid())
+  userId                 String   // Stack Auth user ID
+  stripePaymentIntentId  String?  @unique // Stripe payment intent ID
+  stripeSessionId        String?  @unique // Stripe checkout session ID
+  creditsRemaining       Int      @default(1) // Number of HQ exports remaining
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Stores video render job notifications
+model VideoJobNotification {
+  id          String    @id @default(cuid())
+  jobId       String    @unique // The video render job ID from the backend
+  email       String    // User's email for notification
+  status      String    @default("pending") // pending, completed, sent, failed
+  downloadUrl String?   // URL to download the video file
+  videoTitle  String?   // Title of the video for the email
+  emailSentAt DateTime? // When the notification email was sent
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([jobId])
+  @@index([email])
+  @@index([status])
+}

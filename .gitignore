@@ -1,0 +1,89 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+
+# Next.js
+.next/
+out/
+build/
+
+# Production
+dist/
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Python virtual environment
+backend/venv/
+venv/
+ENV/
+env/
+
+# Audio files (temp uploads/outputs)
+backend/uploads/
+backend/outputs/
+backend/references/
+public/*.mp3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Assets (temporary images)
+assets/
+
+# Playwright MCP
+.playwright-mcp/
+
+.vercel
+
+/src/generated/prisma

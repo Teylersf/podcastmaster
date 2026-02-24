@@ -1,0 +1,28 @@
+# Python backend (deployed separately to Modal)
+backend/
+*.py
+
+# Python virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Node modules (Vercel installs fresh)
+node_modules/
+
+# Git
+.git/
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+
+# Playwright
+.playwright-mcp/
+

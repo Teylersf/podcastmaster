@@ -1,0 +1,46 @@
+{
+  "name": "podcastmaster",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@react-email/render": "^2.0.0",
+    "@remotion/bundler": "^4.0.414",
+    "@remotion/cli": "^4.0.414",
+    "@remotion/player": "^4.0.414",
+    "@remotion/renderer": "^4.0.414",
+    "@stackframe/stack": "^2.8.54",
+    "@vercel/analytics": "^1.5.0",
+    "@vercel/blob": "^2.0.0",
+    "axios": "^1.13.2",
+    "framer-motion": "^12.23.24",
+    "html-to-image": "^1.11.13",
+    "lucide-react": "^0.554.0",
+    "next": "16.0.7",
+    "prisma": "^5.22.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "react-dropzone": "^14.3.8",
+    "remotion": "^4.0.414",
+    "resend": "^6.5.2",
+    "stripe": "^20.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.7",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

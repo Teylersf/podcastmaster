@@ -1,0 +1,28 @@
+# https://www.robotstxt.org/robotstxt.html
+
+# Allow all web crawlers
+User-agent: *
+Allow: /
+
+# Disallow API routes and handler routes (not useful for SEO)
+Disallow: /api/
+Disallow: /handler/
+
+# Sitemap location
+Sitemap: https://freepodcastmastering.com/sitemap.xml
+
+# Crawl delay (optional, prevents server overload)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
