@@ -1,10 +1,6 @@
 # 🎙️ Free Podcast Mastering - Open Source Podcast Audio Mastering Tool
 
 <p align="center">
-  <img src="public/og-image.png" alt="Free Podcast Mastering - AI-Powered Podcast Audio Mastering Tool" width="800">
-</p>
-
-<p align="center">
   <strong>Free AI-powered podcast mastering. Professional broadcast quality in minutes. No signup required. 100% open source.</strong>
 </p>
 
