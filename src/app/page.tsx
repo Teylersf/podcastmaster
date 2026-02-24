@@ -226,7 +226,7 @@ function StaticSections() {
       {/* Open Source Section */}
       <section className="mt-8">
         <a 
-          href="https://github.com/yourusername/podcastmaster" 
+          href="https://github.com/Teylersf/podcastmaster" 
           target="_blank" 
           rel="noopener noreferrer"
           className="block p-6 rounded-2xl bg-gradient-to-br from-[rgba(139,92,246,0.1)] to-[rgba(59,130,246,0.1)] border border-[rgba(139,92,246,0.3)] hover:border-[rgba(139,92,246,0.5)] transition-all group"
@@ -279,7 +279,7 @@ function StaticSections() {
           </Link>
           <span className="text-[rgba(255,255,255,0.2)]">|</span>
           <a 
-            href="https://github.com/yourusername/podcastmaster" 
+            href="https://github.com/Teylersf/podcastmaster" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1"

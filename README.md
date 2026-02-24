@@ -12,7 +12,7 @@
   <a href="https://freepodcastmastering.com">
     <img src="https://img.shields.io/badge/Live%20Site-freepodcastmastering.com-orange?style=for-the-badge&logo=vercel" alt="Live Site">
   </a>
-  <a href="https://github.com/yourusername/podcastmaster">
+  <a href="https://github.com/Teylersf/podcastmaster">
     <img src="https://img.shields.io/badge/Open%20Source-100%25-green?style=for-the-badge&logo=github" alt="Open Source">
   </a>
   <img src="https://img.shields.io/badge/Built%20with-Next.js%2016-black?style=for-the-badge&logo=next.js" alt="Next.js 16">
@@ -172,7 +172,7 @@ We take privacy seriously:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/podcastmaster.git
+   git clone https://github.com/Teylersf/podcastmaster.git
    cd podcastmaster
    ```
 
@@ -233,7 +233,7 @@ We take privacy seriously:
 
 ### Deploy to Vercel (Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/podcastmaster)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Teylersf/podcastmaster)
 
 1. Push your code to GitHub
 2. Import your repository on Vercel
@@ -312,7 +312,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - 🌐 **Website:** [https://freepodcastmastering.com](https://freepodcastmastering.com)
 - 📧 **Email:** support@freepodcastmastering.com
 - 🐦 **Twitter:** [@freepodcastmaster](https://twitter.com/freepodcastmaster)
-- 💬 **GitHub Discussions:** [Join the conversation](https://github.com/yourusername/podcastmaster/discussions)
+- 💬 **GitHub Discussions:** [Join the conversation](https://github.com/Teylersf/podcastmaster/discussions)
 
 ---
 
