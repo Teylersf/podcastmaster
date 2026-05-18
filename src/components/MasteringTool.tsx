@@ -105,7 +105,8 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
   
   // Mastering settings
   const [outputQuality, setOutputQuality] = useState<"standard" | "high">("standard");
-  const [limiterMode, setLimiterMode] = useState<"gentle" | "normal" | "loud">("normal");
+  const [loudnessTarget, setLoudnessTarget] = useState<"conservative" | "standard" | "loud">("standard");
+  const [noiseReduction, setNoiseReduction] = useState<boolean>(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Email notification state
@@ -412,7 +413,8 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
         target_file_id: targetFile.fileId,
         template_id: selectedTemplate,
         output_quality: outputQuality,
-        limiter_mode: limiterMode,
+        loudness_target: loudnessTarget,
+        noise_reduction: String(noiseReduction),
       });
       
       const response = await fetch(
@@ -488,7 +490,8 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
           fileId: targetFile.fileId,
           templateName: templateInfo?.name || selectedTemplate,
           outputQuality,
-          limiterMode,
+          loudnessTarget,
+          noiseReduction,
         }),
       }).catch(() => {});
 
@@ -1000,25 +1003,25 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
                       )}
                     </div>
 
-                    {/* Limiter Mode */}
+                    {/* Loudness Target */}
                     <div>
                       <label className="block text-sm font-medium mb-2 text-(--text-secondary)">
                         <span className="flex items-center gap-2">
                           <Zap className="w-3.5 h-3.5" />
-                          Loudness
+                          Loudness Target
                         </span>
                       </label>
                       <div className="grid grid-cols-3 gap-2">
                         {[
-                          { id: "gentle", name: "Gentle", desc: "Dynamic" },
-                          { id: "normal", name: "Normal", desc: "Balanced" },
-                          { id: "loud", name: "Loud", desc: "Maximum" },
+                          { id: "conservative", name: "Conservative", desc: "-16 LUFS · Apple" },
+                          { id: "standard", name: "Standard", desc: "-14 LUFS · Spotify" },
+                          { id: "loud", name: "Loud", desc: "-12 LUFS · Broadcast" },
                         ].map((mode) => (
                           <button
                             key={mode.id}
-                            onClick={() => setLimiterMode(mode.id as typeof limiterMode)}
+                            onClick={() => setLoudnessTarget(mode.id as typeof loudnessTarget)}
                             className={`p-3 rounded-lg border text-center transition-all ${
-                              limiterMode === mode.id
+                              loudnessTarget === mode.id
                                 ? "border-(--accent-primary) bg-(--accent-muted)"
                                 : "border-(--border-subtle) hover:border-(--border-medium)"
                             }`}
@@ -1028,6 +1031,40 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* AI Noise Reduction */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setNoiseReduction((v) => !v)}
+                        className={`w-full p-3 rounded-lg border text-left transition-all flex items-center justify-between ${
+                          noiseReduction
+                            ? "border-(--accent-primary) bg-(--accent-muted)"
+                            : "border-(--border-subtle) hover:border-(--border-medium)"
+                        }`}
+                      >
+                        <div>
+                          <p className="font-medium text-sm flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            AI Noise Reduction
+                          </p>
+                          <p className="text-xs text-(--text-muted) mt-0.5">
+                            Cleans background hum, room tone, and hiss.
+                          </p>
+                        </div>
+                        <div
+                          className={`w-10 h-6 rounded-full relative transition-colors shrink-0 ${
+                            noiseReduction ? "bg-(--accent-primary)" : "bg-(--border-medium)"
+                          }`}
+                        >
+                          <div
+                            className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                              noiseReduction ? "left-4.5" : "left-0.5"
+                            }`}
+                          />
+                        </div>
+                      </button>
                     </div>
                   </div>
                 </motion.div>

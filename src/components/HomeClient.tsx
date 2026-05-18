@@ -125,7 +125,8 @@ export default function HomeClient() {
   const [processingMessage, setProcessingMessage] = useState(PROCESSING_MESSAGES[0]);
   
   const [outputQuality, setOutputQuality] = useState<"standard" | "high">("standard");
-  const [limiterMode, setLimiterMode] = useState<"gentle" | "normal" | "loud">("normal");
+  const [loudnessTarget, setLoudnessTarget] = useState<"conservative" | "standard" | "loud">("standard");
+  const [noiseReduction, setNoiseReduction] = useState<boolean>(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const [notificationEmail, setNotificationEmail] = useState("");
@@ -413,7 +414,8 @@ export default function HomeClient() {
         target_file_id: targetFile.fileId,
         template_id: selectedTemplate,
         output_quality: outputQuality,
-        limiter_mode: limiterMode,
+        loudness_target: loudnessTarget,
+        noise_reduction: String(noiseReduction),
       });
       
       const response = await fetch(
@@ -483,7 +485,8 @@ export default function HomeClient() {
           fileId: targetFile.fileId,
           templateName: templateInfo?.name || selectedTemplate,
           outputQuality,
-          limiterMode,
+          loudnessTarget,
+          noiseReduction,
         }),
       }).catch(() => {});
 
@@ -1185,7 +1188,11 @@ export default function HomeClient() {
                 <div className="text-left">
                   <h3 className="font-semibold">Output Settings</h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    {outputQuality === "high" ? "24-bit" : "16-bit"} • {limiterMode.charAt(0).toUpperCase() + limiterMode.slice(1)} limiter
+                    {outputQuality === "high" ? "24-bit" : "16-bit"} • {
+                      loudnessTarget === "conservative" ? "-16 LUFS"
+                      : loudnessTarget === "loud" ? "-12 LUFS"
+                      : "-14 LUFS (Spotify)"
+                    }{noiseReduction ? " • AI noise reduction" : ""}
                   </p>
                 </div>
               </div>
@@ -1277,25 +1284,25 @@ export default function HomeClient() {
                       )}
                     </div>
 
-                    {/* Limiter Mode */}
+                    {/* Loudness Target */}
                     <div>
                       <label className="block text-sm font-medium mb-3 text-[var(--text-secondary)]">
                         <span className="flex items-center gap-2">
                           <Zap className="w-4 h-4" />
-                          Loudness
+                          Loudness Target
                         </span>
                       </label>
                       <div className="grid grid-cols-3 gap-3">
                         {[
-                          { id: "gentle", name: "Gentle", desc: "Dynamic" },
-                          { id: "normal", name: "Normal", desc: "Balanced" },
-                          { id: "loud", name: "Loud", desc: "Maximum" },
+                          { id: "conservative", name: "Conservative", desc: "-16 LUFS · Apple" },
+                          { id: "standard", name: "Standard", desc: "-14 LUFS · Spotify" },
+                          { id: "loud", name: "Loud", desc: "-12 LUFS · Broadcast" },
                         ].map((mode) => (
                           <button
                             key={mode.id}
-                            onClick={() => setLimiterMode(mode.id as "gentle" | "normal" | "loud")}
+                            onClick={() => setLoudnessTarget(mode.id as "conservative" | "standard" | "loud")}
                             className={`p-3 rounded-xl border text-center transition-all ${
-                              limiterMode === mode.id
+                              loudnessTarget === mode.id
                                 ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
                                 : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
                             }`}
@@ -1305,6 +1312,40 @@ export default function HomeClient() {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    {/* AI Noise Reduction */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setNoiseReduction((v) => !v)}
+                        className={`w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between ${
+                          noiseReduction
+                            ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
+                            : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                        }`}
+                      >
+                        <div>
+                          <p className="font-semibold flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            AI Noise Reduction
+                          </p>
+                          <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                            Removes background hum, room tone, and hiss before mastering.
+                          </p>
+                        </div>
+                        <div
+                          className={`w-10 h-6 rounded-full relative transition-colors shrink-0 ${
+                            noiseReduction ? "bg-[#f97316]" : "bg-[rgba(255,255,255,0.15)]"
+                          }`}
+                        >
+                          <div
+                            className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${
+                              noiseReduction ? "left-4.5" : "left-0.5"
+                            }`}
+                          />
+                        </div>
+                      </button>
                     </div>
                   </div>
                 </motion.div>

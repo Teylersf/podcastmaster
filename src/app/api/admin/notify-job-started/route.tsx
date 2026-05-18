@@ -12,15 +12,19 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
  */
 export async function POST(request: Request) {
   try {
-    const { 
-      jobId, 
-      fileName, 
-      fileSize, 
+    const body = await request.json();
+    const {
+      jobId,
+      fileName,
+      fileSize,
       fileId,
-      templateName, 
-      outputQuality, 
-      limiterMode 
-    } = await request.json();
+      templateName,
+      outputQuality,
+      loudnessTarget,
+      noiseReduction,
+      // Legacy field — still accepted from old clients during the deploy window
+      limiterMode,
+    } = body;
 
     if (!jobId) {
       return NextResponse.json(
@@ -29,20 +33,30 @@ export async function POST(request: Request) {
       );
     }
 
+    // Map legacy limiterMode to loudnessTarget if needed
+    const legacyMap: Record<string, string> = {
+      gentle: "conservative",
+      normal: "standard",
+      loud: "loud",
+    };
+    const resolvedLoudnessTarget =
+      loudnessTarget || legacyMap[limiterMode as string] || "standard";
+
     // File info - the original is stored in R2 as uploads/{fileId}.ext
     // Admin can access via R2 dashboard if needed
     const fileInfo = `File ID: ${fileId || "N/A"}`;
 
     // Render the email HTML
     const emailHtml = await render(
-      <AdminJobStartedEmail 
+      <AdminJobStartedEmail
         jobId={jobId}
         fileName={fileName || "Unknown"}
         fileSize={fileSize || "Unknown"}
         downloadUrl={fileInfo}
         templateName={templateName || "Default"}
         outputQuality={outputQuality || "standard"}
-        limiterMode={limiterMode || "normal"}
+        loudnessTarget={resolvedLoudnessTarget}
+        noiseReduction={Boolean(noiseReduction)}
       />
     );
 

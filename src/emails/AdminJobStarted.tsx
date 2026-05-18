@@ -7,7 +7,8 @@ interface AdminJobStartedEmailProps {
   downloadUrl: string;
   templateName: string;
   outputQuality: string;
-  limiterMode: string;
+  loudnessTarget: string;
+  noiseReduction: boolean;
 }
 
 export const AdminJobStartedEmail: React.FC<AdminJobStartedEmailProps> = ({
@@ -17,8 +18,13 @@ export const AdminJobStartedEmail: React.FC<AdminJobStartedEmailProps> = ({
   downloadUrl,
   templateName,
   outputQuality,
-  limiterMode,
+  loudnessTarget,
+  noiseReduction,
 }) => {
+  const loudnessLabel =
+    loudnessTarget === "conservative" ? "-16 LUFS (Apple Podcasts)"
+    : loudnessTarget === "loud" ? "-12 LUFS (Broadcast)"
+    : "-14 LUFS (Spotify)";
   return (
     <html>
       <head>
@@ -128,7 +134,8 @@ export const AdminJobStartedEmail: React.FC<AdminJobStartedEmailProps> = ({
                                           Settings
                                         </p>
                                         <p style={{ color: "#fafafa", fontSize: "14px", margin: 0 }}>
-                                          {outputQuality} quality • {limiterMode} limiter
+                                          {outputQuality} quality • {loudnessLabel}
+                                          {noiseReduction ? " • AI noise reduction" : ""}
                                         </p>
                                       </td>
                                     </tr>

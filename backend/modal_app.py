@@ -31,37 +31,85 @@ image = (
         "requests>=2.31.0",  # For webhook notifications
         "vercel-blob>=0.1.0",  # For direct Vercel Blob uploads
         "openai-whisper>=20231117",  # For transcription
+        # Loudness + post-processing chain
+        "pyloudnorm>=0.1.1",       # ITU-R BS.1770 LUFS measurement
+        "pedalboard>=0.9.0",       # Spotify's DSP host (compressor, limiter, EQ, gain)
+        "noisereduce>=3.0.0",      # Spectral noise reduction (optional pre-stage)
+        "numpy>=1.26.0",
     )
     .add_local_dir("references", "/references")  # Bake reference templates into image
 )
 
-# Reference templates stored permanently in the container image
-# These are available instantly without downloading from R2
-REFERENCE_TEMPLATES = {
-    "voice-optimized": {
+# Loudness targets (integrated LUFS)
+# Standard = Spotify spec; this is the default for the new pipeline.
+LOUDNESS_TARGETS = {
+    "conservative": -16.0,  # Apple Podcasts / dialog-heavy
+    "standard":     -14.0,  # Spotify (default)
+    "loud":         -12.0,  # Broadcast-loud (YouTube-leaning)
+}
+
+# True-peak ceiling for final limiter
+TRUE_PEAK_CEILING_DB = -1.0
+
+# Backwards-compat: map the legacy `limiter_mode` values to the new `loudness_target` values.
+# Kept for one deploy cycle so in-flight requests from old clients don't break.
+LEGACY_LIMITER_MODE_MAP = {
+    "gentle": "conservative",
+    "normal": "standard",
+    "loud":   "loud",
+}
+
+# Reference templates stored permanently in the container image.
+# Available instantly without downloading from R2.
+#
+# Each entry's `file_path` is what gets passed to Matchering. The helper
+# `_pick_reference_path()` below prefers a `.wav` sibling if it exists
+# (re-mastered via scripts/remaster_references.py) so we can upgrade the
+# reference audio quality without changing this dict.
+_REFERENCE_TEMPLATE_DEFS = [
+    {
         "id": "voice-optimized",
         "name": "Recommended - Optimized for Voices",
         "description": "Professional voice-optimized preset with balanced EQ and loudness. Best for podcasts and spoken content.",
-        "file_path": "/references/voice-optimized.mp3",
+        "base_path": "/references/voice-optimized",
     },
-    "female-podcast": {
+    {
         "id": "female-podcast",
         "name": "Female Voice + Full Production",
         "description": "Optimized for female voices with intro music and sound effects. Ready-to-release quality.",
-        "file_path": "/references/femalepodcast.mp3",
+        "base_path": "/references/femalepodcast",
     },
-    "male-podcast": {
+    {
         "id": "male-podcast",
         "name": "Male Voice + Full Production",
         "description": "Optimized for male voices with intro music and sound effects. Ready-to-release quality.",
-        "file_path": "/references/maleonlyvoicesfullproduction.mp3",
+        "base_path": "/references/maleonlyvoicesfullproduction",
     },
-    "news-broadcast": {
+    {
         "id": "news-broadcast",
         "name": "News & Broadcast Style",
         "description": "Breaking news channel sound. Male & female voices with background music, intros, and full production.",
-        "file_path": "/references/maleandfemalenewssounds.mp3",
+        "base_path": "/references/maleandfemalenewssounds",
     },
+]
+
+
+def _pick_reference_path(base_path: str) -> str:
+    """Prefer a re-mastered .wav next to the base path, fall back to .mp3."""
+    import os
+    wav = base_path + ".wav"
+    mp3 = base_path + ".mp3"
+    return wav if os.path.exists(wav) else mp3
+
+
+REFERENCE_TEMPLATES = {
+    t["id"]: {
+        "id": t["id"],
+        "name": t["name"],
+        "description": t["description"],
+        "file_path": _pick_reference_path(t["base_path"]),
+    }
+    for t in _REFERENCE_TEMPLATE_DEFS
 }
 
 # Create a volume for temporary processing (downloaded from R2)
@@ -304,198 +352,290 @@ def cleanup_old_files():
     memory=8192,  # 8GB RAM for large audio files
 )
 def process_audio(
-    job_id: str, 
-    target_r2_key: str, 
-    reference_source: str, 
+    job_id: str,
+    target_r2_key: str,
+    reference_source: str,
     is_template: bool = False,
-    output_quality: str = "standard",  # "standard" (16-bit) or "high" (24-bit)
-    limiter_mode: str = "normal",  # "gentle", "normal", or "loud"
+    output_quality: str = "standard",      # "standard" (16-bit) or "high" (24-bit)
+    loudness_target: str = "standard",     # "conservative" | "standard" | "loud"
+    noise_reduction: bool = False,         # AI spectral noise reduction pre-pass
 ):
     """
-    Process audio using Matchering library
-    Downloads target from R2, uses template or R2 reference, uploads result back to R2
-    
-    Args:
-        job_id: Unique job identifier
-        target_r2_key: R2 key for the uploaded target audio
-        reference_source: Either a template ID (if is_template=True) or R2 key (if is_template=False)
-        is_template: If True, reference_source is a template ID; if False, it's an R2 key
-        output_quality: "standard" for 16-bit, "high" for 24-bit output
-        limiter_mode: "gentle" (less limiting), "normal", or "loud" (more limiting)
+    Mastering pipeline. Stages:
+      1. Download target audio from R2
+      2. (optional) Spectral noise reduction
+      3. Matchering — spectral match + RMS match to reference template
+      4. Post-Matchering polish: subsonic HPF, presence lift, gentle de-ess, leveling compressor
+      5. LUFS measurement + makeup gain to hit the loudness target
+      6. True-peak brickwall limiter at -1 dBTP
+      7. Write at requested bit depth, upload to R2 (and Vercel Blob for premium)
+
+    Loudness targets (integrated LUFS):
+      conservative = -16 LUFS (Apple Podcasts / dialog-heavy)
+      standard     = -14 LUFS (Spotify)  ← default
+      loud         = -12 LUFS (broadcast-loud)
     """
-    import matchering as mg
-    import soundfile as sf
     import os
-    
+    import numpy as np
+    import soundfile as sf
+    import matchering as mg
+    import pyloudnorm as pyln
+    from pedalboard import (
+        Pedalboard, HighpassFilter, PeakFilter, Compressor, Gain, Limiter,
+    )
+
     s3 = get_r2_client()
-    
+
     # Local paths for processing
     os.makedirs(f"{VOLUME_PATH}/processing", exist_ok=True)
-    target_path = f"{VOLUME_PATH}/processing/{job_id}_target.wav"
-    reference_path = f"{VOLUME_PATH}/processing/{job_id}_reference.wav"
-    output_path = f"{VOLUME_PATH}/processing/{job_id}_mastered.wav"
-    output_r2_key = f"outputs/{job_id}_mastered.wav"
-    
-    # Track which files to clean up (don't delete template files!)
-    files_to_cleanup = [target_path, output_path]
-    
+    target_path        = f"{VOLUME_PATH}/processing/{job_id}_target.wav"
+    target_clean_path  = f"{VOLUME_PATH}/processing/{job_id}_target_clean.wav"
+    reference_path     = f"{VOLUME_PATH}/processing/{job_id}_reference.wav"
+    matched_path       = f"{VOLUME_PATH}/processing/{job_id}_matched.wav"
+    output_path        = f"{VOLUME_PATH}/processing/{job_id}_mastered.wav"
+    output_r2_key      = f"outputs/{job_id}_mastered.wav"
+
+    # Files we created and should remove on success/failure. Reference templates
+    # baked into the image are NOT in this list — never delete them.
+    files_to_cleanup = [target_path, target_clean_path, matched_path, output_path]
+
+    def update_status(progress: int, message: str):
+        current = job_statuses.get(job_id, {}) or {}
+        current.update({"status": "processing", "progress": progress, "message": message, "output_file": None})
+        job_statuses[job_id] = current
+
     try:
-        # Update status - downloading
-        job_statuses[job_id] = {
-            "status": "processing",
-            "progress": 5,
-            "message": "Downloading your audio...",
-            "output_file": None,
-        }
-        
-        # Download target file from R2
+        # ============================================================
+        # Stage 0 — Download inputs
+        # ============================================================
+        update_status(5, "Downloading your audio...")
         s3.download_file(R2_BUCKET, target_r2_key, target_path)
-        job_statuses[job_id] = {**job_statuses[job_id], "progress": 10, "message": "Loading reference template..."}
-        
-        # Get reference file - either from built-in template or R2
+
+        update_status(10, "Loading reference template...")
         if is_template:
             template = REFERENCE_TEMPLATES.get(reference_source)
             if not template:
                 raise ValueError(f"Unknown template: {reference_source}")
-            # Use the template file baked into the container image (don't delete it!)
-            reference_path = template["file_path"]
+            reference_path = template["file_path"]  # baked into image — don't delete
             print(f"Using built-in template: {template['name']}")
         else:
-            # Download reference from R2 (this one we can delete)
             s3.download_file(R2_BUCKET, reference_source, reference_path)
             files_to_cleanup.append(reference_path)
-        
-        job_statuses[job_id] = {**job_statuses[job_id], "progress": 15, "message": "Analyzing source audio..."}
-        
-        # Detect original sample rate from target file to preserve quality
+
+        # Detect original sample rate so we preserve it end-to-end
         target_info = sf.info(target_path)
-        original_sample_rate = target_info.samplerate
-        print(f"Detected source sample rate: {original_sample_rate} Hz - will preserve this in output")
-        
-        job_statuses[job_id] = {**job_statuses[job_id], "message": f"Loading audio at {original_sample_rate} Hz..."}
-        
-        # Limiter threshold based on mode
-        # Lower threshold = more limiting = louder output
-        # Higher threshold = less limiting = more dynamic range
-        limiter_thresholds = {
-            "gentle": 0.95,   # Less limiting, more dynamic
-            "normal": 0.9,   # Balanced (default)
-            "loud": 0.8,     # More limiting, louder output
-        }
-        threshold = limiter_thresholds.get(limiter_mode, 0.9)
-        
-        print(f"Settings: output_quality={output_quality}, limiter_mode={limiter_mode}, threshold={threshold}")
-        
-        # Custom config for long podcasts (up to 4 hours)
+        sample_rate = target_info.samplerate
+        print(f"Source sample rate: {sample_rate} Hz")
+        print(
+            f"Settings: output_quality={output_quality}, "
+            f"loudness_target={loudness_target}, noise_reduction={noise_reduction}"
+        )
+
+        # ============================================================
+        # Stage 1 — Optional spectral noise reduction
+        # ============================================================
+        matchering_input = target_path
+
+        if noise_reduction:
+            import noisereduce as nr
+            update_status(18, "Removing background noise...")
+
+            audio, sr = sf.read(target_path, always_2d=True, dtype="float32")
+            # noisereduce expects (channels, samples) or (samples,)
+            audio_for_nr = audio.T
+            reduced = nr.reduce_noise(
+                y=audio_for_nr,
+                sr=sr,
+                stationary=False,
+                prop_decrease=0.75,
+                n_fft=1024,
+                time_constant_s=2.0,
+            )
+            audio = reduced.T
+
+            sf.write(target_clean_path, audio, sr, subtype="FLOAT")
+            matchering_input = target_clean_path
+            print("Noise reduction complete")
+
+        # ============================================================
+        # Stage 2 — Matchering: spectral + RMS match to reference
+        # ============================================================
+        # We deliberately leave headroom (threshold=0.95) so the post-Matchering
+        # chain (LUFS makeup gain + true-peak limiter) has room to work without
+        # fighting Matchering's internal limiter.
         podcast_config = mg.Config(
             max_length=635_040_000,
-            threshold=threshold,
+            threshold=0.95,
         )
-        
-        # Progress tracking via log handler
+
         def log_handler(message: str):
-            print(f"Matchering: {message}")  # Log to Modal console for debugging
-            current = job_statuses.get(job_id, {})
+            print(f"Matchering: {message}")
+            current = job_statuses.get(job_id, {}) or {}
             current["message"] = message
-            
-            if "Loading" in message:
-                current["progress"] = 20
-            elif "Analyzing" in message:
+            # Map matchering's internal stages to 25..70% of the overall progress bar
+            lower = message.lower()
+            if "loading" in lower:
+                current["progress"] = 25
+            elif "analyzing" in lower:
                 current["progress"] = 40
-            elif "Matching" in message:
-                current["progress"] = 60
-            elif "Limiting" in message:
-                current["progress"] = 80
-            elif "Saving" in message:
-                current["progress"] = 85
-                
+            elif "matching" in lower:
+                current["progress"] = 55
+            elif "limiting" in lower:
+                current["progress"] = 65
+            elif "saving" in lower:
+                current["progress"] = 70
             job_statuses[job_id] = current
-        
+
         mg.log(log_handler)
-        
-        print(f"Starting matchering process: target={target_path}, reference={reference_path}")
-        
-        # Select output format based on quality setting
-        if output_quality == "high":
-            result_format = mg.pcm24(output_path)  # 24-bit for high quality
-            print("Output format: 24-bit PCM WAV")
-        else:
-            result_format = mg.pcm16(output_path)  # 16-bit for standard quality
-            print("Output format: 16-bit PCM WAV")
-        
-        # Process with Matchering
+
+        update_status(25, "Matching reference tone & EQ...")
+        # Intermediate is 24-bit so we don't lose precision before the final stage.
         mg.process(
-            target=target_path,
+            target=matchering_input,
             reference=reference_path,
             config=podcast_config,
-            results=[result_format],
+            results=[mg.pcm24(matched_path)],
         )
-        
-        print("Matchering process completed successfully")
-        
+
+        # ============================================================
+        # Stage 3 — Post-Matchering polish + LUFS normalize + true-peak limit
+        # ============================================================
+        update_status(75, "Polishing tone and dynamics...")
+        audio, sr = sf.read(matched_path, always_2d=True, dtype="float32")
+
+        # pedalboard expects (channels, samples)
+        audio_pb = np.ascontiguousarray(audio.T)
+
+        polish_chain = Pedalboard([
+            HighpassFilter(cutoff_frequency_hz=40.0),                       # remove subsonic / DC
+            PeakFilter(cutoff_frequency_hz=200.0,  gain_db=-1.0, q=0.7),    # tame low-mud
+            PeakFilter(cutoff_frequency_hz=2800.0, gain_db= 1.0, q=0.8),    # subtle presence
+            PeakFilter(cutoff_frequency_hz=6500.0, gain_db=-2.5, q=2.5),    # gentle de-esser
+            Compressor(threshold_db=-18.0, ratio=2.0, attack_ms=8.0, release_ms=100.0),  # glue + level
+        ])
+        audio_pb = polish_chain(audio_pb, sr)
+        audio = audio_pb.T  # back to (samples, channels)
+
+        # Measure loudness
+        update_status(82, "Measuring loudness...")
+        meter = pyln.Meter(sr)
+        try:
+            current_lufs = float(meter.integrated_loudness(audio))
+        except Exception:
+            current_lufs = -23.0  # neutral fallback
+        if not np.isfinite(current_lufs) or current_lufs < -70.0:
+            current_lufs = -40.0  # very-quiet fallback
+
+        target_lufs = LOUDNESS_TARGETS.get(loudness_target, -14.0)
+
+        # BS.1770 integrated loudness uses relative gating — applying a big gain
+        # can change which blocks are gated in/out, so single-pass "gain by
+        # (target - measured)" tends to overshoot by 1-3 dB on dynamic content.
+        # We iterate up to 3 times with a corrective gain to converge on target.
+        # Each pass: apply remaining gain delta, run limiter, re-measure.
+        audio_pb = np.ascontiguousarray(audio.T)
+        applied_gain_db = 0.0
+        delta_db = (target_lufs - current_lufs) + 0.3   # small overshoot for limiter loss
+
+        for pass_idx in range(3):
+            delta_db = float(np.clip(delta_db, -24.0, 24.0))
+            chain = Pedalboard([
+                Gain(gain_db=delta_db),
+                Limiter(threshold_db=TRUE_PEAK_CEILING_DB, release_ms=100.0),
+            ])
+            audio_pb = chain(audio_pb, sr)
+            applied_gain_db += delta_db
+
+            # Measure after this pass
+            try:
+                measured = float(meter.integrated_loudness(audio_pb.T))
+            except Exception:
+                break
+            if not np.isfinite(measured):
+                break
+
+            diff = target_lufs - measured
+            print(f"  pass {pass_idx + 1}: gain {delta_db:+.2f} dB -> {measured:.2f} LUFS (target {target_lufs:.1f}, diff {diff:+.2f})")
+
+            # Converged within 0.3 dB tolerance — good enough
+            if abs(diff) < 0.3:
+                break
+            # Next pass corrects by the remaining diff
+            delta_db = diff
+
+        audio = audio_pb.T
+
+        # Safety: no NaN/Inf, clamp to [-1, 1]
+        audio = np.nan_to_num(audio, nan=0.0, posinf=1.0, neginf=-1.0)
+        audio = np.clip(audio, -1.0, 1.0)
+
+        update_status(88, f"Loudness set to {target_lufs:.0f} LUFS")
+        print(f"Loudness: {current_lufs:.2f} LUFS source -> total gain {applied_gain_db:+.2f} dB -> target {target_lufs:.1f} LUFS")
+
+        # ============================================================
+        # Stage 4 — Write output
+        # ============================================================
+        update_status(92, "Writing mastered audio...")
+        subtype = "PCM_24" if output_quality == "high" else "PCM_16"
+        sf.write(output_path, audio, sr, subtype=subtype)
+        print(f"Wrote {subtype} WAV at {sample_rate} Hz")
+
         # Get file size for blob upload
         output_file_size = os.path.getsize(output_path)
-        
+
         # Upload result to R2 (for download URL and fallback)
-        job_statuses[job_id] = {**job_statuses[job_id], "progress": 85, "message": "Uploading mastered audio..."}
+        update_status(94, "Uploading mastered audio...")
         s3.upload_file(output_path, R2_BUCKET, output_r2_key)
-        
+
         # Try to upload directly to Vercel Blob for premium users
-        # This happens AFTER R2 upload so we have a fallback
-        job_statuses[job_id] = {**job_statuses[job_id], "progress": 92, "message": "Saving to cloud storage..."}
+        update_status(96, "Saving to cloud storage...")
         blob_data = upload_to_vercel_blob(job_id, output_path, output_file_size)
-        
         if blob_data:
             print(f"Premium user file saved to Vercel Blob: {blob_data.get('blobUrl')}")
-        
-        # Clean up local files (but not template files!)
+
+        # Clean up local files (skip baked-in template files)
         for path in files_to_cleanup:
             if os.path.exists(path):
                 os.remove(path)
-        
+
         # Update file metadata with output key
         for file_id, meta in file_metadata.items():
             if meta.get("job_id") == job_id:
                 meta["output_r2_key"] = output_r2_key
                 file_metadata[file_id] = meta
                 break
-        
-        # Update final status
+
         job_statuses[job_id] = {
             "status": "completed",
             "progress": 100,
             "message": "Mastering complete!",
             "output_file": output_r2_key,
         }
-        
-        # Notify frontend webhook to send email notification
-        # Include blob_data so webhook can save to database without downloading
+
         notify_job_complete(job_id, "completed", output_r2_key, blob_data)
-        
         return {"success": True, "output_file": output_r2_key, "blob_data": blob_data}
-        
+
     except Exception as e:
         import traceback
         error_msg = str(e)
         error_traceback = traceback.format_exc()
         print(f"ERROR in process_audio: {error_msg}")
         print(f"Traceback: {error_traceback}")
-        
-        # Clean up on error (but not template files!)
+
         for path in files_to_cleanup:
             if os.path.exists(path):
-                os.remove(path)
-                
+                try:
+                    os.remove(path)
+                except Exception:
+                    pass
+
         job_statuses[job_id] = {
             "status": "failed",
             "progress": 0,
             "message": f"Error: {error_msg}",
             "output_file": None,
         }
-        
-        # Notify frontend webhook about failure
         notify_job_complete(job_id, "failed", None)
-        
         return {"success": False, "error": error_msg, "traceback": error_traceback}
 
 
@@ -551,11 +691,29 @@ def fastapi_app():
                 ],
                 "default": "standard",
             },
-            "limiter_mode": {
+            "loudness_target": {
                 "options": [
-                    {"id": "gentle", "name": "Gentle", "description": "More dynamic range, natural sound"},
-                    {"id": "normal", "name": "Normal", "description": "Balanced loudness and dynamics"},
-                    {"id": "loud", "name": "Loud", "description": "Maximum loudness, less dynamic range"},
+                    {"id": "conservative", "name": "Conservative (-16 LUFS)", "description": "Apple Podcasts spec. Dynamic, dialog-friendly."},
+                    {"id": "standard",     "name": "Standard (-14 LUFS)",     "description": "Spotify spec. Recommended for most podcasts."},
+                    {"id": "loud",         "name": "Loud (-12 LUFS)",         "description": "Broadcast-loud. Punchy, YouTube-leaning."},
+                ],
+                "default": "standard",
+            },
+            "noise_reduction": {
+                "options": [
+                    {"id": False, "name": "Off", "description": "Keep the original recording untouched."},
+                    {"id": True,  "name": "On",  "description": "AI-clean background noise, hum, and room tone."},
+                ],
+                "default": False,
+            },
+            # Kept for one deploy cycle so old clients don't break.
+            # Maps to loudness_target via LEGACY_LIMITER_MODE_MAP.
+            "limiter_mode": {
+                "deprecated": True,
+                "options": [
+                    {"id": "gentle", "name": "Gentle", "description": "Deprecated — use loudness_target=conservative"},
+                    {"id": "normal", "name": "Normal", "description": "Deprecated — use loudness_target=standard"},
+                    {"id": "loud",   "name": "Loud",   "description": "Deprecated — use loudness_target=loud"},
                 ],
                 "default": "normal",
             },
@@ -640,54 +798,64 @@ def fastapi_app():
     
     @web_app.post("/master")
     async def start_mastering(
-        target_file_id: str, 
-        template_id: str = None, 
+        target_file_id: str,
+        template_id: str = None,
         reference_file_id: str = None,
-        output_quality: str = "standard",  # "standard" or "high"
-        limiter_mode: str = "normal",  # "gentle", "normal", or "loud"
+        output_quality: str = "standard",     # "standard" (16-bit) | "high" (24-bit)
+        loudness_target: str = None,          # "conservative" | "standard" | "loud"
+        noise_reduction: bool = False,        # AI noise-reduction pre-pass
+        limiter_mode: str = None,             # DEPRECATED — kept for one deploy cycle
     ):
         """
         Start the mastering process.
-        
+
         Either template_id OR reference_file_id must be provided:
         - template_id: Use a built-in reference template (faster, no upload needed)
         - reference_file_id: Use a user-uploaded reference file
-        
-        Optional settings:
-        - output_quality: "standard" (16-bit) or "high" (24-bit)
-        - limiter_mode: "gentle", "normal", or "loud"
+
+        Settings:
+        - output_quality:  "standard" (16-bit) or "high" (24-bit)
+        - loudness_target: "conservative" (-16 LUFS), "standard" (-14 LUFS, default), "loud" (-12 LUFS)
+        - noise_reduction: bool — apply AI spectral noise reduction before mastering
+        - limiter_mode:    DEPRECATED. If provided and loudness_target is not, it's
+                           mapped via LEGACY_LIMITER_MODE_MAP.
         """
         # Validate input - need either template or uploaded reference
         if not template_id and not reference_file_id:
             raise HTTPException(
-                status_code=400, 
+                status_code=400,
                 detail="Either template_id or reference_file_id must be provided"
             )
-        
-        # Validate settings
+
+        # Resolve loudness_target (with legacy fallback)
+        if loudness_target is None and limiter_mode is not None:
+            loudness_target = LEGACY_LIMITER_MODE_MAP.get(limiter_mode, "standard")
+        if loudness_target not in LOUDNESS_TARGETS:
+            loudness_target = "standard"
+
+        # Validate output_quality
         if output_quality not in ["standard", "high"]:
             output_quality = "standard"
-        if limiter_mode not in ["gentle", "normal", "loud"]:
-            limiter_mode = "normal"
-        
+
+        # Coerce noise_reduction to bool (FastAPI usually handles this, but be defensive)
+        noise_reduction = bool(noise_reduction) if noise_reduction is not None else False
+
         # Get target file metadata
         target_meta = file_metadata.get(target_file_id)
         if not target_meta:
             raise HTTPException(status_code=404, detail="Target file not found")
-        
+
         target_r2_key = target_meta.get("r2_key")
         if not target_r2_key:
             raise HTTPException(status_code=400, detail="Target file not properly uploaded")
-        
+
         # Determine reference source
         if template_id:
-            # Using a built-in template
             if template_id not in REFERENCE_TEMPLATES:
                 raise HTTPException(status_code=404, detail=f"Template '{template_id}' not found")
             reference_source = template_id
             is_template = True
         else:
-            # Using an uploaded reference file
             reference_meta = file_metadata.get(reference_file_id)
             if not reference_meta:
                 raise HTTPException(status_code=404, detail="Reference file not found")
@@ -695,14 +863,14 @@ def fastapi_app():
             if not reference_source:
                 raise HTTPException(status_code=400, detail="Reference file not properly uploaded")
             is_template = False
-        
+
         # Create job
         job_id = str(uuid.uuid4())
-        
+
         # Update metadata with job_id for cleanup tracking
         target_meta["job_id"] = job_id
         file_metadata[target_file_id] = target_meta
-        
+
         # Initialize job status
         job_statuses[job_id] = {
             "status": "pending",
@@ -710,17 +878,18 @@ def fastapi_app():
             "message": "Queued for processing...",
             "output_file": None,
         }
-        
+
         # Spawn the processing function with all settings
         process_audio.spawn(
-            job_id, 
-            target_r2_key, 
-            reference_source, 
+            job_id,
+            target_r2_key,
+            reference_source,
             is_template,
             output_quality,
-            limiter_mode,
+            loudness_target,
+            noise_reduction,
         )
-        
+
         return {"job_id": job_id, "message": "Mastering job started"}
     
     @web_app.get("/status/{job_id}")
