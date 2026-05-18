@@ -1,0 +1,362 @@
+[
+  {
+    "id": "podcast-this-american-life",
+    "name": "This American Life",
+    "description": "Spectrally matched to the production sound of This American Life.",
+    "file": "podcast-this-american-life.mp3",
+    "source_feed": "https://www.thisamericanlife.org/podcast/rss.xml",
+    "source_episode": "887: Two Is One, One Is None!",
+    "built_lufs": -10.69
+  },
+  {
+    "id": "podcast-radiolab",
+    "name": "Radiolab",
+    "description": "Spectrally matched to the production sound of Radiolab.",
+    "file": "podcast-radiolab.mp3",
+    "source_feed": "https://feeds.simplecast.com/EmVW7VGp",
+    "source_episode": "Your Friendly Neighborhood Hookworms",
+    "built_lufs": -10.35
+  },
+  {
+    "id": "podcast-hidden-brain",
+    "name": "Hidden Brain",
+    "description": "Spectrally matched to the production sound of Hidden Brain.",
+    "file": "podcast-hidden-brain.mp3",
+    "source_feed": "https://feeds.simplecast.com/kwWc0lhf",
+    "source_episode": "The Empathy Gym",
+    "built_lufs": -10.3
+  },
+  {
+    "id": "podcast-planet-money",
+    "name": "Planet Money",
+    "description": "Spectrally matched to the production sound of Planet Money.",
+    "file": "podcast-planet-money.mp3",
+    "source_feed": "https://feeds.npr.org/510289/podcast.xml",
+    "source_episode": "Jerome Powell and the Future of Fed Independence",
+    "built_lufs": -10.48
+  },
+  {
+    "id": "podcast-code-switch",
+    "name": "Code Switch",
+    "description": "Spectrally matched to the production sound of Code Switch.",
+    "file": "podcast-code-switch.mp3",
+    "source_feed": "https://feeds.npr.org/510312/podcast.xml",
+    "source_episode": "Is astrology real? Depends who you ask",
+    "built_lufs": -10.51
+  },
+  {
+    "id": "podcast-throughline",
+    "name": "Throughline",
+    "description": "Spectrally matched to the production sound of Throughline.",
+    "file": "podcast-throughline.mp3",
+    "source_feed": "https://feeds.npr.org/510333/podcast.xml",
+    "source_episode": "War by remote control, how drones changed modern warfare",
+    "built_lufs": -10.13
+  },
+  {
+    "id": "podcast-fresh-air",
+    "name": "Fresh Air",
+    "description": "Spectrally matched to the production sound of Fresh Air.",
+    "file": "podcast-fresh-air.mp3",
+    "source_feed": "https://feeds.npr.org/381444908/podcast.xml",
+    "source_episode": "Son of radicals, Zayd Ayers Dohrn grew up underground & on the run",
+    "built_lufs": -10.47
+  },
+  {
+    "id": "podcast-wait-wait-dont-tell-me",
+    "name": "Wait Wait Don't Tell Me",
+    "description": "Spectrally matched to the production sound of Wait Wait Don't Tell Me.",
+    "file": "podcast-wait-wait-dont-tell-me.mp3",
+    "source_feed": "https://feeds.npr.org/344098539/podcast.xml",
+    "source_episode": "We make Ken Jennings relive the worst moment of his life",
+    "built_lufs": -9.97
+  },
+  {
+    "id": "podcast-invisibilia",
+    "name": "Invisibilia",
+    "description": "Spectrally matched to the production sound of Invisibilia.",
+    "file": "podcast-invisibilia.mp3",
+    "source_feed": "https://feeds.npr.org/510307/podcast.xml",
+    "source_episode": "\"The Network\" from NPR's Embedded",
+    "built_lufs": -10.33
+  },
+  {
+    "id": "podcast-snap-judgment",
+    "name": "Snap Judgment",
+    "description": "Spectrally matched to the production sound of Snap Judgment.",
+    "file": "podcast-snap-judgment.mp3",
+    "source_feed": "https://rss.pdrl.fm/9ba5b0/snap.feed.snapjudgment.org",
+    "source_episode": "Heavyweight",
+    "built_lufs": -10.25
+  },
+  {
+    "id": "podcast-revisionist-history",
+    "name": "Revisionist History",
+    "description": "Spectrally matched to the production sound of Revisionist History.",
+    "file": "podcast-revisionist-history.mp3",
+    "source_feed": "https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/0e563f45-9d14-4ce8-8ef0-ae32006cd7e7/0d4cc74d-fff7-4b89-8818-ae32006cd7f0/podcast.rss",
+    "source_episode": "The BlackBerry Problem | The Mistakes Series",
+    "built_lufs": -10.56
+  },
+  {
+    "id": "podcast-the-happiness-lab",
+    "name": "The Happiness Lab",
+    "description": "Spectrally matched to the production sound of The Happiness Lab.",
+    "file": "podcast-the-happiness-lab.mp3",
+    "source_feed": "https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/96c5c41e-0bc8-4661-b184-ae32006cd726/d623ef0b-3fee-4c26-b815-ae32006cd739/podcast.rss",
+    "source_episode": "The Hidden Beliefs That Shape Your Happiness with Shawn Achor",
+    "built_lufs": -10.32
+  },
+  {
+    "id": "podcast-cautionary-tales-with-tim-harford",
+    "name": "Cautionary Tales with Tim Harford",
+    "description": "Spectrally matched to the production sound of Cautionary Tales with Tim Harford.",
+    "file": "podcast-cautionary-tales-with-tim-harford.mp3",
+    "source_feed": "https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/c0ae8c6e-22f0-4e9b-ac1c-ae390037ac53/7f5a4714-6b10-4ccf-a424-ae390037ac70/podcast.rss",
+    "source_episode": "Angels, Gold and Lust: John Dee and the Philosopher's Stone (Part 2)",
+    "built_lufs": -10.22
+  },
+  {
+    "id": "podcast-heavyweight",
+    "name": "Heavyweight",
+    "description": "Spectrally matched to the production sound of Heavyweight.",
+    "file": "podcast-heavyweight.mp3",
+    "source_feed": "https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/afbd76b8-eff2-442a-b938-b28e0126edad/d08826cd-f888-4cd3-b700-b28e0126edbb/podcast.rss",
+    "source_episode": "2026 Update: Christina",
+    "built_lufs": -10.32
+  },
+  {
+    "id": "podcast-science-vs",
+    "name": "Science Vs",
+    "description": "Spectrally matched to the production sound of Science Vs.",
+    "file": "podcast-science-vs.mp3",
+    "source_feed": "https://feeds.megaphone.fm/sciencevs",
+    "source_episode": "Hantavirus: How Scary Is It??",
+    "built_lufs": -10.18
+  },
+  {
+    "id": "podcast-reply-all",
+    "name": "Reply All",
+    "description": "Spectrally matched to the production sound of Reply All.",
+    "file": "podcast-reply-all.mp3",
+    "source_feed": "https://feeds.megaphone.fm/replyall",
+    "source_episode": "Big Lives: Emmanuel's New Show",
+    "built_lufs": -10.58
+  },
+  {
+    "id": "podcast-the-daily",
+    "name": "The Daily",
+    "description": "Spectrally matched to the production sound of The Daily.",
+    "file": "podcast-the-daily.mp3",
+    "source_feed": "https://feeds.simplecast.com/Sl5CSM3S",
+    "source_episode": "The Courtroom Showdown Between Elon Musk and Sam Altman",
+    "built_lufs": -10.43
+  },
+  {
+    "id": "podcast-hard-fork",
+    "name": "Hard Fork",
+    "description": "Spectrally matched to the production sound of Hard Fork.",
+    "file": "podcast-hard-fork.mp3",
+    "source_feed": "https://feeds.simplecast.com/6HKOhNgS",
+    "source_episode": "A.I. Safety Is So Back + Mythos Mayhem with Nikesh Arora + Hot Mess Express",
+    "built_lufs": -10.24
+  },
+  {
+    "id": "podcast-the-ezra-klein-show",
+    "name": "The Ezra Klein Show",
+    "description": "Spectrally matched to the production sound of The Ezra Klein Show.",
+    "file": "podcast-the-ezra-klein-show.mp3",
+    "source_feed": "https://feeds.simplecast.com/kEKXbjuJ",
+    "source_episode": "This Is Why I Find Pema Ch\u00f6dr\u00f6n So Essential",
+    "built_lufs": -10.26
+  },
+  {
+    "id": "podcast-today-explained",
+    "name": "Today Explained",
+    "description": "Spectrally matched to the production sound of Today Explained.",
+    "file": "podcast-today-explained.mp3",
+    "source_feed": "https://feeds.megaphone.fm/VMP5705694065",
+    "source_episode": "How the right embraced psychedelics",
+    "built_lufs": -10.04
+  },
+  {
+    "id": "podcast-the-weeds",
+    "name": "The Weeds",
+    "description": "Spectrally matched to the production sound of The Weeds.",
+    "file": "podcast-the-weeds.mp3",
+    "source_feed": "https://rss.buzzsprout.com/1918829.rss",
+    "source_episode": "Community Fridges",
+    "built_lufs": -11.49
+  },
+  {
+    "id": "podcast-lex-fridman-podcast",
+    "name": "Lex Fridman Podcast",
+    "description": "Spectrally matched to the production sound of Lex Fridman Podcast.",
+    "file": "podcast-lex-fridman-podcast.mp3",
+    "source_feed": "https://lexfridman.com/feed/podcast/",
+    "source_episode": "#496 \u2013 FFmpeg: The Incredible Technology Behind Video on the Internet",
+    "built_lufs": -13.97
+  },
+  {
+    "id": "podcast-the-tim-ferriss-show",
+    "name": "The Tim Ferriss Show",
+    "description": "Spectrally matched to the production sound of The Tim Ferriss Show.",
+    "file": "podcast-the-tim-ferriss-show.mp3",
+    "source_feed": "https://rss.art19.com/tim-ferriss-show",
+    "source_episode": "#865: The Most Incredible Transformation I\u2019ve Ever Seen \u2014 Jerzy Gregorek on Autism, Cerebral Palsy, Coaching, and the Power of Micro-Progressions",
+    "built_lufs": -10.47
+  },
+  {
+    "id": "podcast-conan-obrien-needs-a-friend",
+    "name": "Conan O'Brien Needs a Friend",
+    "description": "Spectrally matched to the production sound of Conan O'Brien Needs a Friend.",
+    "file": "podcast-conan-obrien-needs-a-friend.mp3",
+    "source_feed": "https://feeds.simplecast.com/dHoohVNH",
+    "source_episode": "Charlie Puth",
+    "built_lufs": -10.29
+  },
+  {
+    "id": "podcast-smartless",
+    "name": "SmartLess",
+    "description": "Spectrally matched to the production sound of SmartLess.",
+    "file": "podcast-smartless.mp3",
+    "source_feed": "https://feeds.simplecast.com/hNaFxXpO",
+    "source_episode": "\"Sting\"",
+    "built_lufs": -9.99
+  },
+  {
+    "id": "podcast-armchair-expert-with-dax-shepard",
+    "name": "Armchair Expert with Dax Shepard",
+    "description": "Spectrally matched to the production sound of Armchair Expert with Dax Shepard.",
+    "file": "podcast-armchair-expert-with-dax-shepard.mp3",
+    "source_feed": "https://rss.art19.com/armchair-expert",
+    "source_episode": "Brandi Carlile",
+    "built_lufs": -9.97
+  },
+  {
+    "id": "podcast-wtf-with-marc-maron-podcast",
+    "name": "WTF with Marc Maron Podcast",
+    "description": "Spectrally matched to the production sound of WTF with Marc Maron Podcast.",
+    "file": "podcast-wtf-with-marc-maron-podcast.mp3",
+    "source_feed": "https://feeds.acast.com/public/shows/62a222737c02140013aa4c03",
+    "source_episode": "Episode 1686 - Barack Obama",
+    "built_lufs": -10.74
+  },
+  {
+    "id": "podcast-all-in-podcast",
+    "name": "All-In Podcast",
+    "description": "Spectrally matched to the production sound of All-In Podcast.",
+    "file": "podcast-all-in-podcast.mp3",
+    "source_feed": "https://rss.libsyn.com/shows/254861/destinations/1928300.xml",
+    "source_episode": "Trump-Xi Summit, Benioff: \"Not My First SaaSpocalypse,\" OpenAI vs Apple, Multi-Sensory AI, El Ni\u00f1o",
+    "built_lufs": -10.28
+  },
+  {
+    "id": "podcast-the-vergecast",
+    "name": "The Vergecast",
+    "description": "Spectrally matched to the production sound of The Vergecast.",
+    "file": "podcast-the-vergecast.mp3",
+    "source_feed": "https://feeds.megaphone.fm/vergecast",
+    "source_episode": "Everybody wants to rule the AI world",
+    "built_lufs": -10.65
+  },
+  {
+    "id": "podcast-pivot",
+    "name": "Pivot",
+    "description": "Spectrally matched to the production sound of Pivot.",
+    "file": "podcast-pivot.mp3",
+    "source_feed": "https://feeds.megaphone.fm/pivot",
+    "source_episode": "Trump\u2019s China Summit, Inflation Shock, and Silicon Valley\u2019s Midterm Money",
+    "built_lufs": -10.18
+  },
+  {
+    "id": "podcast-99-invisible",
+    "name": "99% Invisible",
+    "description": "Spectrally matched to the production sound of 99% Invisible.",
+    "file": "podcast-99-invisible.mp3",
+    "source_feed": "https://feeds.simplecast.com/BqbsxVfO",
+    "source_episode": "Ask Your Doctor About",
+    "built_lufs": -10.31
+  },
+  {
+    "id": "podcast-criminal",
+    "name": "Criminal",
+    "description": "Spectrally matched to the production sound of Criminal.",
+    "file": "podcast-criminal.mp3",
+    "source_feed": "https://feeds.megaphone.fm/VMP7924981569",
+    "source_episode": "The Mountain",
+    "built_lufs": -10.78
+  },
+  {
+    "id": "podcast-the-memory-palace",
+    "name": "The Memory Palace",
+    "description": "Spectrally matched to the production sound of The Memory Palace.",
+    "file": "podcast-the-memory-palace.mp3",
+    "source_feed": "http://feeds.thememorypalace.us/thememorypalace",
+    "source_episode": "Episode 243: The Brothers Switzer",
+    "built_lufs": -10.46
+  },
+  {
+    "id": "podcast-the-moth-radio-hour",
+    "name": "The Moth Radio Hour",
+    "description": "Spectrally matched to the production sound of The Moth Radio Hour.",
+    "file": "podcast-the-moth-radio-hour.mp3",
+    "source_feed": "http://feeds.feedburner.com/themothpodcast",
+    "source_episode": "Swiftly Flow The Days: The Moth Podcast",
+    "built_lufs": -10.08
+  },
+  {
+    "id": "podcast-serial",
+    "name": "Serial",
+    "description": "Spectrally matched to the production sound of Serial.",
+    "file": "podcast-serial.mp3",
+    "source_feed": "https://feeds.simplecast.com/PpzWFGhg",
+    "source_episode": "The Idiot - Chapter 1",
+    "built_lufs": -10.69
+  },
+  {
+    "id": "podcast-office-ladies",
+    "name": "Office Ladies",
+    "description": "Spectrally matched to the production sound of Office Ladies.",
+    "file": "podcast-office-ladies.mp3",
+    "source_feed": "https://feeds.megaphone.fm/office-ladies",
+    "source_episode": "Second Drink: The Surplus",
+    "built_lufs": -9.66
+  },
+  {
+    "id": "podcast-my-brother-my-brother-and-me",
+    "name": "My Brother My Brother and Me",
+    "description": "Spectrally matched to the production sound of My Brother My Brother and Me.",
+    "file": "podcast-my-brother-my-brother-and-me.mp3",
+    "source_feed": "https://feeds.simplecast.com/wjQvYtdl",
+    "source_episode": "MBMBaM 814: Pibbonade",
+    "built_lufs": -10.45
+  },
+  {
+    "id": "podcast-stuff-you-should-know",
+    "name": "Stuff You Should Know",
+    "description": "Spectrally matched to the production sound of Stuff You Should Know.",
+    "file": "podcast-stuff-you-should-know.mp3",
+    "source_feed": "https://www.omnycontent.com/d/playlist/e73c998e-6e60-432f-8610-ae210140c5b1/a91018a4-ea4f-4130-bf55-ae270180c327/44710ecc-10bb-48d1-93c7-ae270180c33e/podcast.rss",
+    "source_episode": "Selects: Did Mallory Make it to the Top of Everest First?",
+    "built_lufs": -10.25
+  },
+  {
+    "id": "podcast-in-our-time-philosophy",
+    "name": "In Our Time: Philosophy",
+    "description": "Spectrally matched to the production sound of In Our Time: Philosophy.",
+    "file": "podcast-in-our-time-philosophy.mp3",
+    "source_feed": "https://podcasts.files.bbci.co.uk/p01f0vzr.rss",
+    "source_episode": "Maurice Merleau-Ponty",
+    "built_lufs": -10.25
+  },
+  {
+    "id": "podcast-desert-island-discs",
+    "name": "Desert Island Discs",
+    "description": "Spectrally matched to the production sound of Desert Island Discs.",
+    "file": "podcast-desert-island-discs.mp3",
+    "source_feed": "https://podcasts.files.bbci.co.uk/b006qnmr.rss",
+    "source_episode": "Classic Desert Island Discs - Dame Donna Langley",
+    "built_lufs": -10.03
+  }
+]

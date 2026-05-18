@@ -69,7 +69,11 @@ env/
 # Audio files (temp uploads/outputs)
 backend/uploads/
 backend/outputs/
-backend/references/
+# Ignore reference audio files but keep the manifest tracked. Pattern matters:
+# when the directory itself is ignored with a trailing slash, files inside
+# can't be un-ignored. So ignore by glob and un-ignore the JSON.
+backend/references/*
+!backend/references/manifest.json
 public/*.mp3
 
 # IDE
