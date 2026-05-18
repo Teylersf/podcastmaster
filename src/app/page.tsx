@@ -20,6 +20,8 @@ import {
   Github,
   Lock,
   Trash2,
+  Rocket,
+  Gift,
 } from "lucide-react";
 
 // Dynamic imports for client components - reduces initial JS bundle
@@ -343,15 +345,110 @@ export default function Home() {
 
       <div className="relative z-10 px-4 py-8 md:py-16">
         <div className="max-w-6xl mx-auto">
+          {/* V3 launch announcement — server-rendered, appears instantly */}
+          <VersionThreeBanner />
+
           {/* Client-side interactive content */}
           <Suspense fallback={<HomeLoadingSkeleton />}>
             <HomeClient />
           </Suspense>
-          
+
           {/* Static sections - server rendered */}
           <StaticSections />
         </div>
       </div>
     </main>
+  );
+}
+
+// Launch banner for the v3 rewrite — celebrates the mastering chain upgrades
+// AND surfaces the 2-month "3 free HQ exports" promo.
+function VersionThreeBanner() {
+  const upgrades = [
+    "Spotify-spec loudness (-14 LUFS targeting, not just reference matching)",
+    "AI noise reduction toggle — cleans hum, room tone, hiss",
+    "All-new polish chain: de-esser, presence lift, leveling compressor",
+    "True-peak limiting at -1 dBTP (no more clipped uploads)",
+    "Iterative loudness convergence (hits target within 0.3 dB)",
+    "Fixed the inverted loudness modes — \"Loud\" is now actually loud",
+  ];
+
+  return (
+    <section className="relative mb-10 md:mb-12 overflow-hidden rounded-3xl border border-[rgba(244,63,157,0.35)] bg-gradient-to-br from-[rgba(244,63,157,0.18)] via-[rgba(251,146,60,0.12)] to-[rgba(56,189,248,0.18)] p-6 md:p-8 shadow-[0_8px_40px_rgba(244,63,157,0.18)]">
+      {/* Decorative gradient glow */}
+      <div
+        className="pointer-events-none absolute -top-32 -right-32 w-72 h-72 rounded-full opacity-50"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(244,63,157,0.45) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute -bottom-32 -left-32 w-72 h-72 rounded-full opacity-40"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(56,189,248,0.4) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+
+      <div className="relative grid md:grid-cols-[1fr_auto] gap-6 items-center">
+        <div>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.15)] text-xs font-semibold tracking-wider uppercase text-white/90">
+              <Rocket className="w-3.5 h-3.5" />
+              Just shipped
+            </span>
+            <span className="text-xs font-mono text-[var(--text-muted)]">
+              v3.0
+            </span>
+          </div>
+
+          <h2 className="text-2xl md:text-4xl font-bold leading-tight mb-2 bg-gradient-to-r from-[#f43f9d] via-[#fb923c] to-[#38bdf8] bg-clip-text text-transparent">
+            Version 3.0 — Bigger, Louder, Smarter
+          </h2>
+          <p className="text-[var(--text-secondary)] text-sm md:text-base mb-5 max-w-2xl">
+            We rebuilt the entire mastering engine. Your podcasts now hit
+            real broadcast-loudness targets, sound cleaner, and have AI noise
+            reduction one click away.
+          </p>
+
+          <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
+            {upgrades.map((upgrade) => (
+              <li
+                key={upgrade}
+                className="flex items-start gap-2 text-[var(--text-secondary)]"
+              >
+                <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[#22c55e]" />
+                <span>{upgrade}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Free HQ promo card */}
+        <div className="md:w-[280px] rounded-2xl border border-[rgba(244,63,157,0.4)] bg-[rgba(10,6,18,0.5)] p-5 backdrop-blur">
+          <div className="flex items-center gap-2 mb-2">
+            <Gift className="w-5 h-5 text-[#f43f9d]" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#f43f9d]">
+              Launch gift
+            </span>
+          </div>
+          <p className="text-2xl font-bold leading-tight mb-1">
+            3 free
+            <span className="block text-base font-medium text-[var(--text-secondary)] mt-0.5">
+              24-bit HQ exports
+            </span>
+          </p>
+          <p className="text-xs text-[var(--text-muted)] mb-3">
+            For every visitor. No signup. No credit card.
+          </p>
+          <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider">
+            Free for the next 2 months
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }

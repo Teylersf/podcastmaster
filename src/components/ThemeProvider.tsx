@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 export type ThemeName =
+  | "version-3"
   | "glassmorphism"
   | "light"
   | "dark"
@@ -31,7 +32,8 @@ export interface ThemeInfo {
 }
 
 export const themes: ThemeInfo[] = [
-  { id: "glassmorphism", name: "Glassmorphism", icon: "✨" },
+  { id: "version-3", name: "Version 3 ✨ NEW", icon: "🚀" },
+  { id: "glassmorphism", name: "Glassmorphism", icon: "🪟" },
   { id: "dark", name: "Dark", icon: "🌙" },
   { id: "light", name: "Light", icon: "☀️" },
   { id: "pretty-pink", name: "Pretty Pink", icon: "🌸" },
@@ -62,8 +64,8 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Default theme for all users
-const DEFAULT_THEME: ThemeName = "glassmorphism";
+// Default theme for all users (v3 launch — was "glassmorphism" before)
+const DEFAULT_THEME: ThemeName = "version-3";
 
 // Check if a theme is valid
 function isValidTheme(theme: string | null): theme is ThemeName {
@@ -91,7 +93,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       themeToUse = userChosenTheme;
       setHasUserChosen(true);
     } else {
-      // Default to glassmorphism for all new users
+      // Default to the current launch theme for all new users
       themeToUse = DEFAULT_THEME;
     }
     
@@ -131,7 +133,7 @@ export function useTheme() {
   // Return default values during SSR/build time when context isn't available
   if (context === undefined) {
     return {
-      theme: "glassmorphism" as ThemeName,
+      theme: "version-3" as ThemeName,
       setTheme: () => {},
       themes,
       hasUserChosen: false,

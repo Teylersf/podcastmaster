@@ -129,18 +129,18 @@ const jsonLd = {
 };
 
 // Script to prevent flash of wrong theme
-// Priority: user's chosen theme > glassmorphism (default)
+// Priority: user's chosen theme > version-3 (v3 launch default)
 const themeScript = `
   (function() {
     try {
-      var themes = ['glassmorphism','dark','light','pretty-pink','blue','green-ocean','purple-galaxy','boring-enterprise','grey-alien','matrix','hand-written','coloring-book','rainbow','chaos','orange-slim','yellow-sunshine','90s','80s','cringe','black-and-white'];
+      var themes = ['version-3','glassmorphism','dark','light','pretty-pink','blue','green-ocean','purple-galaxy','boring-enterprise','grey-alien','matrix','hand-written','coloring-book','rainbow','chaos','orange-slim','yellow-sunshine','90s','80s','cringe','black-and-white'];
       var userChosen = localStorage.getItem('podcast-theme-chosen');
-      var theme = 'glassmorphism';
-      
+      var theme = 'version-3';
+
       if (userChosen && themes.indexOf(userChosen) !== -1) {
         theme = userChosen;
       }
-      
+
       document.documentElement.setAttribute('data-theme', theme);
     } catch (e) {}
   })();

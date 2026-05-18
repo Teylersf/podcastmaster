@@ -72,7 +72,7 @@ export default function ThemeSelector() {
             <div className="flex items-center gap-2 text-sm">
               <Palette className="w-4 h-4 text-(--accent-primary)" />
               <span className="text-(--text-secondary)">
-                Change theme here — <span className="text-(--accent-primary) font-medium">19 themes</span> available!
+                Change theme here — <span className="text-(--accent-primary) font-medium">{themes.length} themes</span> available!
               </span>
             </div>
             {/* Tooltip arrow */}

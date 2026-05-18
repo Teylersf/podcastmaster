@@ -221,15 +221,18 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
     }
   };
 
-  // Check if user can use HQ export
-  const canUseHqExport = isSubscribed || hqCredits > 0;
+  // v3 launch promo: everyone gets HQ free for 2 months. UI says "3 free
+  // exports"; we don't actually count or enforce. Flip HQ_PROMO to false
+  // to end the promo and restore the original gating.
+  const HQ_PROMO = true;
+  const canUseHqExport = HQ_PROMO || isSubscribed || hqCredits > 0;
 
-  // Reset to standard quality if user can't use HQ
+  // Reset to standard quality if user can't use HQ (skipped during promo)
   useEffect(() => {
-    if (!canUseHqExport && outputQuality === "high") {
+    if (!HQ_PROMO && !canUseHqExport && outputQuality === "high") {
       setOutputQuality("standard");
     }
-  }, [canUseHqExport, outputQuality]);
+  }, [canUseHqExport, outputQuality, HQ_PROMO]);
 
   // Fetch templates
   useEffect(() => {
@@ -445,8 +448,9 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
         }
       }
 
-      // Consume HQ credit if using high quality and not a subscriber
-      if (outputQuality === "high" && !isSubscribed && hqCredits > 0) {
+      // Consume HQ credit if using high quality and not a subscriber.
+      // Skipped during v3 launch promo — no decrement, unlimited use.
+      if (!HQ_PROMO && outputQuality === "high" && !isSubscribed && hqCredits > 0) {
         try {
           const hqRes = await fetch("/api/hq-purchase/status", { method: "POST" });
           const hqData = await hqRes.json();
@@ -961,45 +965,70 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
                                 : "border-(--border-subtle) hover:border-(--border-medium)"
                           }`}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-2">
                             <p className="font-medium text-sm">High Quality (24-bit)</p>
-                            {!canUseHqExport && <Crown className="w-3 h-3 text-(--warning)" />}
-                            {hqCredits > 0 && !isSubscribed && (
-                              <span className="text-xs bg-(--success-muted) text-(--success) px-1.5 py-0.5 rounded">
-                                {hqCredits} credit
+                            {HQ_PROMO ? (
+                              <span className="text-[10px] uppercase tracking-wider font-bold bg-(--accent-muted) text-(--accent-primary) px-1.5 py-0.5 rounded border border-(--border-hover) whitespace-nowrap">
+                                Free · v3
                               </span>
+                            ) : (
+                              <>
+                                {!canUseHqExport && <Crown className="w-3 h-3 text-(--warning)" />}
+                                {hqCredits > 0 && !isSubscribed && (
+                                  <span className="text-xs bg-(--success-muted) text-(--success) px-1.5 py-0.5 rounded">
+                                    {hqCredits} credit
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
                           <p className="text-xs text-(--text-muted) mt-0.5">
-                            {isSubscribed ? "Professional production" : hqCredits > 0 ? "1 credit will be used" : "Unlock below"}
+                            {HQ_PROMO
+                              ? "Free for everyone during v3 launch"
+                              : isSubscribed
+                                ? "Professional production"
+                                : hqCredits > 0
+                                  ? "1 credit will be used"
+                                  : "Unlock below"}
                           </p>
                         </button>
                       </div>
-                      
-                      {/* $1 HQ Purchase Option */}
-                      {!isSubscribed && hqCredits === 0 && (
-                        <div className="mt-3 p-3 rounded-lg bg-linear-to-r from-[rgba(224,122,76,0.08)] to-[rgba(196,105,61,0.08)] border border-[rgba(224,122,76,0.25)]">
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">Try 24-bit HQ Export — $1</p>
-                              <p className="text-xs text-(--text-muted)">Exact format for Spotify, Apple Podcasts & YouTube</p>
+
+                      {HQ_PROMO ? (
+                        <div className="mt-3 p-3 rounded-lg bg-linear-to-r from-(--accent-muted) to-(--accent-muted) border border-(--border-hover)">
+                          <div className="flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-(--accent-primary) shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium">3 free 24-bit HQ exports</p>
+                              <p className="text-xs text-(--text-muted)">v3 launch promo — free for the next 2 months.</p>
                             </div>
-                            <button
-                              onClick={handleHqPurchase}
-                              disabled={hqCheckoutLoading}
-                              className="px-4 py-2 rounded-lg bg-linear-to-r from-[#e07a4c] to-[#c4693d] text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
-                            >
-                              {hqCheckoutLoading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <Sparkles className="w-4 h-4" />
-                                  $1
-                                </>
-                              )}
-                            </button>
                           </div>
                         </div>
+                      ) : (
+                        !isSubscribed && hqCredits === 0 && (
+                          <div className="mt-3 p-3 rounded-lg bg-linear-to-r from-[rgba(224,122,76,0.08)] to-[rgba(196,105,61,0.08)] border border-[rgba(224,122,76,0.25)]">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Try 24-bit HQ Export — $1</p>
+                                <p className="text-xs text-(--text-muted)">Exact format for Spotify, Apple Podcasts & YouTube</p>
+                              </div>
+                              <button
+                                onClick={handleHqPurchase}
+                                disabled={hqCheckoutLoading}
+                                className="px-4 py-2 rounded-lg bg-linear-to-r from-[#e07a4c] to-[#c4693d] text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
+                              >
+                                {hqCheckoutLoading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Sparkles className="w-4 h-4" />
+                                    $1
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )
                       )}
                     </div>
 

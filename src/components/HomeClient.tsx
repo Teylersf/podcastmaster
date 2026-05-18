@@ -152,7 +152,11 @@ export default function HomeClient() {
   const [audioDuration, setAudioDuration] = useState(0);
   const [outputR2Key, setOutputR2Key] = useState<string | null>(null);
 
-  const canUseHqExport = isSubscribed || hqCredits > 0;
+  // v3 launch promo: everyone gets HQ free for 2 months. UI says "3 free
+  // exports per person"; we don't actually count or enforce. Flip HQ_PROMO
+  // to false to end the promo (and uncomment the original gating below).
+  const HQ_PROMO = true;
+  const canUseHqExport = HQ_PROMO || isSubscribed || hqCredits > 0;
 
   // Lazy load subscription check
   useEffect(() => {
@@ -160,18 +164,19 @@ export default function HomeClient() {
       if (!user) {
         setIsSubscribed(false);
         setHqCredits(0);
-        if (outputQuality === "high") {
+        // During v3 promo, anonymous visitors can also pick HQ — skip reset.
+        if (!HQ_PROMO && outputQuality === "high") {
           setOutputQuality("standard");
         }
         return;
       }
-      
+
       setCheckingSubscription(true);
       try {
         const res = await fetch("/api/subscription/status");
         const data = await res.json();
         setIsSubscribed(data.isSubscribed || false);
-        if (!data.isSubscribed && outputQuality === "high") {
+        if (!HQ_PROMO && !data.isSubscribed && outputQuality === "high") {
           setOutputQuality("standard");
         }
       } catch (error) {
@@ -181,8 +186,11 @@ export default function HomeClient() {
         setCheckingSubscription(false);
       }
     };
-    
+
     checkSubscription();
+    // HQ_PROMO is a stable const; outputQuality reset is a no-op during the
+    // promo so we don't need to re-run on outputQuality changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
@@ -443,7 +451,7 @@ export default function HomeClient() {
         console.error("Failed to record usage:", err);
       }
 
-      if (outputQuality === "high" && !isSubscribed && hqCredits > 0) {
+      if (!HQ_PROMO && outputQuality === "high" && !isSubscribed && hqCredits > 0) {
         try {
           const hqRes = await fetch("/api/hq-purchase/status", { method: "POST" });
           const hqData = await hqRes.json();
@@ -1232,55 +1240,85 @@ export default function HomeClient() {
                           disabled={!canUseHqExport}
                           className={`p-4 rounded-xl border text-left transition-all ${
                             outputQuality === "high"
-                              ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
+                              ? "border-[#f43f9d] bg-[rgba(244,63,157,0.1)]"
                               : !canUseHqExport
                                 ? "border-[rgba(255,255,255,0.05)] opacity-50 cursor-not-allowed"
                                 : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
                           }`}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-2">
                             <p className="font-semibold">High Quality (24-bit)</p>
-                            {!canUseHqExport && <Crown className="w-4 h-4 text-[var(--warning)]" />}
-                            {hqCredits > 0 && !isSubscribed && (
-                              <span className="text-xs bg-[rgba(34,197,94,0.15)] text-[#22c55e] px-2 py-0.5 rounded-full">
-                                {hqCredits} credit
+                            {HQ_PROMO ? (
+                              <span className="text-[10px] uppercase tracking-wider font-bold bg-[rgba(244,63,157,0.18)] text-[#f43f9d] px-2 py-0.5 rounded-full border border-[rgba(244,63,157,0.35)] whitespace-nowrap">
+                                Free · v3
                               </span>
+                            ) : (
+                              <>
+                                {!canUseHqExport && <Crown className="w-4 h-4 text-[var(--warning)]" />}
+                                {hqCredits > 0 && !isSubscribed && (
+                                  <span className="text-xs bg-[rgba(34,197,94,0.15)] text-[#22c55e] px-2 py-0.5 rounded-full">
+                                    {hqCredits} credit
+                                  </span>
+                                )}
+                              </>
                             )}
                           </div>
                           <p className="text-xs text-[var(--text-muted)] mt-1">
-                            {isSubscribed ? "Professional production" : hqCredits > 0 ? "1 credit will be used" : "Unlock below"}
+                            {HQ_PROMO
+                              ? "Free for everyone during the v3 launch"
+                              : isSubscribed
+                                ? "Professional production"
+                                : hqCredits > 0
+                                  ? "1 credit will be used"
+                                  : "Unlock below"}
                           </p>
                         </button>
                       </div>
-                      
-                      {!isSubscribed && hqCredits === 0 && (
-                        <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-[rgba(249,115,22,0.1)] to-[rgba(59,130,246,0.1)] border border-[rgba(249,115,22,0.2)]">
-                          <div className="flex items-center justify-between gap-4">
+
+                      {HQ_PROMO ? (
+                        <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-[rgba(244,63,157,0.12)] via-[rgba(251,146,60,0.1)] to-[rgba(56,189,248,0.12)] border border-[rgba(244,63,157,0.25)]">
+                          <div className="flex items-center gap-3">
+                            <Sparkles className="w-5 h-5 text-[#f43f9d] shrink-0" />
                             <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <Sparkles className="w-4 h-4 text-[#f97316]" />
-                                <p className="font-semibold">Try 24-bit HQ for $1</p>
-                              </div>
+                              <p className="font-semibold text-sm">
+                                Launch promo — 3 free 24-bit HQ exports
+                              </p>
                               <p className="text-xs text-[var(--text-secondary)]">
-                                Exact format for Spotify, Apple Podcasts & YouTube
+                                For everyone, no signup, for the next 2 months.
                               </p>
                             </div>
-                            <button
-                              onClick={handleHqPurchase}
-                              disabled={hqCheckoutLoading}
-                              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f97316] to-[#ea580c] text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-[rgba(249,115,22,0.3)]"
-                            >
-                              {hqCheckoutLoading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <Sparkles className="w-4 h-4" />
-                                  $1
-                                </>
-                              )}
-                            </button>
                           </div>
                         </div>
+                      ) : (
+                        !isSubscribed && hqCredits === 0 && (
+                          <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-[rgba(249,115,22,0.1)] to-[rgba(59,130,246,0.1)] border border-[rgba(249,115,22,0.2)]">
+                            <div className="flex items-center justify-between gap-4">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <Sparkles className="w-4 h-4 text-[#f97316]" />
+                                  <p className="font-semibold">Try 24-bit HQ for $1</p>
+                                </div>
+                                <p className="text-xs text-[var(--text-secondary)]">
+                                  Exact format for Spotify, Apple Podcasts & YouTube
+                                </p>
+                              </div>
+                              <button
+                                onClick={handleHqPurchase}
+                                disabled={hqCheckoutLoading}
+                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f97316] to-[#ea580c] text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-[rgba(249,115,22,0.3)]"
+                              >
+                                {hqCheckoutLoading ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Sparkles className="w-4 h-4" />
+                                    $1
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        )
                       )}
                     </div>
 
