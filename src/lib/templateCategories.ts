@@ -22,6 +22,37 @@ export const FEATURED_IDS = new Set([
   "news-broadcast",
 ]);
 
+// Hardcoded defaults so the picker is usable on first paint without waiting
+// for the Modal `/templates` fetch (cold starts can hit 4+ seconds, which
+// the user perceives as the picker being broken). The full 44-preset list
+// folds in silently when the API responds.
+//
+// Names + descriptions mirror backend/modal_app.py's _REFERENCE_TEMPLATE_DEFS.
+// If they drift, the API response wins (the prefill is only seen for a
+// fraction of a second on a warm container, or ~4s on a cold one).
+export const DEFAULT_TEMPLATES: Template[] = [
+  {
+    id: "voice-optimized",
+    name: "Recommended - Optimized for Voices",
+    description: "Professional voice-optimized preset with balanced EQ and loudness. Best for podcasts and spoken content.",
+  },
+  {
+    id: "female-podcast",
+    name: "Female Voice + Full Production",
+    description: "Optimized for female voices with intro music and sound effects. Ready-to-release quality.",
+  },
+  {
+    id: "male-podcast",
+    name: "Male Voice + Full Production",
+    description: "Optimized for male voices with intro music and sound effects. Ready-to-release quality.",
+  },
+  {
+    id: "news-broadcast",
+    name: "News & Broadcast Style",
+    description: "Breaking news channel sound. Male & female voices with background music, intros, and full production.",
+  },
+];
+
 // Ordered. Each entry is a display name + the set of podcast slugs it owns.
 // The "podcast-" prefix is implicit — list the bare slugs from the manifest.
 type CategoryDef = { label: string; slugs: string[] };

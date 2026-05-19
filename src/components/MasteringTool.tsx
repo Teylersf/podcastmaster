@@ -27,6 +27,7 @@ import FileDropzone from "@/components/FileDropzone";
 import WaveformAnimation from "@/components/WaveformAnimation";
 import AudioPlayer from "@/components/AudioPlayer";
 import TemplatePicker from "@/components/TemplatePicker";
+import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
 import dynamic from "next/dynamic";
 
 const VideoGenerator = dynamic(() => import("@/components/video/VideoGenerator"), {
@@ -94,7 +95,10 @@ interface MasteringToolProps {
 
 export default function MasteringTool({ compact = false, showHeader = true }: MasteringToolProps) {
   const [targetFile, setTargetFile] = useState<UploadedFile | null>(null);
-  const [templates, setTemplates] = useState<ReferenceTemplate[]>([]);
+  // Pre-fill with the 4 built-in presets so the picker is usable on first
+  // paint. The fetch below expands this to the full 44-preset library
+  // (Modal cold-start can take 4+ seconds).
+  const [templates, setTemplates] = useState<ReferenceTemplate[]>(DEFAULT_TEMPLATES);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("voice-optimized");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingTarget, setUploadingTarget] = useState(false);
@@ -235,25 +239,20 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
     }
   }, [canUseHqExport, outputQuality, HQ_PROMO]);
 
-  // Fetch templates
+  // Expand the prefilled DEFAULT_TEMPLATES into the full ~44-preset library
+  // when Modal's /templates responds. If it fails or returns empty, leave
+  // the prefilled defaults in place — the picker stays usable.
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
         const response = await fetch(`${API_URL}/templates`);
-        if (response.ok) {
-          const data = await response.json();
+        if (!response.ok) return;
+        const data = await response.json();
+        if (Array.isArray(data.templates) && data.templates.length > 0) {
           setTemplates(data.templates);
-          if (data.templates.length > 0) {
-            setSelectedTemplate(data.templates[0].id);
-          }
         }
       } catch (err) {
         console.error("Failed to fetch templates:", err);
-        setTemplates([{
-          id: "voice-optimized",
-          name: "Recommended - Optimized for Voices",
-          description: "Professional voice-optimized preset"
-        }]);
       }
     };
     fetchTemplates();

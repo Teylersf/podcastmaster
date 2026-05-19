@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import FileDropzone from "@/components/FileDropzone";
 import TemplatePicker from "@/components/TemplatePicker";
+import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
 
 // Dynamic imports for components not needed on initial load
 const WaveformAnimation = dynamic(() => import("@/components/WaveformAnimation"), {
@@ -114,7 +115,10 @@ const PROCESSING_MESSAGES = [
 
 export default function HomeClient() {
   const [targetFile, setTargetFile] = useState<UploadedFile | null>(null);
-  const [templates, setTemplates] = useState<ReferenceTemplate[]>([]);
+  // Pre-fill with the 4 built-in presets so the picker is usable on first
+  // paint. The fetch below expands this to the full 44-preset library when
+  // the Modal `/templates` endpoint responds (cold-start can be 4+ seconds).
+  const [templates, setTemplates] = useState<ReferenceTemplate[]>(DEFAULT_TEMPLATES);
   const [selectedTemplate, setSelectedTemplate] = useState<string>("voice-optimized");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingTarget, setUploadingTarget] = useState(false);
@@ -245,25 +249,22 @@ export default function HomeClient() {
     }
   };
 
-  // Fetch templates - defer until interaction or after initial render
+  // Fetch the full template library and fold it in on top of DEFAULT_TEMPLATES.
+  // The prefill keeps the picker usable instantly; this expands it to all
+  // ~44 presets once Modal's /templates responds (cold-start can hit 4s+).
+  // If the fetch fails or returns nothing, we leave the prefill alone.
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
         const response = await fetch(`${API_URL}/templates`);
-        if (response.ok) {
-          const data = await response.json();
+        if (!response.ok) return;
+        const data = await response.json();
+        if (Array.isArray(data.templates) && data.templates.length > 0) {
           setTemplates(data.templates);
-          if (data.templates.length > 0) {
-            setSelectedTemplate(data.templates[0].id);
-          }
         }
       } catch (err) {
         console.error("Failed to fetch templates:", err);
-        setTemplates([{
-          id: "voice-optimized",
-          name: "Recommended - Optimized for Voices",
-          description: "Professional voice-optimized preset"
-        }]);
+        // Leave the 4 DEFAULT_TEMPLATES in place; the user can still master.
       }
     };
     // Defer template fetch to not block initial render
