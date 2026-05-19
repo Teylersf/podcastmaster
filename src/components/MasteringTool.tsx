@@ -26,6 +26,7 @@ import {
 import FileDropzone from "@/components/FileDropzone";
 import WaveformAnimation from "@/components/WaveformAnimation";
 import AudioPlayer from "@/components/AudioPlayer";
+import TemplatePicker from "@/components/TemplatePicker";
 import dynamic from "next/dynamic";
 
 const VideoGenerator = dynamic(() => import("@/components/video/VideoGenerator"), {
@@ -894,22 +895,12 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
                 </div>
               </div>
 
-              <div className="space-y-2">
-                {templates.map((template) => (
-                  <button
-                    key={template.id}
-                    onClick={() => setSelectedTemplate(template.id)}
-                    className={`w-full p-3 rounded-lg border text-left transition-all ${
-                      selectedTemplate === template.id
-                        ? "border-(--accent-primary) bg-(--accent-muted)"
-                        : "border-(--border-subtle) hover:border-(--border-medium)"
-                    }`}
-                  >
-                    <p className="font-medium text-sm">{template.name}</p>
-                    <p className="text-xs text-(--text-muted) mt-0.5">{template.description}</p>
-                  </button>
-                ))}
-              </div>
+              <TemplatePicker
+                templates={templates}
+                selected={selectedTemplate}
+                onSelect={setSelectedTemplate}
+                compact
+              />
             </div>
           </div>
 

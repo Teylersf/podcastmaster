@@ -50,8 +50,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Scope Python's lib/ + lib64/ to root only — otherwise they collide with src/lib/
+/lib/
+/lib64/
 parts/
 sdist/
 var/

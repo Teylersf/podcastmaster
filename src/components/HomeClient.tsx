@@ -36,6 +36,7 @@ import {
   Palette,
 } from "lucide-react";
 import FileDropzone from "@/components/FileDropzone";
+import TemplatePicker from "@/components/TemplatePicker";
 
 // Dynamic imports for components not needed on initial load
 const WaveformAnimation = dynamic(() => import("@/components/WaveformAnimation"), {
@@ -1139,47 +1140,11 @@ export default function HomeClient() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                {templates.map((template) => (
-                  <label
-                    key={template.id}
-                    className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
-                      selectedTemplate === template.id
-                        ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                        : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)] hover:bg-[rgba(255,255,255,0.02)]"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="template"
-                      value={template.id}
-                      checked={selectedTemplate === template.id}
-                      onChange={(e) => setSelectedTemplate(e.target.value)}
-                      className="sr-only"
-                    />
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${
-                      selectedTemplate === template.id
-                        ? "border-[#f97316] bg-[#f97316]"
-                        : "border-[var(--text-muted)]"
-                    }`}>
-                      {selectedTemplate === template.id && (
-                        <CheckCircle2 className="w-3 h-3 text-white" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold">{template.name}</p>
-                      <p className="text-sm text-[var(--text-muted)] mt-0.5">{template.description}</p>
-                    </div>
-                  </label>
-                ))}
-                
-                {templates.length === 0 && (
-                  <div className="text-center py-8 text-[var(--text-muted)]">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
-                    <p className="text-sm">Loading presets...</p>
-                  </div>
-                )}
-              </div>
+              <TemplatePicker
+                templates={templates}
+                selected={selectedTemplate}
+                onSelect={setSelectedTemplate}
+              />
             </div>
           </div>
 
