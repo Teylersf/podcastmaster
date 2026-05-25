@@ -25,6 +25,11 @@ const MasteringTool = dynamic(() => import("@/components/MasteringTool"), {
   loading: () => <MasteringToolSkeleton />,
 });
 
+const AlbumBatchMastering = dynamic(
+  () => import("@/components/AlbumBatchMastering"),
+  { ssr: false }
+);
+
 // ---- SEO --------------------------------------------------------------------
 
 export const metadata: Metadata = {
@@ -101,8 +106,8 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
     a: "WAV, MP3, FLAC, AIFF, OGG, and M4A. We recommend uploading the highest-quality version of your mix you have — bit depth and sample rate are preserved through to the output.",
   },
   {
-    q: "Will this work on a full album, or only single tracks?",
-    a: "Both. Run each track through the same reference preset and you'll get an album that hangs together as a cohesive release. We don't currently have a 'batch upload all tracks at once' feature — you'll process them one at a time.",
+    q: "Can I master a whole album at once?",
+    a: "Yes — scroll down to the 'Master a Full Album' section on this page. Drop multiple files at once or pick an entire folder of tracks. We'll process them in parallel using the same reference, loudness target, and settings, so the album hangs together as a cohesive release. When everything finishes, hit 'Download all as ZIP' for a one-click bundle.",
   },
   {
     q: "Can I use a commercial song as my reference?",
@@ -241,7 +246,7 @@ function StaticSections() {
             {
               icon: Disc3,
               title: "Full Albums",
-              desc: "Run every track in your album through the same chain for a consistent, cohesive sound.",
+              desc: "Drop a whole folder of tracks (or multi-select) and master the entire album in parallel with one click.",
             },
             {
               icon: Mic,
@@ -515,6 +520,9 @@ export default function AudioMasteringPage() {
           <Suspense fallback={<MasteringToolSkeleton />}>
             <MasteringTool audioType="music" />
           </Suspense>
+
+          {/* Album batch mode — drop multiple tracks or pick a folder. */}
+          <AlbumBatchMastering audioType="music" />
 
           <StaticSections />
         </div>
