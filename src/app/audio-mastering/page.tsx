@@ -25,9 +25,11 @@ const MasteringTool = dynamic(() => import("@/components/MasteringTool"), {
   loading: () => <MasteringToolSkeleton />,
 });
 
+// Lazy-load the batch component so it doesn't enlarge the initial bundle.
+// (Next.js 16 disallows ssr:false in Server Components — the component is
+//  "use client" so it'll hydrate before any browser-only code runs.)
 const AlbumBatchMastering = dynamic(
-  () => import("@/components/AlbumBatchMastering"),
-  { ssr: false }
+  () => import("@/components/AlbumBatchMastering")
 );
 
 // ---- SEO --------------------------------------------------------------------

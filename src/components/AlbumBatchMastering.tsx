@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Disc3,
   FolderOpen,
@@ -334,13 +334,17 @@ export default function AlbumBatchMastering({ audioType = "music" }: Props) {
   );
   const [noiseReduction, setNoiseReduction] = useState(false);
 
-  // Lazy-load templates so the picker shows real music presets.
-  useMemo(() => {
+  // Lazy-load templates so the picker shows real music presets. Must be
+  // useEffect (not useMemo) — useMemo runs during render including on the
+  // server, and we don't want a fetch happening during SSR.
+  useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
         const r = await fetch(`${API_URL}/templates`);
-        if (!r.ok) return;
+        if (!r.ok || cancelled) return;
         const data = await r.json();
+        if (cancelled) return;
         if (Array.isArray(data.templates) && data.templates.length > 0) {
           setTemplates(data.templates);
           if (!selectedTemplate) {
@@ -351,9 +355,12 @@ export default function AlbumBatchMastering({ audioType = "music" }: Props) {
           }
         }
       } catch {
-        // leave defaults
+        // leave defaults — picker shows "upload your own reference" hint
       }
     })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [audioType]);
 
