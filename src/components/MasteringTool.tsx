@@ -102,6 +102,31 @@ export default function MasteringTool({
   showHeader = true,
   audioType = "podcast",
 }: MasteringToolProps) {
+  // User-facing strings that need to differ between podcast and music modes.
+  // Anything reading "podcast" / "Master My Podcast" / "Drop your podcast audio"
+  // would feel out of place on the music page, so we resolve them here once.
+  const labels = audioType === "music"
+    ? {
+        yourFileTitle: "Your Track",
+        yourFileHint: "Upload the song, instrumental, or album track to master",
+        dropzoneLabel: "Drop your music track",
+        outputQualityHint: "Great for streaming",
+        ctaButton: "Master My Music",
+        readyMessage: "Your master is ready for download.",
+        defaultFileName: "mastered_music",
+        hqMarketplaceCopy: "Exact format for Spotify, Apple Music & YouTube",
+      }
+    : {
+        yourFileTitle: "Your Podcast",
+        yourFileHint: "Upload the audio to master",
+        dropzoneLabel: "Drop your podcast audio",
+        outputQualityHint: "Great for podcasts",
+        ctaButton: "Master My Podcast",
+        readyMessage: "Your podcast is ready for download.",
+        defaultFileName: "mastered_podcast",
+        hqMarketplaceCopy: "Exact format for Spotify, Apple Podcasts & YouTube",
+      };
+
   const [targetFile, setTargetFile] = useState<UploadedFile | null>(null);
   // Pre-fill with the 4 built-in podcast presets so the picker is usable on
   // first paint. The fetch below expands this to the full preset library
@@ -879,8 +904,8 @@ export default function MasteringTool({
                   <Music2 className="w-5 h-5 text-(--accent-primary)" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Your Podcast</h3>
-                  <p className="text-sm text-(--text-muted)">Upload the audio to master</p>
+                  <h3 className="font-semibold">{labels.yourFileTitle}</h3>
+                  <p className="text-sm text-(--text-muted)">{labels.yourFileHint}</p>
                 </div>
               </div>
 
@@ -904,7 +929,7 @@ export default function MasteringTool({
                 <FileDropzone
                   onFileDrop={handleTargetDrop}
                   isLoading={uploadingTarget}
-                  label="Drop your podcast audio"
+                  label={labels.dropzoneLabel}
                   uploadProgress={targetUploadProgress}
                 />
               )}
@@ -971,7 +996,7 @@ export default function MasteringTool({
                           }`}
                         >
                           <p className="font-medium text-sm">Standard (16-bit)</p>
-                          <p className="text-xs text-(--text-muted) mt-0.5">Great for podcasts</p>
+                          <p className="text-xs text-(--text-muted) mt-0.5">{labels.outputQualityHint}</p>
                         </button>
                         <button
                           onClick={() => canUseHqExport && setOutputQuality("high")}
@@ -1029,7 +1054,7 @@ export default function MasteringTool({
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex-1">
                                 <p className="text-sm font-medium">Try 24-bit HQ Export — $1</p>
-                                <p className="text-xs text-(--text-muted)">Exact format for Spotify, Apple Podcasts & YouTube</p>
+                                <p className="text-xs text-(--text-muted)">{labels.hqMarketplaceCopy}</p>
                               </div>
                               <button
                                 onClick={handleHqPurchase}
@@ -1131,7 +1156,7 @@ export default function MasteringTool({
             ) : (
               <>
                 <Sparkles className="w-5 h-5" />
-                <span>Master My Podcast</span>
+                <span>{labels.ctaButton}</span>
               </>
             )}
           </button>
@@ -1213,7 +1238,7 @@ export default function MasteringTool({
           </motion.div>
 
           <h2 className="text-xl font-semibold mb-2">Mastering Complete!</h2>
-          <p className="text-(--text-secondary) text-sm mb-4">Your podcast is ready for download.</p>
+          <p className="text-(--text-secondary) text-sm mb-4">{labels.readyMessage}</p>
 
           {isSubscribed && (
             <div className="mb-4">
@@ -1295,7 +1320,7 @@ export default function MasteringTool({
           <VideoGenerator
             audioUrl={`${API_URL}/download/${jobId}`}
             audioDuration={audioDuration}
-            fileName={targetFile?.name || "mastered_podcast"}
+            fileName={targetFile?.name || labels.defaultFileName}
             r2Key={outputR2Key || undefined}
             onClose={() => setShowVideoGenerator(false)}
           />
