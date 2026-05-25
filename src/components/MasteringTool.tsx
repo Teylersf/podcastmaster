@@ -63,6 +63,7 @@ interface ReferenceTemplate {
   id: string;
   name: string;
   description: string;
+  kind?: "podcast" | "music";
 }
 
 const PROCESSING_MESSAGES = [
@@ -91,15 +92,31 @@ function formatFileSize(bytes: number): string {
 interface MasteringToolProps {
   compact?: boolean;
   showHeader?: boolean;
+  /** "podcast" (default) or "music". Controls which polish chain the
+   * backend runs and which preset kind shows in the picker. */
+  audioType?: "podcast" | "music";
 }
 
-export default function MasteringTool({ compact = false, showHeader = true }: MasteringToolProps) {
+export default function MasteringTool({
+  compact = false,
+  showHeader = true,
+  audioType = "podcast",
+}: MasteringToolProps) {
   const [targetFile, setTargetFile] = useState<UploadedFile | null>(null);
-  // Pre-fill with the 4 built-in presets so the picker is usable on first
-  // paint. The fetch below expands this to the full 44-preset library
-  // (Modal cold-start can take 4+ seconds).
-  const [templates, setTemplates] = useState<ReferenceTemplate[]>(DEFAULT_TEMPLATES);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("voice-optimized");
+  // Pre-fill with the 4 built-in podcast presets so the picker is usable on
+  // first paint. The fetch below expands this to the full preset library
+  // once /templates responds (cold-start can take 4+ seconds). For the
+  // music page, the picker is empty until the API returns music presets —
+  // and the TemplatePicker shows an "upload your own reference" hint in
+  // that case.
+  const [templates, setTemplates] = useState<ReferenceTemplate[]>(
+    audioType === "music" ? [] : DEFAULT_TEMPLATES
+  );
+  // No default selection for music — picked once the music presets arrive.
+  // Podcast page keeps its long-standing default of "voice-optimized".
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(
+    audioType === "music" ? "" : "voice-optimized"
+  );
   const [isUploading, setIsUploading] = useState(false);
   const [uploadingTarget, setUploadingTarget] = useState(false);
   const [targetUploadProgress, setTargetUploadProgress] = useState<UploadProgress | null>(null);
@@ -239,7 +256,7 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
     }
   }, [canUseHqExport, outputQuality, HQ_PROMO]);
 
-  // Expand the prefilled DEFAULT_TEMPLATES into the full ~44-preset library
+  // Expand the prefilled DEFAULT_TEMPLATES into the full preset library
   // when Modal's /templates responds. If it fails or returns empty, leave
   // the prefilled defaults in place — the picker stays usable.
   useEffect(() => {
@@ -250,13 +267,23 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
         const data = await response.json();
         if (Array.isArray(data.templates) && data.templates.length > 0) {
           setTemplates(data.templates);
+
+          // For the music page, pick the first music preset as the default
+          // selection once the API responds (the prefill is empty there).
+          if (audioType === "music" && !selectedTemplate) {
+            const firstMusic = data.templates.find(
+              (t: ReferenceTemplate) => t.kind === "music"
+            );
+            if (firstMusic) setSelectedTemplate(firstMusic.id);
+          }
         }
       } catch (err) {
         console.error("Failed to fetch templates:", err);
       }
     };
     fetchTemplates();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioType]);
 
   // Upload file using presigned URL pattern (same as home page)
   const uploadFile = async (
@@ -418,6 +445,7 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
         output_quality: outputQuality,
         loudness_target: loudnessTarget,
         noise_reduction: String(noiseReduction),
+        audio_type: audioType,
       });
       
       const response = await fetch(
@@ -899,6 +927,7 @@ export default function MasteringTool({ compact = false, showHeader = true }: Ma
                 selected={selectedTemplate}
                 onSelect={setSelectedTemplate}
                 compact
+                kindFilter={audioType}
               />
             </div>
           </div>

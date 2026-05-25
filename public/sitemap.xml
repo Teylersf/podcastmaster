@@ -10,7 +10,15 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
+
+  <!-- Music / Album / Song mastering page (v3 launch) -->
+  <url>
+    <loc>https://freepodcastmastering.com/audio-mastering</loc>
+    <lastmod>2026-05-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
   <!-- SEO Guide - High-value content page -->
   <url>
     <loc>https://freepodcastmastering.com/how-to-master-podcast-audio</loc>

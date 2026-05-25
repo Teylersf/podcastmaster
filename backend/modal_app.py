@@ -72,24 +72,28 @@ _REFERENCE_TEMPLATE_DEFS = [
         "name": "Recommended - Optimized for Voices",
         "description": "Professional voice-optimized preset with balanced EQ and loudness. Best for podcasts and spoken content.",
         "base_path": "/references/voice-optimized",
+        "kind": "podcast",
     },
     {
         "id": "female-podcast",
         "name": "Female Voice + Full Production",
         "description": "Optimized for female voices with intro music and sound effects. Ready-to-release quality.",
         "base_path": "/references/femalepodcast",
+        "kind": "podcast",
     },
     {
         "id": "male-podcast",
         "name": "Male Voice + Full Production",
         "description": "Optimized for male voices with intro music and sound effects. Ready-to-release quality.",
         "base_path": "/references/maleonlyvoicesfullproduction",
+        "kind": "podcast",
     },
     {
         "id": "news-broadcast",
         "name": "News & Broadcast Style",
         "description": "Breaking news channel sound. Male & female voices with background music, intros, and full production.",
         "base_path": "/references/maleandfemalenewssounds",
+        "kind": "podcast",
     },
 ]
 
@@ -135,6 +139,9 @@ def _load_manifest_templates() -> list[dict]:
                 "name": entry["name"],
                 "description": entry["description"],
                 "base_path": f"/references/{base}",
+                # Legacy manifest entries (podcast presets) have no `kind`; default
+                # to "podcast" so they don't accidentally show up in the music UI.
+                "kind": entry.get("kind", "podcast"),
             })
         except (KeyError, TypeError) as e:
             print(f"[manifest] skipping malformed entry: {e}")
@@ -147,6 +154,7 @@ REFERENCE_TEMPLATES = {
         "name": t["name"],
         "description": t["description"],
         "file_path": _pick_reference_path(t["base_path"]),
+        "kind": t.get("kind", "podcast"),
     }
     for t in (_REFERENCE_TEMPLATE_DEFS + _load_manifest_templates())
 }
@@ -398,6 +406,7 @@ def process_audio(
     output_quality: str = "standard",      # "standard" (16-bit) or "high" (24-bit)
     loudness_target: str = "standard",     # "conservative" | "standard" | "loud"
     noise_reduction: bool = False,         # AI spectral noise reduction pre-pass
+    audio_type: str = "podcast",           # "podcast" | "music" — selects polish chain
 ):
     """
     Mastering pipeline. Stages:
@@ -466,7 +475,7 @@ def process_audio(
         sample_rate = target_info.samplerate
         print(f"Source sample rate: {sample_rate} Hz")
         print(
-            f"Settings: output_quality={output_quality}, "
+            f"Settings: audio_type={audio_type}, output_quality={output_quality}, "
             f"loudness_target={loudness_target}, noise_reduction={noise_reduction}"
         )
 
@@ -545,13 +554,26 @@ def process_audio(
         # pedalboard expects (channels, samples)
         audio_pb = np.ascontiguousarray(audio.T)
 
-        polish_chain = Pedalboard([
-            HighpassFilter(cutoff_frequency_hz=40.0),                       # remove subsonic / DC
-            PeakFilter(cutoff_frequency_hz=200.0,  gain_db=-1.0, q=0.7),    # tame low-mud
-            PeakFilter(cutoff_frequency_hz=2800.0, gain_db= 1.0, q=0.8),    # subtle presence
-            PeakFilter(cutoff_frequency_hz=6500.0, gain_db=-2.5, q=2.5),    # gentle de-esser
-            Compressor(threshold_db=-18.0, ratio=2.0, attack_ms=8.0, release_ms=100.0),  # glue + level
-        ])
+        # Polish chain shape depends on what we're mastering. Voice content
+        # benefits from de-essing and a presence lift around 2.8 kHz; music
+        # has full-spectrum content where those moves would dull cymbals,
+        # harshen drums, or scoop the body of guitars/keys.
+        if audio_type == "music":
+            polish_chain = Pedalboard([
+                HighpassFilter(cutoff_frequency_hz=25.0),                                # preserve bass; just kill subsonic
+                Compressor(threshold_db=-20.0, ratio=1.6, attack_ms=20.0, release_ms=150.0),  # gentle glue, slower attack
+            ])
+            print("Polish chain: music (HPF + gentle glue)")
+        else:
+            polish_chain = Pedalboard([
+                HighpassFilter(cutoff_frequency_hz=40.0),                       # remove subsonic / DC
+                PeakFilter(cutoff_frequency_hz=200.0,  gain_db=-1.0, q=0.7),    # tame low-mud
+                PeakFilter(cutoff_frequency_hz=2800.0, gain_db= 1.0, q=0.8),    # subtle presence
+                PeakFilter(cutoff_frequency_hz=6500.0, gain_db=-2.5, q=2.5),    # gentle de-esser
+                Compressor(threshold_db=-18.0, ratio=2.0, attack_ms=8.0, release_ms=100.0),  # glue + level
+            ])
+            print("Polish chain: podcast (HPF + EQ + de-ess + glue)")
+
         audio_pb = polish_chain(audio_pb, sr)
         audio = audio_pb.T  # back to (samples, channels)
 
@@ -708,12 +730,14 @@ def fastapi_app():
     
     @web_app.get("/templates")
     async def list_templates():
-        """List available reference templates"""
+        """List available reference templates. Each template carries a `kind`
+        ("podcast" | "music") so the frontend can filter for the right page."""
         templates = [
             {
                 "id": t["id"],
                 "name": t["name"],
                 "description": t["description"],
+                "kind": t.get("kind", "podcast"),
             }
             for t in REFERENCE_TEMPLATES.values()
         ]
@@ -744,6 +768,13 @@ def fastapi_app():
                     {"id": True,  "name": "On",  "description": "AI-clean background noise, hum, and room tone."},
                 ],
                 "default": False,
+            },
+            "audio_type": {
+                "options": [
+                    {"id": "podcast", "name": "Podcast / Voice", "description": "Spoken-word polish: HPF, gentle EQ, de-esser, voice-tuned compressor."},
+                    {"id": "music",   "name": "Music / Album",   "description": "Music polish: subsonic HPF + gentle glue compression. No voice-specific EQ moves."},
+                ],
+                "default": "podcast",
             },
             # Kept for one deploy cycle so old clients don't break.
             # Maps to loudness_target via LEGACY_LIMITER_MODE_MAP.
@@ -843,6 +874,7 @@ def fastapi_app():
         output_quality: str = "standard",     # "standard" (16-bit) | "high" (24-bit)
         loudness_target: str = None,          # "conservative" | "standard" | "loud"
         noise_reduction: bool = False,        # AI noise-reduction pre-pass
+        audio_type: str = "podcast",          # "podcast" | "music" — selects polish chain
         limiter_mode: str = None,             # DEPRECATED — kept for one deploy cycle
     ):
         """
@@ -875,6 +907,10 @@ def fastapi_app():
         # Validate output_quality
         if output_quality not in ["standard", "high"]:
             output_quality = "standard"
+
+        # Validate audio_type (selects the polish chain shape)
+        if audio_type not in ["podcast", "music"]:
+            audio_type = "podcast"
 
         # Coerce noise_reduction to bool (FastAPI usually handles this, but be defensive)
         noise_reduction = bool(noise_reduction) if noise_reduction is not None else False
@@ -927,6 +963,7 @@ def fastapi_app():
             output_quality,
             loudness_target,
             noise_reduction,
+            audio_type,
         )
 
         return {"job_id": job_id, "message": "Mastering job started"}

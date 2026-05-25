@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CheckCircle2, ChevronDown, ChevronUp, Search, Sparkles } from "lucide-react";
-import { groupTemplates, type Template } from "@/lib/templateCategories";
+import { groupTemplates, type Template, type TemplateKind } from "@/lib/templateCategories";
 
 type Props = {
   templates: Template[];
@@ -10,30 +10,45 @@ type Props = {
   onSelect: (id: string) => void;
   /** Compact mode = dashboard / smaller container; non-compact = homepage hero. */
   compact?: boolean;
+  /** Restrict to one kind of preset. Used by the music mastering page. */
+  kindFilter?: TemplateKind;
 };
 
 // Categories collapsed by default below the fold to keep the picker scannable.
-// Featured stays open; the highest-traffic category (NPR) too.
-const OPEN_BY_DEFAULT = new Set(["Featured Presets", "NPR & Public Radio"]);
+// Featured stays open; the highest-traffic category (NPR) too. Music references
+// also stay open since the music page has only one category for now.
+const OPEN_BY_DEFAULT = new Set([
+  "Featured Presets",
+  "NPR & Public Radio",
+  "Music References",
+]);
 
 export default function TemplatePicker({
   templates,
   selected,
   onSelect,
   compact = false,
+  kindFilter,
 }: Props) {
   const [query, setQuery] = useState("");
   const [openCats, setOpenCats] = useState<Record<string, boolean>>({});
 
   const grouped = useMemo(
-    () => groupTemplates(templates, query),
-    [templates, query]
+    () => groupTemplates(templates, query, kindFilter),
+    [templates, query, kindFilter]
   );
 
   const totalShown = useMemo(
     () => grouped.reduce((n, g) => n + g.items.length, 0),
     [grouped]
   );
+
+  // Count templates of this kind in the pool (regardless of search) so we can
+  // show a sensible placeholder when the music library is empty.
+  const totalForKind = useMemo(() => {
+    if (!kindFilter) return templates.length;
+    return templates.filter((t) => (t.kind ?? "podcast") === kindFilter).length;
+  }, [templates, kindFilter]);
 
   // When the user is searching, force-open every group so matches are visible.
   const isSearching = query.trim().length > 0;
@@ -47,6 +62,24 @@ export default function TemplatePicker({
     return (
       <div className="text-center py-8 text-(--text-muted)">
         <p className="text-sm">Loading presets…</p>
+      </div>
+    );
+  }
+
+  // Music page when the library hasn't been built yet, or any kind that
+  // returns nothing from the API. Show a friendly placeholder pointing the
+  // user at the upload-your-own-reference flow.
+  if (kindFilter && totalForKind === 0) {
+    return (
+      <div className="rounded-xl border border-(--border-subtle) bg-(--bg-secondary) p-5 text-sm text-(--text-secondary)">
+        <p className="font-medium mb-1 text-(--text-primary)">
+          No built-in {kindFilter} references yet.
+        </p>
+        <p className="text-(--text-muted)">
+          Upload any well-mastered track as your reference and our engine will match
+          your audio to its tone and loudness. Built-in {kindFilter} presets are
+          coming soon.
+        </p>
       </div>
     );
   }

@@ -7,7 +7,10 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import {
   Upload,
+  Music,
   Music2,
+  Disc3,
+  Volume2,
   Wand2,
   Download,
   CheckCircle2,
@@ -32,8 +35,6 @@ import {
   HardDrive,
   Mic,
   Video,
-  Film,
-  Palette,
 } from "lucide-react";
 import FileDropzone from "@/components/FileDropzone";
 import TemplatePicker from "@/components/TemplatePicker";
@@ -835,67 +836,64 @@ export default function HomeClient() {
         transition={{ delay: 0.2 }}
         className="mb-12"
       >
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#8b5cf6]/20 via-[#1a1a2e] to-[#0f0f0f] border border-[#8b5cf6]/30">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#f43f9d]/20 via-[#1a0a1f] to-[#0a0612] border border-[#f43f9d]/30">
           {/* Animated background glow */}
           <div className="absolute inset-0">
-            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-[#8b5cf6]/20 blur-[100px] animate-pulse" />
-            <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-[#f97316]/10 blur-[100px] animate-pulse delay-1000" />
+            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-[#f43f9d]/20 blur-[100px] animate-pulse" />
+            <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-[#38bdf8]/15 blur-[100px] animate-pulse delay-1000" />
           </div>
-          
+
           <div className="relative z-10 p-8 md:p-10">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               {/* Icon */}
-              <div className="shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] flex items-center justify-center shadow-lg shadow-[#8b5cf6]/30">
-                <Video className="w-8 h-8 text-white" />
+              <div className="shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f43f9d] to-[#fb923c] flex items-center justify-center shadow-lg shadow-[#f43f9d]/30">
+                <Music className="w-8 h-8 text-white" />
               </div>
-              
+
               {/* Content */}
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h2 className="text-2xl md:text-3xl font-bold">Turn Audio Into Video</h2>
+                  <h2 className="text-2xl md:text-3xl font-bold">Master Music, Songs & Full Albums</h2>
                   <span className="px-3 py-1 rounded-full bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white text-xs font-bold uppercase tracking-wider shadow-lg">
                     FREE
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-[#8b5cf6]/20 border border-[#8b5cf6]/40 text-[#a78bfa] text-xs font-bold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-[#f43f9d]/20 border border-[#f43f9d]/40 text-[#f43f9d] text-xs font-bold uppercase tracking-wider">
                     NEW
                   </span>
                 </div>
                 <p className="text-[var(--text-secondary)] text-lg mb-4">
-                  Transform your mastered podcast into stunning videos for YouTube, TikTok, and Instagram — 
-                  <span className="text-[#f97316] font-semibold">100% free</span> for all users.
+                  Now mastering <strong className="text-[var(--text-primary)]">music</strong>, songs, albums, and any audio track —
+                  <span className="text-[#f43f9d] font-semibold"> a separate, music-tuned chain</span> with reference matching, true-peak limiting, and Spotify-spec loudness.
                 </p>
-                
+
                 {/* Feature highlights */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { icon: Film, text: "YouTube & Shorts" },
-                    { icon: Sparkles, text: "AI Captions" },
-                    { icon: Zap, text: "60fps Export" },
-                    { icon: Palette, text: "5 Visual Styles" },
+                    { icon: Music2, text: "Any Genre" },
+                    { icon: Disc3, text: "Full Albums" },
+                    { icon: Mic, text: "Vocals & Beats" },
+                    { icon: Volume2, text: "-14 LUFS" },
                   ].map((feature) => (
                     <div
                       key={feature.text}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(139,92,246,0.1)] border border-[rgba(139,92,246,0.2)] text-sm"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(244,63,157,0.1)] border border-[rgba(244,63,157,0.2)] text-sm"
                     >
-                      <feature.icon className="w-4 h-4 text-[#a78bfa]" />
+                      <feature.icon className="w-4 h-4 text-[#f43f9d]" />
                       <span className="text-[var(--text-secondary)]">{feature.text}</span>
                     </div>
                   ))}
                 </div>
               </div>
-              
+
               {/* CTA */}
               <div className="shrink-0">
-                <button
-                  onClick={() => {
-                    const element = document.getElementById('mastering-tool');
-                    element?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="group px-6 py-3 rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] hover:from-[#9f7aea] hover:to-[#8b5cf6] text-white font-semibold transition-all shadow-lg shadow-[#8b5cf6]/30 flex items-center gap-2"
+                <Link
+                  href="/audio-mastering"
+                  className="group px-6 py-3 rounded-xl bg-gradient-to-r from-[#f43f9d] to-[#fb923c] hover:from-[#fb6cb6] hover:to-[#fca573] text-white font-semibold transition-all shadow-lg shadow-[#f43f9d]/30 flex items-center gap-2"
                 >
-                  Try It Now
+                  Master Music
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Link>
               </div>
             </div>
           </div>

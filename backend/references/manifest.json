@@ -358,5 +358,65 @@
     "source_feed": "https://podcasts.files.bbci.co.uk/b006qnmr.rss",
     "source_episode": "Classic Desert Island Discs - Dame Donna Langley",
     "built_lufs": -10.03
+  },
+  {
+    "id": "music-electronic",
+    "name": "Electronic & EDM",
+    "description": "Music mastering reference \u2014 matched to a electronic & edm track. Source: \"EOTO 2010-09-17 Bellvue, CO. Mishwaka\" by EOTO (CC-BY, archive.org/details/Eoto2010-09-17BellvueCo.Mishwaka)",
+    "file": "music-electronic.mp3",
+    "source_url": "https://archive.org/details/Eoto2010-09-17BellvueCo.Mishwaka",
+    "source_track": "EOTO 2010-09-17 Bellvue, CO. Mishwaka",
+    "source_creator": "EOTO",
+    "built_lufs": -9.38,
+    "kind": "music",
+    "license": "CC-BY"
+  },
+  {
+    "id": "music-acoustic-folk",
+    "name": "Acoustic & Folk",
+    "description": "Music mastering reference \u2014 matched to a acoustic & folk track. Source: \"Novos Baianos - Acabou Chorare\" by Novos Baianos (CC-BY, archive.org/details/NovosBaianos-AcabouChorare)",
+    "file": "music-acoustic-folk.mp3",
+    "source_url": "https://archive.org/details/NovosBaianos-AcabouChorare",
+    "source_track": "Novos Baianos - Acabou Chorare",
+    "source_creator": "Novos Baianos",
+    "built_lufs": -9.63,
+    "kind": "music",
+    "license": "CC-BY"
+  },
+  {
+    "id": "music-hip-hop",
+    "name": "Hip-Hop & R&B",
+    "description": "Music mastering reference \u2014 matched to a hip-hop & r&b track. Source: \"Midnight Maraudaz Noir V 57 Mixed By Don Ray The Future Soul Episode\" by Don-Ray (CC-BY, archive.org/details/MidnightMaraudazNoirV57MixedByDonRayTheFutureSoulEpisode)",
+    "file": "music-hip-hop.mp3",
+    "source_url": "https://archive.org/details/MidnightMaraudazNoirV57MixedByDonRayTheFutureSoulEpisode",
+    "source_track": "Midnight Maraudaz Noir V 57 Mixed By Don Ray The Future Soul Episode",
+    "source_creator": "Don-Ray",
+    "built_lufs": -9.94,
+    "kind": "music",
+    "license": "CC-BY"
+  },
+  {
+    "id": "music-jazz",
+    "name": "Jazz",
+    "description": "Music mastering reference \u2014 matched to a jazz track. Source: \"Nothing On But The Radio Gary Allen\" by Unknown (CC-BY, archive.org/details/NothingOnButTheRadioGaryAllen)",
+    "file": "music-jazz.mp3",
+    "source_url": "https://archive.org/details/NothingOnButTheRadioGaryAllen",
+    "source_track": "Nothing On But The Radio Gary Allen",
+    "source_creator": "Unknown",
+    "built_lufs": -9.73,
+    "kind": "music",
+    "license": "CC-BY"
+  },
+  {
+    "id": "music-classical",
+    "name": "Classical",
+    "description": "Music mastering reference \u2014 matched to a classical track. Source: \"Sunset Bleeds Distortion\" by DJ Rkod (CC-BY, archive.org/details/DJ_Rkod_-_Sunset_Bleeds_Distortion)",
+    "file": "music-classical.mp3",
+    "source_url": "https://archive.org/details/DJ_Rkod_-_Sunset_Bleeds_Distortion",
+    "source_track": "Sunset Bleeds Distortion",
+    "source_creator": "DJ Rkod",
+    "built_lufs": -9.56,
+    "kind": "music",
+    "license": "CC-BY"
   }
 ]
