@@ -29,6 +29,7 @@
 | 16 | [16-deployment.md](16-deployment.md) | Vercel (frontend) + Modal (backend) |
 | 17 | [17-local-development.md](17-local-development.md) | Setup, dev commands, common gotchas |
 | 18 | [18-common-tasks.md](18-common-tasks.md) | "How do I add a theme / a Stripe product / an API route" recipes |
+| 19 | [19-multi-domain-setup.md](19-multi-domain-setup.md) | freepodcastmastering.com + freemusicmaster.com — middleware, canonicals, sitemap, DNS |
 | — | [MIGRATING_NEON_TO_LINODE.md](MIGRATING_NEON_TO_LINODE.md) | One-off Postgres migration playbook (kept for reference) |
 
 ## Quick orientation (60 seconds)

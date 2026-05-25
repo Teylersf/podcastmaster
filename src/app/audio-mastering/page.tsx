@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { headers } from "next/headers";
 import {
   Music,
   Music2,
@@ -34,67 +35,88 @@ const AlbumBatchMastering = dynamic(
 
 // ---- SEO --------------------------------------------------------------------
 
-export const metadata: Metadata = {
-  title:
-    "Free AI Music Mastering | Master Songs, Albums & Audio Tracks Online Free",
-  description:
-    "Free AI-powered music mastering. Master songs, full albums, and audio tracks to professional quality in minutes. Works for pop, rock, electronic, hip-hop, jazz, acoustic, and more. No signup, no watermarks, unlimited uses.",
-  keywords: [
-    "free music mastering",
-    "free song mastering",
-    "free album mastering",
-    "free audio mastering",
-    "free track mastering",
-    "AI music mastering",
-    "AI song mastering",
-    "online music mastering",
-    "master my song free",
-    "master my album free",
-    "master my track free",
-    "music mastering tool",
-    "automatic music mastering",
-    "master audio online",
-    "free music mastering online",
-    "online song mastering free",
-    "best free music mastering",
-    "best free mastering tool",
-    "professional music mastering free",
-    "mastering for spotify",
-    "mastering for apple music",
-    "mastering for youtube music",
-    "free pop mastering",
-    "free rock mastering",
-    "free electronic mastering",
-    "free hip-hop mastering",
-    "free album mastering online",
-  ],
-  alternates: { canonical: "https://freepodcastmastering.com/audio-mastering" },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://freepodcastmastering.com/audio-mastering",
-    siteName: "Free Podcast Mastering",
-    title: "Free AI Music & Album Mastering — Master Songs Online",
-    description:
-      "Free AI music mastering for songs, albums and any audio track. Pop, rock, electronic, hip-hop, jazz, acoustic — broadcast-loudness output in minutes. No signup.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Free AI Music Mastering Tool",
-      },
+// Canonical URL strategy (multi-domain SEO):
+// Both freepodcastmastering.com/audio-mastering AND freemusicmaster.com/
+// serve the same content. To avoid duplicate-content penalties + to
+// concentrate ranking authority on the exact-match domain, BOTH point
+// their canonical at the music domain root.
+const MUSIC_DOMAIN_CANONICAL = "https://freemusicmaster.com/";
+
+// `generateMetadata` runs per-request, so we can read the host header
+// and tweak siteName / openGraph URL to match the visitor's domain.
+// (Title/description stay the same — they're already music-focused and
+//  work equally well from either domain.)
+export async function generateMetadata(): Promise<Metadata> {
+  const h = await headers();
+  const isMusicHost = h.get("x-host-mode") === "music";
+
+  const title =
+    "Free AI Music Mastering | Master Songs, Albums & Audio Tracks Online Free";
+  const description =
+    "Free AI-powered music mastering. Master songs, full albums, and audio tracks to professional quality in minutes. Works for pop, rock, electronic, hip-hop, jazz, acoustic, and more. No signup, no watermarks, unlimited uses.";
+
+  return {
+    title,
+    description,
+    keywords: [
+      "free music mastering",
+      "free song mastering",
+      "free album mastering",
+      "free audio mastering",
+      "free track mastering",
+      "AI music mastering",
+      "AI song mastering",
+      "online music mastering",
+      "master my song free",
+      "master my album free",
+      "master my track free",
+      "music mastering tool",
+      "automatic music mastering",
+      "master audio online",
+      "free music mastering online",
+      "online song mastering free",
+      "best free music mastering",
+      "best free mastering tool",
+      "professional music mastering free",
+      "mastering for spotify",
+      "mastering for apple music",
+      "mastering for youtube music",
+      "free pop mastering",
+      "free rock mastering",
+      "free electronic mastering",
+      "free hip-hop mastering",
+      "free album mastering online",
     ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Free AI Music Mastering | Songs, Albums & Tracks",
-    description:
-      "Master songs, albums and audio tracks free. Pro-quality AI mastering with no signup.",
-    images: ["/og-image.png"],
-  },
-  robots: { index: true, follow: true },
-};
+    // Cross-domain canonical to consolidate SEO equity on freemusicmaster.com.
+    // Google handles this fine; the non-canonical URL just won't get indexed.
+    alternates: { canonical: MUSIC_DOMAIN_CANONICAL },
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      url: isMusicHost ? MUSIC_DOMAIN_CANONICAL : "https://freepodcastmastering.com/audio-mastering",
+      siteName: isMusicHost ? "Free Music Mastering" : "Free Podcast Mastering",
+      title: "Free AI Music & Album Mastering — Master Songs Online",
+      description:
+        "Free AI music mastering for songs, albums and any audio track. Pop, rock, electronic, hip-hop, jazz, acoustic — broadcast-loudness output in minutes. No signup.",
+      images: [
+        {
+          url: "/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "Free AI Music Mastering Tool",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Free AI Music Mastering | Songs, Albums & Tracks",
+      description:
+        "Master songs, albums and audio tracks free. Pro-quality AI mastering with no signup.",
+      images: ["/og-image.png"],
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
 // The eight Q&As below are repeated in both the visible FAQ and the
 // FAQPage schema — keep them in sync. Single source for both:
@@ -136,11 +158,14 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
 // Two pieces of structured data:
 //   1. WebApplication — Google's "Free tool" rich panel
 //   2. FAQPage — eligible for Google's expandable Q&A rich snippet
+// JSON-LD points at the music-domain canonical so Google associates the
+// schema (name, offers, features) with freemusicmaster.com regardless of
+// which host served the page.
 const jsonLdWebApp = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "Free AI Music Mastering",
-  url: "https://freepodcastmastering.com/audio-mastering",
+  url: MUSIC_DOMAIN_CANONICAL,
   description:
     "Free AI music mastering tool for songs, albums, and audio tracks. Professional broadcast loudness in minutes.",
   applicationCategory: "MultimediaApplication",
@@ -225,7 +250,15 @@ function MusicHero() {
   );
 }
 
-function StaticSections() {
+function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
+  // When served from freemusicmaster.com, "Podcast mastering" links should
+  // point at the absolute podcast domain (otherwise they'd point at this same
+  // site). Renders nothing for the prominent cross-link callout — the music
+  // site stays music-focused.
+  const podcastHomeHref = isMusicHost
+    ? "https://freepodcastmastering.com/"
+    : "/";
+
   return (
     <>
       {/* What can you master */}
@@ -390,39 +423,43 @@ function StaticSections() {
         </div>
       </section>
 
-      {/* Cross-link to podcast */}
-      <section className="mt-12 p-6 rounded-2xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f97316] to-[#3b82f6] flex items-center justify-center shrink-0">
-              <Mic className="w-6 h-6 text-white" />
+      {/* Cross-link to podcast — only shown when this page is served from
+          the podcast domain. On freemusicmaster.com it would be visually
+          off-brand to surface the podcast tool that prominently. */}
+      {!isMusicHost && (
+        <section className="mt-12 p-6 rounded-2xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f97316] to-[#3b82f6] flex items-center justify-center shrink-0">
+                <Mic className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold mb-0.5">Mastering a podcast instead?</h3>
+                <p className="text-sm text-[var(--text-muted)]">
+                  The voice-tuned pipeline lives on the home page.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold mb-0.5">Mastering a podcast instead?</h3>
-              <p className="text-sm text-[var(--text-muted)]">
-                The voice-tuned pipeline lives on the home page.
-              </p>
-            </div>
+            <Link
+              href="/"
+              className="px-5 py-2.5 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.3)] text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap"
+            >
+              Podcast mastering
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
-          <Link
-            href="/"
-            className="px-5 py-2.5 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.3)] text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap"
-          >
-            Podcast mastering
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="mt-16 pt-8 border-t border-[rgba(255,255,255,0.08)] text-center">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm mb-6">
-          <Link
-            href="/"
+          <a
+            href={podcastHomeHref}
             className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             Podcast Mastering
-          </Link>
+          </a>
           <span className="text-[rgba(255,255,255,0.2)]">|</span>
           <Link
             href="/pricing"
@@ -457,10 +494,12 @@ function StaticSections() {
           </a>
         </div>
         <p className="font-bold text-lg bg-gradient-to-r from-[#f43f9d] via-[#fb923c] to-[#38bdf8] bg-clip-text text-transparent mb-2">
-          freepodcastmastering.com
+          {isMusicHost ? "freemusicmaster.com" : "freepodcastmastering.com"}
         </p>
         <p className="text-xs text-[var(--text-muted)]">
-          Free professional mastering for music, songs, albums, and podcasts.
+          {isMusicHost
+            ? "Free professional mastering for music, songs, albums, and audio tracks."
+            : "Free professional mastering for music, songs, albums, and podcasts."}
         </p>
       </footer>
     </>
@@ -469,7 +508,10 @@ function StaticSections() {
 
 // ---- Page -------------------------------------------------------------------
 
-export default function AudioMasteringPage() {
+export default async function AudioMasteringPage() {
+  const h = await headers();
+  const isMusicHost = h.get("x-host-mode") === "music";
+
   return (
     <main className="min-h-screen relative overflow-hidden">
       {/* Decorative gradient backdrop */}
@@ -526,7 +568,7 @@ export default function AudioMasteringPage() {
           {/* Album batch mode — drop multiple tracks or pick a folder. */}
           <AlbumBatchMastering audioType="music" />
 
-          <StaticSections />
+          <StaticSections isMusicHost={isMusicHost} />
         </div>
       </div>
     </main>
