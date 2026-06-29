@@ -1134,11 +1134,19 @@ a.btn-primary:disabled,
   .dropzone {
     padding: 2rem 1rem;
   }
-  
+
   .btn-primary {
     padding: 0.75rem 1.5rem;
     font-size: 0.875rem;
   }
+}
+
+/* Safety net: CSS Grid items default to min-width: auto, which lets a child
+   with intrinsic max-content size (long text, a forced-wide input, etc.)
+   blow out the track and overflow horizontally on mobile. min-width: 0 on
+   direct grid children opts back into normal track-sized behavior. */
+.grid > * {
+  min-width: 0;
 }
 
 /* ============================================
@@ -1201,7 +1209,7 @@ form small,
   color: var(--text-secondary) !important;
 }
 
-input, 
+input:not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(.sr-only),
 input[type="text"],
 input[type="email"],
 input[type="password"],

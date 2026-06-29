@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, IBM_Plex_Mono, Caveat, Patrick_Hand } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
@@ -102,6 +102,12 @@ export const metadata: Metadata = {
     // Add your Google Search Console verification code here
     // google: "your-google-verification-code",
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 // JSON-LD structured data for rich snippets
