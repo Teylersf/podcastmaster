@@ -6,6 +6,27 @@ import Stripe from "stripe";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+// Stripe's `current_period_start`/`current_period_end` moved from the
+// subscription root to the subscription item in the 2025-03-31.basil API.
+// New events serialize them only on items; older events have them on the
+// root. Read both so we keep working across versions and renewals.
+function extractPeriod(sub: Stripe.Subscription): {
+  start?: number;
+  end?: number;
+} {
+  const item = sub.items?.data?.[0] as
+    | { current_period_start?: number; current_period_end?: number }
+    | undefined;
+  const root = sub as unknown as {
+    current_period_start?: number;
+    current_period_end?: number;
+  };
+  return {
+    start: item?.current_period_start ?? root.current_period_start,
+    end: item?.current_period_end ?? root.current_period_end,
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.text();
@@ -60,9 +81,7 @@ export async function POST(request: Request) {
           // Get subscription details from Stripe
           const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId);
 
-          // Extract period dates safely
-          const periodStart = (stripeSubscription as any).current_period_start;
-          const periodEnd = (stripeSubscription as any).current_period_end;
+          const { start: periodStart, end: periodEnd } = extractPeriod(stripeSubscription);
 
           // Build data with safe date handling
           const subscriptionData: {
@@ -107,9 +126,7 @@ export async function POST(request: Request) {
         const subscriptionData = event.data.object as Stripe.Subscription;
         const customerId = subscriptionData.customer as string;
 
-        // Extract period dates safely
-        const periodStart = (subscriptionData as any).current_period_start;
-        const periodEnd = (subscriptionData as any).current_period_end;
+        const { start: periodStart, end: periodEnd } = extractPeriod(subscriptionData);
 
         // Build update data dynamically, only including dates if they exist and are valid
         const updateData: {
