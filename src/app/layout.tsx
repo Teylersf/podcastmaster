@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "@/stack";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import FeedbackButton from "@/components/FeedbackButton";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -213,6 +214,7 @@ export default function RootLayout({
             <ThemeProvider>
               <div className="noise-texture" />
               {children}
+              <FeedbackButton />
               <Analytics />
             </ThemeProvider>
           </StackTheme>
