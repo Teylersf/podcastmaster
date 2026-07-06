@@ -238,8 +238,12 @@ function StaticSections() {
             Terms of Service
           </Link>
           <span className="text-(--border-medium)">|</span>
-          <a 
-            href="https://github.com/Teylersf/podcastmaster" 
+          <Link href="/privacy" className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+            Privacy Policy
+          </Link>
+          <span className="text-(--border-medium)">|</span>
+          <a
+            href="https://github.com/Teylersf/podcastmaster"
             target="_blank" 
             rel="noopener noreferrer"
             className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1"

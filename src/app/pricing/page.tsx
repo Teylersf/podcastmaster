@@ -491,6 +491,7 @@ export default function PricingPage() {
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-(--text-muted)">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
             <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
           </div>
           <p className="mt-4 text-xs text-(--text-muted)">

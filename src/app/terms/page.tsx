@@ -3,16 +3,19 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
-  Shield,
-  Trash2,
-  Lock,
-  Heart,
+  ScrollText,
   ArrowLeft,
-  Clock,
-  CheckCircle2,
-  XCircle,
+  Zap,
+  CreditCard,
+  User,
+  AlertCircle,
+  Ban,
+  RefreshCw,
+  Scale,
 } from "lucide-react";
 import ThemeSelector from "@/components/ThemeSelector";
+
+const LAST_UPDATED = "July 6, 2026";
 
 export default function TermsOfService() {
   return (
@@ -44,255 +47,393 @@ export default function TermsOfService() {
         >
           <div className="flex items-center justify-center gap-3 mb-5">
             <div className="w-12 h-12 rounded-xl bg-(--accent-muted) border border-(--border-subtle) flex items-center justify-center">
-              <Shield className="w-6 h-6 text-(--accent-primary)" />
+              <ScrollText className="w-6 h-6 text-(--accent-primary)" />
             </div>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
             Terms of Service
           </h1>
           <p className="text-base text-(--text-secondary) max-w-lg mx-auto">
-            Your privacy matters. Here&apos;s exactly how we handle your data.
+            The rules for using Free Podcast Mastering. Plain English.
+          </p>
+          <p className="text-xs text-(--text-muted) mt-3">
+            Last updated: {LAST_UPDATED}
           </p>
         </motion.header>
 
-        {/* Key Points Banner */}
+        {/* TL;DR */}
         <motion.div
-          className="mb-8 p-5 rounded-xl bg-(--success-muted) border border-(--success)/30"
+          className="mb-8 p-5 rounded-xl bg-(--accent-muted) border border-(--accent-primary)/30"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <h2 className="text-lg font-semibold text-(--success) mb-4 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5" />
-            The Important Stuff (TL;DR)
+          <h2 className="text-lg font-semibold text-foreground mb-3">
+            The short version
           </h2>
-          <div className="grid gap-4">
-            <div className="flex items-start gap-3">
-              <Trash2 className="w-5 h-5 text-(--success) mt-0.5 shrink-0" />
-              <p className="text-foreground">
-                <strong>All files are automatically deleted within 24 hours</strong> — no exceptions.
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <XCircle className="w-5 h-5 text-(--success) mt-0.5 shrink-0" />
-              <p className="text-foreground">
-                <strong>We never sell, share, or use your audio</strong> for any purpose beyond processing your request.
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-(--success) mt-0.5 shrink-0">🤖</span>
-              <p className="text-foreground">
-                <strong>No AI training, no voice cloning</strong> — your voice and content are never used for any AI purposes.
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Lock className="w-5 h-5 text-(--success) mt-0.5 shrink-0" />
-              <p className="text-foreground">
-                <strong>We don&apos;t retain any copies</strong> of your files after deletion.
-              </p>
-            </div>
-            <div className="flex items-start gap-3">
-              <Heart className="w-5 h-5 text-(--success) mt-0.5 shrink-0" />
-              <p className="text-foreground">
-                <strong>Built for the good of humanity</strong> — helping podcasters master audio without paying a fortune.
-              </p>
-            </div>
-          </div>
+          <ul className="space-y-2 text-(--text-secondary) text-sm">
+            <li>
+              &bull; One free master per day. $2 for extras, $10/month for
+              unlimited. Cancel anytime.
+            </li>
+            <li>
+              &bull; You keep every right to your audio. We never claim any
+              ownership.
+            </li>
+            <li>
+              &bull; Only upload audio you have permission to process. Don&apos;t
+              try to break the service.
+            </li>
+            <li>
+              &bull; Your privacy is covered separately in the{" "}
+              <Link
+                href="/privacy"
+                className="text-(--accent-primary) hover:underline"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </li>
+          </ul>
         </motion.div>
 
-        {/* Full Terms */}
+        {/* Sections */}
         <motion.div
           className="space-y-5"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          {/* Section 1 */}
+          {/* 1. Who we are */}
           <section className="glass-card p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
-                <Clock className="w-4 h-4 text-(--accent-primary)" />
+                <span className="text-(--accent-primary) font-bold text-sm">1</span>
               </div>
-              <h2 className="text-lg font-semibold">1. File Retention & Deletion</h2>
+              <h2 className="text-lg font-semibold">Who we are and what this is</h2>
             </div>
             <div className="space-y-3 text-(--text-secondary)">
               <p>
-                When you upload a file to Free Podcast Mastering, it is stored temporarily 
-                <strong className="text-foreground"> only for the duration needed to process your audio</strong>.
+                &ldquo;Free Podcast Mastering&rdquo; (the &ldquo;Service&rdquo;)
+                is an AI-powered audio mastering tool operated by Teyler at{" "}
+                <a
+                  href="https://freepodcastmastering.com"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  freepodcastmastering.com
+                </a>{" "}
+                and{" "}
+                <a
+                  href="https://freemusicmaster.com"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  freemusicmaster.com
+                </a>
+                . These Terms of Service (the &ldquo;Terms&rdquo;) govern your
+                access to and use of the Service.
               </p>
               <p>
-                <strong className="text-foreground">All uploaded and processed files are automatically and permanently deleted within 24 hours.</strong> This 
-                includes your original uploaded file and the mastered output file.
-              </p>
-              <p>
-                After deletion, <strong className="text-foreground">there is no way for us — or anyone — to recover your files</strong>. 
-                Make sure to download your mastered audio before the 24-hour window expires.
+                By using the Service you agree to these Terms and to our{" "}
+                <Link
+                  href="/privacy"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+                . If you don&apos;t agree, please don&apos;t use the Service.
               </p>
             </div>
           </section>
 
-          {/* Section 2 */}
+          {/* 2. Pricing */}
           <section className="glass-card p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
-                <XCircle className="w-4 h-4 text-(--accent-primary)" />
+                <CreditCard className="w-4 h-4 text-(--accent-primary)" />
               </div>
-              <h2 className="text-lg font-semibold">2. No Selling, Sharing, or Using Your Data</h2>
+              <h2 className="text-lg font-semibold">2. Pricing and payments</h2>
             </div>
             <div className="space-y-3 text-(--text-secondary)">
               <p>
-                <strong className="text-foreground">We do not sell your audio files to anyone.</strong> Period. Never have, never will.
+                <strong className="text-foreground">Free tier:</strong> one
+                mastered file per rolling 24-hour window. No card required to
+                master. You must create a free account to download your file.
               </p>
               <p>
-                <strong className="text-foreground">We do not share your audio files with any third parties.</strong> Your 
-                content is not used for advertising, marketing, or any commercial purposes.
+                <strong className="text-foreground">Pay-as-you-go
+                ($2/master):</strong> a one-time purchase that unlocks one
+                additional master beyond the daily free one. Credits never
+                expire; you can stack them.
               </p>
               <p>
-                <strong className="text-foreground">We do not use your audio to train AI models of any kind.</strong> Your 
-                voice and content will never be used to train machine learning models, large language models, 
-                or any other AI systems.
+                <strong className="text-foreground">Unlimited ($10/month):</strong>{" "}
+                a recurring subscription that unlocks unlimited masters, 24-bit
+                HQ exports, 5 GB of cloud storage, and files that never expire.
+                Billed monthly until you cancel.
               </p>
               <p>
-                <strong className="text-foreground">We do not use your audio for voice cloning.</strong> Your voice will 
-                never be cloned, synthesized, or replicated in any way using your uploaded content.
+                All payments are processed by{" "}
+                <a
+                  href="https://stripe.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  Stripe
+                </a>
+                . We do not store your card details.
               </p>
               <p>
-                <strong className="text-foreground">We use your files for absolutely nothing</strong> other than processing 
-                your mastering request and then deleting them. That&apos;s it.
+                <strong className="text-foreground">Cancellation:</strong> you
+                can cancel your subscription at any time from your dashboard.
+                You keep unlimited access through the end of your current billing
+                period, after which the account reverts to the free tier.
+              </p>
+              <p>
+                <strong className="text-foreground">Refunds:</strong> pay-as-you
+                -go credits and subscription payments are non-refundable, except
+                where required by law or at our sole discretion. Email{" "}
+                <a
+                  href="mailto:teylersf@gmail.com"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  teylersf@gmail.com
+                </a>{" "}
+                if you have a refund request.
               </p>
             </div>
           </section>
 
-          {/* Section 3 */}
+          {/* 3. Referral program */}
           <section className="glass-card p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
-                <Lock className="w-4 h-4 text-(--accent-primary)" />
+                <Zap className="w-4 h-4 text-(--accent-primary)" />
               </div>
-              <h2 className="text-lg font-semibold">3. No Data Retention</h2>
+              <h2 className="text-lg font-semibold">3. Referral program</h2>
             </div>
             <div className="space-y-3 text-(--text-secondary)">
               <p>
-                We operate on a <strong className="text-foreground">zero-retention policy</strong>. We do not:
+                Every account gets a shareable referral code. When a friend
+                signs up with your code and completes their first paid $2 master,
+                your account receives 7 days of unlimited access. Multiple
+                referrals stack.
               </p>
+              <p>
+                To keep the program fair, we automatically void referrals that
+                appear self-generated. The current fraud gates include
+                same-signup-IP matches between referrer and referee, disposable-
+                email domains, and referrers who have never completed a master
+                themselves. Voids are silent; you can see any that didn&apos;t
+                land on your dashboard.
+              </p>
+            </div>
+          </section>
+
+          {/* 4. Accounts */}
+          <section className="glass-card p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
+                <User className="w-4 h-4 text-(--accent-primary)" />
+              </div>
+              <h2 className="text-lg font-semibold">4. Your account</h2>
+            </div>
+            <div className="space-y-3 text-(--text-secondary)">
+              <p>
+                Authentication is handled by our identity provider (Hexclave,
+                formerly Stack Auth). You can sign up with email, magic link, or
+                Sign in with Google.
+              </p>
+              <p>
+                You are responsible for keeping your login credentials secure
+                and for all activity that happens under your account. If you
+                believe your account has been accessed without your permission,
+                let us know at{" "}
+                <a
+                  href="mailto:teylersf@gmail.com"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  teylersf@gmail.com
+                </a>
+                .
+              </p>
+              <p>
+                You can delete your account at any time by contacting us at the
+                email above. Deletion removes your profile, subscription record,
+                mastered-file metadata, and referral history from our database.
+              </p>
+            </div>
+          </section>
+
+          {/* 5. Acceptable use */}
+          <section className="glass-card p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
+                <Ban className="w-4 h-4 text-(--accent-primary)" />
+              </div>
+              <h2 className="text-lg font-semibold">5. Acceptable use</h2>
+            </div>
+            <div className="space-y-3 text-(--text-secondary)">
+              <p>By using the Service, you agree not to:</p>
               <ul className="list-disc list-inside space-y-2 ml-2">
-                <li>Keep backup copies of your files</li>
-                <li>Store metadata about your audio content</li>
-                <li>Maintain logs that identify specific file contents</li>
-                <li>Archive any user-uploaded content</li>
+                <li>
+                  Upload audio you don&apos;t have the rights to process, or
+                  content that infringes anyone else&apos;s rights.
+                </li>
+                <li>
+                  Upload content that is unlawful, harassing, hateful, or
+                  contains sexual material involving minors.
+                </li>
+                <li>
+                  Attempt to overload, disrupt, reverse-engineer, or scrape the
+                  Service.
+                </li>
+                <li>
+                  Create fake accounts, use disposable emails to game the
+                  referral program, or otherwise attempt to defraud the pricing
+                  or referral system.
+                </li>
+                <li>
+                  Use the Service to build a competing product, resell the
+                  mastered outputs commercially without permission, or train
+                  machine-learning models on the outputs.
+                </li>
               </ul>
-              <p className="pt-2">
-                Once your files are deleted from our servers, <strong className="text-foreground">they are gone forever</strong>.
+              <p>
+                We may suspend or terminate accounts that violate these rules.
               </p>
             </div>
           </section>
 
-          {/* Section 4 */}
+          {/* 6. Ownership */}
           <section className="glass-card p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
-                <Shield className="w-4 h-4 text-(--accent-primary)" />
+                <Scale className="w-4 h-4 text-(--accent-primary)" />
               </div>
-              <h2 className="text-lg font-semibold">4. Your Rights & Ownership</h2>
+              <h2 className="text-lg font-semibold">6. Ownership and license</h2>
             </div>
             <div className="space-y-3 text-(--text-secondary)">
               <p>
-                <strong className="text-foreground">You retain full ownership of your content.</strong> By using our service, 
-                you do not grant us any rights to your audio beyond what&apos;s needed to process it.
+                <strong className="text-foreground">You keep every right</strong>{" "}
+                to the audio you upload and to the mastered files we produce.
+                We claim no ownership over your content.
               </p>
               <p>
-                We claim no intellectual property rights over your uploaded or processed files.
+                You grant us a strictly limited, temporary license to store and
+                process your audio for the sole purpose of mastering it and
+                delivering the result back to you. Once processing is complete
+                and the retention window has elapsed, the file is deleted (see{" "}
+                <Link
+                  href="/privacy"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  Privacy Policy
+                </Link>{" "}
+                for exact windows).
               </p>
               <p>
-                You are responsible for ensuring you have the rights to process any audio you upload.
+                We do not use your audio to train AI models, clone voices, or
+                power any other product. Full stop.
               </p>
             </div>
           </section>
 
-          {/* Section 5 */}
+          {/* 7. Service availability */}
           <section className="glass-card p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
-                <Heart className="w-4 h-4 text-(--accent-primary)" />
+                <RefreshCw className="w-4 h-4 text-(--accent-primary)" />
               </div>
-              <h2 className="text-lg font-semibold">5. Our Mission</h2>
+              <h2 className="text-lg font-semibold">7. Service availability</h2>
             </div>
             <div className="space-y-3 text-(--text-secondary)">
               <p>
-                Free Podcast Mastering was built <strong className="text-foreground">for the good of humanity</strong>.
+                The Service is provided on an &ldquo;as-is&rdquo; and
+                &ldquo;as-available&rdquo; basis. We do not guarantee that the
+                Service will be uninterrupted, error-free, or that every master
+                will be successful.
               </p>
               <p>
-                We believe everyone should have access to professional-quality audio tools, 
-                regardless of their budget. Professional mastering software and services can cost 
-                hundreds or thousands of dollars — <strong className="text-foreground">we think that&apos;s ridiculous</strong>.
-              </p>
-              <p>
-                This tool exists to <strong className="text-foreground">help podcasters master their audio without paying a fortune</strong>. 
-                We&apos;re podcasters ourselves and understand the struggle of producing quality content 
-                on a tight budget. That&apos;s why this service is <strong className="text-foreground">100% free</strong> — 
-                no hidden fees, no premium tiers, no upsells, no tricks.
-              </p>
-              <p>
-                <strong className="text-foreground">How do we keep it free?</strong> If the site ever has hosting costs we can&apos;t 
-                cover ourselves, we&apos;ll simply run a few non-intrusive on-page ads. That&apos;s it. No premium 
-                version, no subscription model, no selling your data. Just a helpful tool for the podcast community.
+                We may change, suspend, or discontinue features at any time. If
+                we discontinue a paid feature you&apos;ve pre-paid for, we&apos;ll
+                make a reasonable effort to refund the unused portion.
               </p>
             </div>
           </section>
 
-          {/* Section 6 */}
+          {/* 8. Warranty + liability */}
+          <section className="glass-card p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
+                <AlertCircle className="w-4 h-4 text-(--accent-primary)" />
+              </div>
+              <h2 className="text-lg font-semibold">
+                8. Warranty disclaimer and limitation of liability
+              </h2>
+            </div>
+            <div className="space-y-3 text-(--text-secondary)">
+              <p>
+                To the maximum extent permitted by law, the Service is provided
+                without warranties of any kind, express or implied, including
+                warranties of merchantability, fitness for a particular purpose,
+                and non-infringement.
+              </p>
+              <p>
+                To the maximum extent permitted by law, in no event will Free
+                Podcast Mastering or its operator be liable for any indirect,
+                incidental, special, consequential, or punitive damages, or any
+                loss of profits or revenues, whether incurred directly or
+                indirectly, arising from your use of the Service. Our total
+                liability for any claim arising out of these Terms will not
+                exceed the amount you paid us in the 12 months before the claim
+                arose (or $50, whichever is greater).
+              </p>
+            </div>
+          </section>
+
+          {/* 9. Changes */}
           <section className="glass-card p-5">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-9 h-9 rounded-lg bg-(--bg-tertiary) flex items-center justify-center">
                 <span className="text-(--accent-primary) font-bold text-sm">§</span>
               </div>
-              <h2 className="text-lg font-semibold">6. Service Terms</h2>
+              <h2 className="text-lg font-semibold">9. Changes and contact</h2>
             </div>
             <div className="space-y-3 text-(--text-secondary)">
-              <p>By using Free Podcast Mastering, you agree that:</p>
-              <ul className="list-disc list-inside space-y-2 ml-2">
-                <li>You will not upload content you don&apos;t have rights to process</li>
-                <li>You will not attempt to abuse or overload the service</li>
-                <li>You understand files are deleted after 24 hours</li>
-                <li>You accept the service is provided &quot;as is&quot; without warranties</li>
-              </ul>
-              <p className="pt-2">
-                We reserve the right to modify these terms at any time. Continued use of the service 
-                constitutes acceptance of any changes.
+              <p>
+                We may update these Terms from time to time. Material changes
+                will be announced on this page and reflected in the &ldquo;Last
+                updated&rdquo; date at the top. Continued use of the Service
+                after a change means you accept the updated Terms.
+              </p>
+              <p>
+                Questions, refund requests, or complaints? Email{" "}
+                <a
+                  href="mailto:teylersf@gmail.com"
+                  className="text-(--accent-primary) hover:underline"
+                >
+                  teylersf@gmail.com
+                </a>
+                .
               </p>
             </div>
           </section>
         </motion.div>
 
-        {/* Contact */}
-        <motion.div
-          className="mt-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <p className="text-(--text-muted) text-sm">
-            Questions? Email us at{" "}
-            <a
-              href="mailto:privacy@freepodcastmastering.com"
-              className="text-(--accent-primary) hover:underline"
-            >
-              privacy@freepodcastmastering.com
-            </a>
-          </p>
-          <p className="text-(--text-muted) text-xs mt-3">
-            Last updated: November 2024
-          </p>
-        </motion.div>
-
         {/* Footer */}
-        <footer className="mt-12 pt-6 border-t border-(--border-subtle) text-center text-sm text-(--text-muted)">
+        <footer className="mt-12 pt-6 border-t border-(--border-subtle) text-center text-sm text-(--text-muted) flex flex-wrap items-center justify-center gap-4">
           <Link href="/" className="text-(--accent-primary) hover:underline">
-            ← Back to Home
+            Home
+          </Link>
+          <Link href="/privacy" className="text-(--accent-primary) hover:underline">
+            Privacy Policy
+          </Link>
+          <Link href="/pricing" className="text-(--accent-primary) hover:underline">
+            Pricing
           </Link>
         </footer>
       </div>
     </main>
   );
 }
-

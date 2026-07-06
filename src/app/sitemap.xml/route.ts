@@ -26,6 +26,7 @@ function buildSitemap(host: string): string {
       { loc: "https://freemusicmaster.com/",        priority: "1.0", changefreq: "weekly",  lastmod: TODAY },
       { loc: "https://freemusicmaster.com/pricing", priority: "0.6", changefreq: "monthly", lastmod: TODAY },
       { loc: "https://freemusicmaster.com/terms",   priority: "0.3", changefreq: "yearly",  lastmod: TODAY },
+      { loc: "https://freemusicmaster.com/privacy", priority: "0.3", changefreq: "yearly",  lastmod: TODAY },
     );
   } else {
     // Default = podcast sitemap (preserves the historic SEO surface).
@@ -36,6 +37,7 @@ function buildSitemap(host: string): string {
       { loc: "https://freepodcastmastering.com/pricing",                    priority: "0.8", changefreq: "monthly", lastmod: TODAY },
       { loc: "https://freepodcastmastering.com/dashboard",                  priority: "0.5", changefreq: "weekly",  lastmod: TODAY },
       { loc: "https://freepodcastmastering.com/terms",                      priority: "0.3", changefreq: "yearly",  lastmod: TODAY },
+      { loc: "https://freepodcastmastering.com/privacy",                    priority: "0.3", changefreq: "yearly",  lastmod: TODAY },
     );
   }
 
