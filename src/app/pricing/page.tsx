@@ -17,17 +17,18 @@ import {
   ArrowRight,
   Loader2,
   Shield,
+  Gift,
+  Coins,
 } from "lucide-react";
 import ThemeSelector from "@/components/ThemeSelector";
 
 export default function PricingPage() {
   const user = useUser();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [hqCheckoutLoading, setHqCheckoutLoading] = useState(false);
+  const [singleMasterLoading, setSingleMasterLoading] = useState(false);
 
   const handleSubscribe = async () => {
     if (!user) {
-      // Redirect to sign up first
       window.location.href = "/handler/sign-up?after_auth_return_to=/pricing";
       return;
     }
@@ -46,24 +47,30 @@ export default function PricingPage() {
     }
   };
 
-  const handleHqPurchase = async () => {
+  // Single-master entitlement ($2 one-time). Same endpoint the in-flow
+  // paywall modal uses; on success the user gets one entitlement they can
+  // spend the next time they hit their daily quota.
+  const handleSingleMasterPurchase = async () => {
     if (!user) {
-      // Redirect to sign up first
       window.location.href = "/handler/sign-up?after_auth_return_to=/pricing";
       return;
     }
 
-    setHqCheckoutLoading(true);
+    setSingleMasterLoading(true);
     try {
-      const res = await fetch("/api/stripe/purchase-hq", { method: "POST" });
+      const res = await fetch("/api/stripe/purchase-master", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ returnPath: "/pricing" }),
+      });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
       }
     } catch (error) {
-      console.error("HQ checkout error:", error);
+      console.error("Single-master checkout error:", error);
     } finally {
-      setHqCheckoutLoading(false);
+      setSingleMasterLoading(false);
     }
   };
 
@@ -114,22 +121,24 @@ export default function PricingPage() {
             <span className="text-gradient">Simple, Transparent Pricing</span>
           </h1>
           <p className="text-lg text-(--text-secondary) max-w-xl mx-auto">
-            Start mastering for free. Upgrade when you need more.
+            Free every day. Pay $2 when you need more. $10/month if you master a lot.
           </p>
         </motion.div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-16">
-          {/* Free Plan */}
+        {/* Three-tier grid: Free (1/day), Pay-as-you-go ($2/master),
+            Unlimited ($10/month, most popular). Stacks on mobile,
+            three columns from md+. */}
+        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+          {/* Free */}
           <motion.div
-            className="glass-card p-8 relative"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            className="glass-card p-8 relative flex flex-col"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-2">Free</h3>
-              <p className="text-(--text-secondary) text-sm">Perfect for trying out the service</p>
+              <p className="text-(--text-secondary) text-sm">Try it out. No card, no signup to master.</p>
             </div>
 
             <div className="mb-6">
@@ -139,78 +148,131 @@ export default function PricingPage() {
 
             <Link
               href={user ? "/" : "/handler/sign-up"}
-              className="w-full mb-8 px-6 py-3 rounded-lg border border-(--border-subtle) hover:border-(--accent-primary) transition-colors flex items-center justify-center gap-2 font-medium"
+              className="w-full mb-8 px-6 py-3 rounded-lg border border-(--border-subtle) hover:border-(--accent-primary) transition-colors flex items-center justify-center gap-2 font-medium text-sm"
             >
-              {user ? "Start Mastering" : "Get Started Free"}
+              {user ? "Start mastering" : "Get started"}
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            <div className="space-y-4">
-              <p className="text-sm font-medium text-(--text-secondary) mb-3">What&apos;s included:</p>
-              
+            <div className="space-y-4 mt-auto">
               <div className="flex items-start gap-3">
                 <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">2 files per week</p>
-                  <p className="text-xs text-(--text-muted)">Master up to 2 podcasts weekly</p>
+                  <p className="text-sm font-medium">1 mastered file per day</p>
+                  <p className="text-xs text-(--text-muted)">Resets every 24 hours</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">Standard quality (16-bit)</p>
-                  <p className="text-xs text-(--text-muted)">Great for most podcasts</p>
+                  <p className="text-sm font-medium">Standard 16-bit export</p>
+                  <p className="text-xs text-(--text-muted)">Broadcast quality, ready to publish</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium">All mastering presets</p>
-                  <p className="text-xs text-(--text-muted)">Voice, music, and custom options</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">Email notifications</p>
-                  <p className="text-xs text-(--text-muted)">Get notified when ready</p>
+                  <p className="text-xs text-(--text-muted)">Podcast, music, and custom presets</p>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-(--border-subtle)">
-                <p className="text-sm font-medium text-(--text-muted) mb-3">Limitations:</p>
-                
+              <div className="pt-4 border-t border-(--border-subtle) space-y-2">
                 <div className="flex items-start gap-3 text-(--text-muted)">
                   <X className="w-5 h-5 shrink-0 mt-0.5 opacity-50" />
-                  <p className="text-sm">Files deleted after 24 hours</p>
+                  <p className="text-sm">Files delete after 24h</p>
                 </div>
-                
-                <div className="flex items-start gap-3 text-(--text-muted) mt-2">
+                <div className="flex items-start gap-3 text-(--text-muted)">
                   <X className="w-5 h-5 shrink-0 mt-0.5 opacity-50" />
-                  <p className="text-sm">No 24-bit exports <span className="text-(--accent-primary)">($1 to try)</span></p>
-                </div>
-                
-                <div className="flex items-start gap-3 text-(--text-muted) mt-2">
-                  <X className="w-5 h-5 shrink-0 mt-0.5 opacity-50" />
-                  <p className="text-sm">No cloud storage</p>
+                  <p className="text-sm">Signup required to download</p>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Unlimited Plan */}
+          {/* Pay as you go — one-time $2 single master */}
           <motion.div
-            className="glass-card p-8 relative border-2 border-(--accent-primary)"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            className="glass-card p-8 relative flex flex-col"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <Coins className="w-5 h-5 text-(--accent-primary)" />
+                <h3 className="text-xl font-semibold">Pay as you go</h3>
+              </div>
+              <p className="text-(--text-secondary) text-sm">Need one more master today? Two bucks.</p>
+            </div>
+
+            <div className="mb-6">
+              <span className="text-4xl font-bold">$2</span>
+              <span className="text-(--text-muted)">/master</span>
+            </div>
+
+            <button
+              onClick={handleSingleMasterPurchase}
+              disabled={singleMasterLoading}
+              className="w-full mb-8 px-6 py-3 rounded-lg bg-(--accent-muted) border border-(--accent-primary)/40 hover:border-(--accent-primary) transition-colors flex items-center justify-center gap-2 font-medium text-sm text-(--accent-primary)"
+            >
+              {singleMasterLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  Buy a master
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+
+            <div className="space-y-4 mt-auto">
+              <p className="text-sm font-medium text-(--text-secondary) mb-3">Everything in Free, plus:</p>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">One extra master, any day</p>
+                  <p className="text-xs text-(--text-muted)">Credit stays until you use it</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">24-bit HQ export bundled</p>
+                  <p className="text-xs text-(--text-muted)">Spotify / Apple Podcasts spec</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">No subscription</p>
+                  <p className="text-xs text-(--text-muted)">One-time. Buy again when you need to.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Stackable</p>
+                  <p className="text-xs text-(--text-muted)">Buy 5 credits, use them over time</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Unlimited subscription — $10/month */}
+          <motion.div
+            className="glass-card p-8 relative flex flex-col border-2 border-(--accent-primary)"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            {/* Popular Badge */}
             <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="px-4 py-1 rounded-full bg-(--accent-primary) text-white text-xs font-medium">
+              <span className="px-4 py-1 rounded-full bg-(--accent-primary) text-white text-xs font-medium whitespace-nowrap">
                 Most Popular
               </span>
             </div>
@@ -220,7 +282,7 @@ export default function PricingPage() {
                 <Crown className="w-5 h-5 text-(--warning)" />
                 <h3 className="text-xl font-semibold">Unlimited</h3>
               </div>
-              <p className="text-(--text-secondary) text-sm">For serious podcasters</p>
+              <p className="text-(--text-secondary) text-sm">For serious podcasters and networks.</p>
             </div>
 
             <div className="mb-6">
@@ -238,104 +300,99 @@ export default function PricingPage() {
               ) : (
                 <>
                   <Crown className="w-5 h-5" />
-                  <span>Subscribe Now</span>
+                  <span>Subscribe</span>
                 </>
               )}
             </button>
 
-            <div className="space-y-4">
-              <p className="text-sm font-medium text-(--text-secondary) mb-3">Everything in Free, plus:</p>
-              
+            <div className="space-y-4 mt-auto">
+              <p className="text-sm font-medium text-(--text-secondary) mb-3">Everything else, plus:</p>
+
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-(--accent-muted) flex items-center justify-center shrink-0 mt-0.5">
                   <Zap className="w-3 h-3 text-(--accent-primary)" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">Unlimited mastering</p>
-                  <p className="text-xs text-(--text-muted)">No weekly limits, master as much as you want</p>
+                  <p className="text-sm font-medium">Truly unlimited</p>
+                  <p className="text-xs text-(--text-muted)">Master as many files as you want</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-(--accent-muted) flex items-center justify-center shrink-0 mt-0.5">
                   <Sparkles className="w-3 h-3 text-(--accent-primary)" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">24-bit HQ exports</p>
-                  <p className="text-xs text-(--text-muted)">Exact recommended format for Spotify, Apple Podcasts & YouTube</p>
+                  <p className="text-sm font-medium">24-bit HQ on every master</p>
+                  <p className="text-xs text-(--text-muted)">Spotify / Apple / YouTube spec</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-(--accent-muted) flex items-center justify-center shrink-0 mt-0.5">
                   <HardDrive className="w-3 h-3 text-(--accent-primary)" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium">5GB cloud storage</p>
-                  <p className="text-xs text-(--text-muted)">Keep your files as long as you&apos;re subscribed</p>
+                  <p className="text-sm font-medium">5 GB cloud storage</p>
+                  <p className="text-xs text-(--text-muted)">Keep every mastered file</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-(--accent-muted) flex items-center justify-center shrink-0 mt-0.5">
                   <Clock className="w-3 h-3 text-(--accent-primary)" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">Files never expire</p>
-                  <p className="text-xs text-(--text-muted)">Download anytime from your dashboard</p>
+                  <p className="text-xs text-(--text-muted)">Re-download any time</p>
                 </div>
               </div>
-              
+
               <div className="flex items-start gap-3">
                 <div className="w-5 h-5 rounded-full bg-(--accent-muted) flex items-center justify-center shrink-0 mt-0.5">
                   <FileAudio className="w-3 h-3 text-(--accent-primary)" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">File management dashboard</p>
-                  <p className="text-xs text-(--text-muted)">Organize and manage all your mastered files</p>
+                  <p className="text-xs text-(--text-muted)">Organize, tag, redownload</p>
                 </div>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* One-Time HQ Purchase Option */}
+        {/* Referral strip — the fourth (free) way to get unlimited access.
+            Sits below the pricing grid so it doesn't confuse the primary
+            choice, but gives cost-sensitive users a real path. */}
         <motion.div
-          className="max-w-2xl mx-auto mb-16"
+          className="max-w-4xl mx-auto mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <div className="glass-card p-6 sm:p-8 bg-linear-to-r from-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40">
+          <div className="glass-card p-6 sm:p-8 border border-(--border-subtle)">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-center gap-4 text-center sm:text-left">
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shrink-0">
-                  <Sparkles className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-(--accent-muted) border border-(--accent-primary)/40 flex items-center justify-center shrink-0">
+                  <Gift className="w-6 h-6 text-(--accent-primary)" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">Just want to try HQ?</h3>
-                  <p className="text-sm text-(--text-secondary) mb-2">
-                    Get one 24-bit high-quality export for just $1. No subscription required.
+                  <h3 className="text-lg font-semibold mb-1">Or master free — refer a friend</h3>
+                  <p className="text-sm text-(--text-secondary) mb-1">
+                    Every referral that pays their first $2 earns you <strong className="text-(--text-primary)">7 days of unlimited mastering</strong>. Bonuses stack.
                   </p>
                   <p className="text-xs text-(--text-muted)">
-                    <strong className="text-(--text-secondary)">Exact recommended format</strong> for Spotify, Apple Podcasts, YouTube & all platforms
+                    Your code is on the dashboard once you sign up.
                   </p>
                 </div>
               </div>
-              <button
-                onClick={handleHqPurchase}
-                disabled={hqCheckoutLoading}
-                className="px-6 py-3 rounded-xl bg-linear-to-r from-(--accent-primary) to-(--accent-tertiary) text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-(--accent-muted)"
+              <Link
+                href={user ? "/dashboard" : "/handler/sign-up?after_auth_return_to=/dashboard"}
+                className="px-6 py-3 rounded-xl border border-(--border-medium) hover:border-(--accent-primary) text-sm font-medium flex items-center gap-2 whitespace-nowrap"
               >
-                {hqCheckoutLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5" />
-                    <span>$1 One-Time</span>
-                  </>
-                )}
-              </button>
+                {user ? "Get your code" : "Sign up to get yours"}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
             </div>
           </div>
         </motion.div>
@@ -348,33 +405,54 @@ export default function PricingPage() {
           transition={{ delay: 0.4 }}
         >
           <h2 className="text-2xl font-semibold text-center mb-8">Frequently Asked Questions</h2>
-          
+
           <div className="space-y-4">
+            <div className="glass-card p-5">
+              <h3 className="font-medium mb-2">Do the $2 credits expire?</h3>
+              <p className="text-sm text-(--text-secondary)">
+                No. A pay-as-you-go credit stays on your account until you use it, so you can buy a stack now and spend them over months.
+              </p>
+            </div>
+
+            <div className="glass-card p-5">
+              <h3 className="font-medium mb-2">Does the $10/month plan really have no cap?</h3>
+              <p className="text-sm text-(--text-secondary)">
+                Yes — while you&apos;re subscribed, master as many files as you want, all with the 24-bit HQ export included, all kept in your 5 GB dashboard storage.
+              </p>
+            </div>
+
             <div className="glass-card p-5">
               <h3 className="font-medium mb-2">Can I cancel anytime?</h3>
               <p className="text-sm text-(--text-secondary)">
-                Yes! You can cancel your subscription at any time from your dashboard. You&apos;ll keep access until the end of your billing period.
+                Yes. Cancel from your dashboard; you keep unlimited access until the end of the current billing period.
               </p>
             </div>
-            
+
             <div className="glass-card p-5">
               <h3 className="font-medium mb-2">What happens to my files if I cancel?</h3>
               <p className="text-sm text-(--text-secondary)">
-                Your files will remain accessible until your subscription ends. After that, they&apos;ll be deleted after 30 days. We recommend downloading them before canceling.
+                Cloud files stay accessible until the period ends, then are deleted 30 days later. Download anything you want to keep before then.
               </p>
             </div>
-            
+
+            <div className="glass-card p-5">
+              <h3 className="font-medium mb-2">How does the 7-day referral bonus work?</h3>
+              <p className="text-sm text-(--text-secondary)">
+                When someone you referred pays for their first $2 master, your account gets a week of unlimited access added on. Multiple referrals stack — three friends who pay = 21 days free.
+              </p>
+            </div>
+
             <div className="glass-card p-5">
               <h3 className="font-medium mb-2">Is there a file size limit?</h3>
               <p className="text-sm text-(--text-secondary)">
-                Individual files can be up to 500MB. For longer podcasts, we recommend splitting into segments or compressing before upload.
+                Individual files can be up to 500 MB. For longer podcasts, split into segments or compress before upload.
               </p>
             </div>
-            
+
             <div className="glass-card p-5">
               <h3 className="font-medium mb-2">What audio formats do you support?</h3>
               <p className="text-sm text-(--text-secondary)">
-                We support MP3, WAV, FLAC, M4A, and most common audio formats. Output is delivered in high-quality WAV format.
+                MP3, WAV, FLAC, M4A, AIFF, and OGG. Output is delivered as high-quality WAV.
               </p>
             </div>
           </div>
