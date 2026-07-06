@@ -142,7 +142,7 @@ const jsonLd = {
 const themeScript = `
   (function() {
     try {
-      var themes = ['version-3','glassmorphism','dark','light','pretty-pink','blue','green-ocean','purple-galaxy','boring-enterprise','grey-alien','matrix','hand-written','coloring-book','rainbow','chaos','orange-slim','yellow-sunshine','90s','80s','cringe','black-and-white'];
+      var themes = ['version-3','glassmorphism','dark','light','pretty-pink','blue','green-ocean','purple-galaxy','boring-enterprise','grey-alien','matrix','hand-written','coloring-book','rainbow','chaos','orange-slim','yellow-sunshine','90s','80s','cringe','black-and-white','anti-vibe-coded'];
       var userChosen = localStorage.getItem('podcast-theme-chosen');
       var theme = 'version-3';
 

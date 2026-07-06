@@ -23,7 +23,8 @@ export type ThemeName =
   | "90s"
   | "80s"
   | "cringe"
-  | "black-and-white";
+  | "black-and-white"
+  | "anti-vibe-coded";
 
 export interface ThemeInfo {
   id: ThemeName;
@@ -53,6 +54,7 @@ export const themes: ThemeInfo[] = [
   { id: "80s", name: "80s Retro", icon: "🕹️" },
   { id: "cringe", name: "Cringe", icon: "😬" },
   { id: "black-and-white", name: "Black & White", icon: "⬛" },
+  { id: "anti-vibe-coded", name: "Anti-Vibe Coded", icon: "📎" },
 ];
 
 interface ThemeContextType {
