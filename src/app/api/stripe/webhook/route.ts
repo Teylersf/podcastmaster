@@ -74,6 +74,26 @@ export async function POST(request: Request) {
           break;
         }
 
+        // Handle one-time $2 single-master purchase. This is the paywall the
+        // client hits after the daily free master is used up. Row lives until
+        // the user starts their next master, at which point checkUserQuota
+        // picks it up as an unused entitlement and consumeQuota flips
+        // `used = true`.
+        if (purchaseType === "single_master" && userId) {
+          console.log(
+            `[WEBHOOK] Creating single-master entitlement for user ${userId}`,
+          );
+          await prisma.masterEntitlement.create({
+            data: {
+              userId,
+              stripeSessionId: session.id,
+              stripePaymentIntentId: session.payment_intent as string,
+            },
+          });
+          console.log(`[WEBHOOK] Entitlement created for user ${userId}`);
+          break;
+        }
+
         // Handle subscription checkout
         const subscriptionId = session.subscription as string;
 

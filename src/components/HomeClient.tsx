@@ -39,6 +39,7 @@ import {
 import FileDropzone from "@/components/FileDropzone";
 import TemplatePicker from "@/components/TemplatePicker";
 import PendingDownloadBanner from "@/components/PendingDownloadBanner";
+import PaywallModal from "@/components/PaywallModal";
 import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
 import { savePendingDownload } from "@/lib/pendingDownload";
 
@@ -147,6 +148,12 @@ export default function HomeClient() {
   const [showStorageModal, setShowStorageModal] = useState(false);
   const [storageInfo, setStorageInfo] = useState<{ used: number; limit: number; remaining: number } | null>(null);
 
+  // Paywall for signed-in users who used today's free master. The referral
+  // code hooks into the modal's "or refer a friend for a free week" CTA.
+  const [showPaywallModal, setShowPaywallModal] = useState(false);
+  const [paywallResetAt, setPaywallResetAt] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
   const user = useUser();
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [checkingSubscription, setCheckingSubscription] = useState(false);
@@ -193,6 +200,17 @@ export default function HomeClient() {
       } finally {
         setCheckingSubscription(false);
       }
+
+      // Pull the profile so the paywall can show the user's own referral
+      // code alongside the "master unlimited for a week" CTA. Non-blocking.
+      fetch("/api/user/profile")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (data?.profile?.referralCode) {
+            setReferralCode(data.profile.referralCode);
+          }
+        })
+        .catch(() => {});
     };
 
     checkSubscription();
@@ -410,14 +428,22 @@ export default function HomeClient() {
           return;
         }
       } else {
-        const limitUrl = user?.id 
+        const limitUrl = user?.id
           ? `/api/rate-limit/check?userId=${encodeURIComponent(user.id)}`
           : "/api/rate-limit/check";
         const limitCheck = await fetch(limitUrl);
         const limitData = await limitCheck.json();
-        
+
         if (!limitData.allowed) {
-          setShowLimitModal(true);
+          // Signed-in user hit the 1/day quota with no active pass and no
+          // unused entitlement → route to the $2 paywall. Guests hit the
+          // legacy limit modal (they can't buy anyway without signing up).
+          if (limitData.signedIn && limitData.needsPayment) {
+            setPaywallResetAt(limitData.resetAt ?? null);
+            setShowPaywallModal(true);
+          } else {
+            setShowLimitModal(true);
+          }
           setIsUploading(false);
           return;
         }
@@ -966,7 +992,16 @@ export default function HomeClient() {
         )}
       </AnimatePresence>
 
-      {/* Rate Limit Modal */}
+      {/* $2 Single-Master Paywall — signed-in users only */}
+      <PaywallModal
+        open={showPaywallModal}
+        onClose={() => setShowPaywallModal(false)}
+        returnPath="/"
+        referralCode={referralCode}
+        resetAt={paywallResetAt}
+      />
+
+      {/* Rate Limit Modal (guests only under the new pricing model) */}
       <AnimatePresence>
         {showLimitModal && (
           <motion.div

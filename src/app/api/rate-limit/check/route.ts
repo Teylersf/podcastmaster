@@ -1,193 +1,135 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
-import crypto from "crypto";
 import prisma from "@/lib/prisma";
+import { stackServerApp } from "@/stack";
+import { checkUserQuota, consumeQuota } from "@/lib/quota";
+import { hashIp, getClientIp } from "@/lib/userProfile";
 
-// Rate limit: 2 files per week
-const WEEKLY_LIMIT = 2;
-const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+// Guest-user throttle. The download gate (Phase 2) already blocks the file
+// itself, so this is just a soft rate-limit on Modal compute, not a
+// monetization gate. Signed-in flow is authoritative and goes through
+// `checkUserQuota` for the real 1/day + $2 paywall + unlimited-pass logic.
+const GUEST_DAILY_LIMIT = 1;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
-/**
- * Hash the IP address for privacy - we don't store raw IPs
- */
-function hashIP(ip: string): string {
-  const salt = process.env.WEBHOOK_SECRET || "default-salt";
-  return crypto.createHash("sha256").update(ip + salt).digest("hex");
-}
-
-/**
- * Get the client's IP address from headers
- */
-async function getClientIP(): Promise<string> {
-  const headersList = await headers();
-  
-  // Try various headers (Vercel, Cloudflare, etc.)
-  const forwardedFor = headersList.get("x-forwarded-for");
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim();
-  }
-  
-  const realIP = headersList.get("x-real-ip");
-  if (realIP) {
-    return realIP;
-  }
-  
-  const cfConnectingIP = headersList.get("cf-connecting-ip");
-  if (cfConnectingIP) {
-    return cfConnectingIP;
-  }
-  
-  return "unknown";
-}
-
-/**
- * Check if the user has exceeded their weekly rate limit.
- * Accepts userId query param for signed-in users, falls back to IP for guests.
- */
+// GET — pre-flight check. Called from the client before hitting Modal's
+// /master endpoint. Response shape lets the client decide between "just
+// master it", "show paywall", or "show over-limit toast for guests".
 export async function GET(request: Request) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get("userId");
-    
-    const oneWeekAgo = new Date(Date.now() - ONE_WEEK_MS);
-    
-    let usageCount: number;
-    let identifier: string;
-    
-    if (userId) {
-      // Signed-in user: check by user ID
-      identifier = `user:${userId}`;
-      usageCount = await prisma.usageLog.count({
-        where: {
-          userId,
-          createdAt: { gte: oneWeekAgo },
-        },
-      });
-    } else {
-      // Guest user: check by IP
-      const clientIP = await getClientIP();
-      const hashedIP = hashIP(clientIP);
-      identifier = `ip:${hashedIP.substring(0, 8)}...`;
-      
-      usageCount = await prisma.usageLog.count({
-        where: {
-          ipAddress: hashedIP,
-          userId: null, // Only count guest usage
-          createdAt: { gte: oneWeekAgo },
-        },
+  const { searchParams } = new URL(request.url);
+  const userIdParam = searchParams.get("userId");
+  const user = await stackServerApp.getUser();
+  const userId = user?.id ?? userIdParam ?? null;
+
+  // Signed-in path: real quota including paywall + pass.
+  if (userId) {
+    const decision = await checkUserQuota(userId);
+    if (decision.allowed) {
+      return NextResponse.json({
+        allowed: true,
+        signedIn: true,
+        reason: decision.reason,
+        limit: 1,
+        used:
+          decision.reason === "under_quota"
+            ? decision.usedToday
+            : undefined,
+        unlimitedUntil:
+          decision.reason === "unlimited_pass"
+            ? decision.unlimitedUntil
+            : undefined,
       });
     }
-    
-    const remaining = Math.max(0, WEEKLY_LIMIT - usageCount);
-    const allowed = usageCount < WEEKLY_LIMIT;
-    
-    console.log(`[RATE-LIMIT] Check for ${identifier}: ${usageCount}/${WEEKLY_LIMIT} used, allowed: ${allowed}`);
-    
+    // Quota exhausted, no entitlement → tell the client to show the paywall.
     return NextResponse.json({
-      allowed,
-      remaining,
-      limit: WEEKLY_LIMIT,
-      used: usageCount,
-    });
-    
-  } catch (error) {
-    console.error("[RATE-LIMIT] Check error:", error);
-    // On check error, be conservative and allow (don't block users due to DB issues)
-    return NextResponse.json({
-      allowed: true,
-      remaining: WEEKLY_LIMIT,
-      limit: WEEKLY_LIMIT,
-      used: 0,
-      error: "check_failed",
+      allowed: false,
+      signedIn: true,
+      reason: "quota_exhausted",
+      needsPayment: true,
+      limit: decision.limit,
+      used: decision.usedToday,
+      resetAt: decision.resetAt,
     });
   }
+
+  // Guest path: simple IP-count throttle.
+  const h = await headers();
+  const hashedIp = hashIp(getClientIp(h));
+  const since = new Date(Date.now() - ONE_DAY_MS);
+  const usedToday = await prisma.usageLog.count({
+    where: { ipAddress: hashedIp, userId: null, createdAt: { gte: since } },
+  });
+  const allowed = usedToday < GUEST_DAILY_LIMIT;
+  return NextResponse.json({
+    allowed,
+    signedIn: false,
+    reason: allowed ? "under_quota" : "quota_exhausted",
+    limit: GUEST_DAILY_LIMIT,
+    used: usedToday,
+  });
 }
 
-/**
- * Record a usage when mastering starts.
- * Uses userId for signed-in users, IP for guests.
- */
+// POST — record that a mastering job started. Called right after the client
+// receives a job_id back from Modal. For signed-in users this consumes any
+// entitlement being spent and stamps `firstMasterAt` on the profile.
 export async function POST(request: Request) {
   try {
-    const { jobId, userId } = await request.json();
-    
-    if (!jobId) {
-      return NextResponse.json(
-        { error: "Missing jobId" },
-        { status: 400 }
-      );
+    const body = (await request.json()) as {
+      jobId?: string;
+      userId?: string | null;
+    };
+    if (!body.jobId) {
+      return NextResponse.json({ error: "Missing jobId" }, { status: 400 });
     }
-    
-    const oneWeekAgo = new Date(Date.now() - ONE_WEEK_MS);
-    
-    let usageCount: number;
-    let hashedIP: string | null = null;
-    let identifier: string;
-    
+
+    const user = await stackServerApp.getUser();
+    const userId = user?.id ?? body.userId ?? null;
+
     if (userId) {
-      // Signed-in user: check and record by user ID
-      identifier = `user:${userId}`;
-      usageCount = await prisma.usageLog.count({
-        where: {
-          userId,
-          createdAt: { gte: oneWeekAgo },
-        },
-      });
-    } else {
-      // Guest user: check and record by IP
-      const clientIP = await getClientIP();
-      hashedIP = hashIP(clientIP);
-      identifier = `ip:${hashedIP.substring(0, 8)}...`;
-      
-      usageCount = await prisma.usageLog.count({
-        where: {
-          ipAddress: hashedIP,
-          userId: null,
-          createdAt: { gte: oneWeekAgo },
-        },
+      // Re-check at record time in case the client bypassed the pre-check.
+      const decision = await checkUserQuota(userId);
+      if (!decision.allowed) {
+        return NextResponse.json(
+          {
+            allowed: false,
+            recorded: false,
+            reason: "quota_exhausted",
+            needsPayment: true,
+          },
+          { status: 402 },
+        );
+      }
+      await consumeQuota(userId, body.jobId, decision);
+      return NextResponse.json({
+        allowed: true,
+        recorded: true,
+        reason: decision.reason,
       });
     }
-    
-    // Double-check limit before recording
-    if (usageCount >= WEEKLY_LIMIT) {
-      console.log(`[RATE-LIMIT] Blocked ${identifier}: already at ${usageCount}/${WEEKLY_LIMIT}`);
+
+    // Guest recording — same as before, IP-hashed.
+    const h = await headers();
+    const hashedIp = hashIp(getClientIp(h));
+    const since = new Date(Date.now() - ONE_DAY_MS);
+    const usedToday = await prisma.usageLog.count({
+      where: { ipAddress: hashedIp, userId: null, createdAt: { gte: since } },
+    });
+    if (usedToday >= GUEST_DAILY_LIMIT) {
       return NextResponse.json({
         allowed: false,
-        remaining: 0,
-        limit: WEEKLY_LIMIT,
-        used: usageCount,
+        recorded: false,
+        reason: "quota_exhausted",
       });
     }
-    
-    // Record the usage
     await prisma.usageLog.create({
-      data: {
-        userId: userId || null,
-        ipAddress: userId ? null : hashedIP,
-        jobId,
-      },
+      data: { userId: null, ipAddress: hashedIp, jobId: body.jobId },
     });
-    
-    const newCount = usageCount + 1;
-    console.log(`[RATE-LIMIT] Recorded for ${identifier}: now ${newCount}/${WEEKLY_LIMIT} used`);
-    
-    return NextResponse.json({
-      allowed: true,
-      remaining: WEEKLY_LIMIT - newCount,
-      limit: WEEKLY_LIMIT,
-      used: newCount,
-      recorded: true,
-    });
-    
-  } catch (error) {
-    console.error("[RATE-LIMIT] Record error:", error);
-    // On record error, return error status so frontend knows it failed
+    return NextResponse.json({ allowed: true, recorded: true });
+  } catch (err) {
+    console.error("[RATE-LIMIT] Record error:", err);
     return NextResponse.json(
-      { 
-        error: "Failed to record usage",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
+      { error: "Failed to record usage" },
+      { status: 500 },
     );
   }
 }

@@ -28,6 +28,7 @@ import WaveformAnimation from "@/components/WaveformAnimation";
 import AudioPlayer from "@/components/AudioPlayer";
 import TemplatePicker from "@/components/TemplatePicker";
 import PendingDownloadBanner from "@/components/PendingDownloadBanner";
+import PaywallModal from "@/components/PaywallModal";
 import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
 import { savePendingDownload } from "@/lib/pendingDownload";
 import { LogIn } from "lucide-react";
@@ -169,7 +170,12 @@ export default function MasteringTool({
 
   // Rate limiting state
   const [showLimitModal, setShowLimitModal] = useState(false);
-  
+
+  // Paywall (signed-in users who used today's free master)
+  const [showPaywallModal, setShowPaywallModal] = useState(false);
+  const [paywallResetAt, setPaywallResetAt] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
   // Storage limit state (for subscribers)
   const [showStorageModal, setShowStorageModal] = useState(false);
   const [storageInfo, setStorageInfo] = useState<{ used: number; limit: number; remaining: number } | null>(null);
@@ -204,6 +210,17 @@ export default function MasteringTool({
         const res = await fetch("/api/subscription/status");
         const data = await res.json();
         setIsSubscribed(data.isSubscribed || false);
+        // Non-blocking: pull profile so the paywall modal can show the
+        // user's referral code alongside the "refer a friend for a free
+        // week" CTA.
+        fetch("/api/user/profile")
+          .then((r) => (r.ok ? r.json() : null))
+          .then((profileData) => {
+            if (profileData?.profile?.referralCode) {
+              setReferralCode(profileData.profile.referralCode);
+            }
+          })
+          .catch(() => {});
       } catch (error) {
         console.error("Failed to check subscription:", error);
         setIsSubscribed(false);
@@ -454,14 +471,21 @@ export default function MasteringTool({
         }
       } else {
         // Check rate limit for free users
-        const limitUrl = user?.id 
+        const limitUrl = user?.id
           ? `/api/rate-limit/check?userId=${encodeURIComponent(user.id)}`
           : "/api/rate-limit/check";
         const limitCheck = await fetch(limitUrl);
         const limitData = await limitCheck.json();
-        
+
         if (!limitData.allowed) {
-          setShowLimitModal(true);
+          // Signed-in and out of daily free masters → paywall. Guests → old
+          // limit modal (they can't buy without signing up anyway).
+          if (limitData.signedIn && limitData.needsPayment) {
+            setPaywallResetAt(limitData.resetAt ?? null);
+            setShowPaywallModal(true);
+          } else {
+            setShowLimitModal(true);
+          }
           setIsUploading(false);
           return;
         }
@@ -768,6 +792,15 @@ export default function MasteringTool({
       {/* If a mastered file is waiting in localStorage from an earlier
           session, surface it above the tool so downloading is one click. */}
       <PendingDownloadBanner activeJobId={jobId} />
+
+      {/* $2 single-master paywall (signed-in users only) */}
+      <PaywallModal
+        open={showPaywallModal}
+        onClose={() => setShowPaywallModal(false)}
+        returnPath={audioType === "music" ? "/audio-mastering" : "/"}
+        referralCode={referralCode}
+        resetAt={paywallResetAt}
+      />
 
       {/* HQ Purchase Success Toast */}
       <AnimatePresence>
