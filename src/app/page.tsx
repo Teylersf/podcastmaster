@@ -20,7 +20,6 @@ import {
   Github,
   Lock,
   Trash2,
-  Rocket,
   Gift,
 } from "lucide-react";
 
@@ -345,8 +344,8 @@ export default function Home() {
 
       <div className="relative z-10 px-4 py-8 md:py-16">
         <div className="max-w-6xl mx-auto">
-          {/* V3 launch announcement — server-rendered, appears instantly */}
-          <VersionThreeBanner />
+          {/* Pricing + engine overview — server-rendered, appears instantly */}
+          <PricingOverviewBanner />
 
           {/* Client-side interactive content */}
           <Suspense fallback={<HomeLoadingSkeleton />}>
@@ -361,16 +360,20 @@ export default function Home() {
   );
 }
 
-// Launch banner for the v3 rewrite — celebrates the mastering chain upgrades
-// AND surfaces the 2-month "3 free HQ exports" promo.
-function VersionThreeBanner() {
+// Homepage overview banner. Two jobs:
+//   1. Set expectations on the pricing model up-front so nobody hits the
+//      $2 paywall as a surprise ("1 free every day, $2 for extras" is not
+//      the same shock as an unadvertised paywall mid-flow).
+//   2. Still surface the engine-quality bullets, because those actually
+//      differentiate us from the other "free podcast mastering" tools.
+function PricingOverviewBanner() {
   const upgrades = [
     "Spotify-spec loudness (-14 LUFS targeting, not just reference matching)",
     "AI noise reduction toggle — cleans hum, room tone, hiss",
     "All-new polish chain: de-esser, presence lift, leveling compressor",
     "True-peak limiting at -1 dBTP (no more clipped uploads)",
     "Iterative loudness convergence (hits target within 0.3 dB)",
-    "Fixed the inverted loudness modes — \"Loud\" is now actually loud",
+    "24-bit HQ export bundled with every paid master",
   ];
 
   return (
@@ -395,23 +398,13 @@ function VersionThreeBanner() {
 
       <div className="relative grid md:grid-cols-[1fr_auto] gap-6 items-center">
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.15)] text-xs font-semibold tracking-wider uppercase text-white/90">
-              <Rocket className="w-3.5 h-3.5" />
-              Just shipped
-            </span>
-            <span className="text-xs font-mono text-[var(--text-muted)]">
-              v3.0
-            </span>
-          </div>
-
           <h2 className="text-2xl md:text-4xl font-bold leading-tight mb-2 bg-gradient-to-r from-[#f43f9d] via-[#fb923c] to-[#38bdf8] bg-clip-text text-transparent">
-            Version 3.0 — Bigger, Louder, Smarter
+            Broadcast-ready podcasts in one click
           </h2>
           <p className="text-[var(--text-secondary)] text-sm md:text-base mb-5 max-w-2xl">
-            We rebuilt the entire mastering engine. Your podcasts now hit
-            real broadcast-loudness targets, sound cleaner, and have AI noise
-            reduction one click away.
+            Same mastering chain the pros use — voice-tuned EQ, real broadcast
+            loudness, AI noise reduction, true-peak limiting. Sign up to
+            download; the mastering itself stays free every day.
           </p>
 
           <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
@@ -427,26 +420,44 @@ function VersionThreeBanner() {
           </ul>
         </div>
 
-        {/* Free HQ promo card */}
+        {/* Pricing snapshot — the model at a glance so the paywall never
+            comes as a surprise. Friendly, not aggressive. */}
         <div className="md:w-[280px] rounded-2xl border border-[rgba(244,63,157,0.4)] bg-[rgba(10,6,18,0.5)] p-5 backdrop-blur">
-          <div className="flex items-center gap-2 mb-2">
-            <Gift className="w-5 h-5 text-[#f43f9d]" />
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-5 h-5 text-[#f43f9d]" />
             <span className="text-xs font-semibold uppercase tracking-wider text-[#f43f9d]">
-              Launch gift
+              How it works
             </span>
           </div>
-          <p className="text-2xl font-bold leading-tight mb-1">
-            3 free
-            <span className="block text-base font-medium text-[var(--text-secondary)] mt-0.5">
-              24-bit HQ exports
-            </span>
-          </p>
-          <p className="text-xs text-[var(--text-muted)] mb-3">
-            For every visitor. No signup. No credit card.
-          </p>
-          <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-wider">
-            Free for the next 2 months
-          </p>
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[#22c55e]" />
+              <span>
+                <span className="font-semibold">1 free master a day</span>
+                <span className="block text-xs text-[var(--text-muted)]">
+                  Full quality, no watermark
+                </span>
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-[#22c55e]" />
+              <span>
+                <span className="font-semibold">$2 for more</span>
+                <span className="block text-xs text-[var(--text-muted)]">
+                  One-time, no subscription
+                </span>
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <Gift className="w-4 h-4 mt-0.5 shrink-0 text-[#f43f9d]" />
+              <span>
+                <span className="font-semibold">Refer a friend</span>
+                <span className="block text-xs text-[var(--text-muted)]">
+                  Get 7 days unlimited when they pay
+                </span>
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
     </section>

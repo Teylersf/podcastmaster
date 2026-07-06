@@ -817,7 +817,7 @@ export default function HomeClient() {
       <header className="text-center mb-12 md:mb-16">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-[rgba(255,255,255,0.1)] text-sm mb-6">
           <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
-          <span className="text-[var(--text-secondary)]">100% Free — No signup required</span>
+          <span className="text-[var(--text-secondary)]">1 free master every day — $2 for extras</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold mb-6 tracking-tight">
