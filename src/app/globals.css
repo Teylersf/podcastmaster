@@ -1238,7 +1238,7 @@ body :is(h1, h2, h3, h4, h5, h6):not(:is(.stack-scope, .stack-scope *)) {
   color: var(--text-primary) !important;
 }
 
-body p, body span, body label, body div {
+body :is(p, span, label, div):not(:is(.stack-scope, .stack-scope *)) {
   color: var(--text-primary);
 }
 
