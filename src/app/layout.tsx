@@ -8,6 +8,7 @@ import { stackServerApp } from "@/stack";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import FeedbackButton from "@/components/FeedbackButton";
 import ProfileHydrator from "@/components/ProfileHydrator";
+import WelcomeBonusClaimer from "@/components/WelcomeBonusClaimer";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -233,6 +234,7 @@ export default function RootLayout({
                   so we do it ourselves for anything that reads auth state. */}
               <Suspense fallback={null}>
                 <ProfileHydrator />
+                <WelcomeBonusClaimer />
               </Suspense>
               <FeedbackButton />
               <Analytics />
