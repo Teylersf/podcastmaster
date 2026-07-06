@@ -1234,7 +1234,7 @@ input:focus-visible {
    STACK AUTH OVERRIDES
    ============================================ */
 
-body h1, body h2, body h3, body h4, body h5, body h6 {
+body :is(h1, h2, h3, h4, h5, h6):not(:is(.stack-scope, .stack-scope *)) {
   color: var(--text-primary) !important;
 }
 
@@ -1253,20 +1253,18 @@ body p, body span, body label, body div {
   --st-colors-primaryColor: var(--accent-primary) !important;
 }
 
-main h1, main h2, main h3,
-main p, main span, main label,
-main div, main a,
-form h1, form h2, form h3,
-form p, form span, form label {
+/* Skip .stack-scope descendants — Stack Auth manages its own colors
+   inside the mounted <SignIn/SignUp> tree and our !important stomps them,
+   most visibly on the "Sign up with Google" button whose inner <span>
+   inherited our near-white --text-primary on top of the white pill. */
+main :is(h1, h2, h3, p, span, label, div, a):not(:is(.stack-scope, .stack-scope *)),
+form :is(h1, h2, h3, p, span, label):not(:is(.stack-scope, .stack-scope *)) {
   color: var(--text-primary) !important;
 }
 
-main small,
-form small,
-[class*="text-secondary"],
-[class*="text-muted"],
-[class*="secondary"],
-[class*="muted"] {
+main small:not(:is(.stack-scope, .stack-scope *)),
+form small:not(:is(.stack-scope, .stack-scope *)),
+:is([class*="text-secondary"], [class*="text-muted"], [class*="secondary"], [class*="muted"]):not(:is(.stack-scope, .stack-scope *)) {
   color: var(--text-secondary) !important;
 }
 
@@ -1311,16 +1309,18 @@ textarea:focus {
   box-shadow: 0 0 0 2px var(--accent-muted) !important;
 }
 
-button[type="submit"],
-[class*="Button"],
-[class*="button"] {
+/* Skip .stack-scope — Stack Auth renders its own themed buttons
+   (e.g. the white "Sign up with Google" pill). Forcing --accent-primary
+   background + --bg-primary text over it broke the OAuth CTA. */
+button[type="submit"]:not(:is(.stack-scope, .stack-scope *)),
+:is([class*="Button"], [class*="button"]):not(:is(.stack-scope, .stack-scope *)):not(button[type="button"]) {
   background-color: var(--accent-primary) !important;
   color: var(--bg-primary) !important;
   border: none !important;
   font-weight: 600 !important;
 }
 
-button[type="submit"]:hover {
+button[type="submit"]:not(:is(.stack-scope, .stack-scope *)):hover {
   background-color: var(--accent-hover, var(--accent-secondary)) !important;
 }
 
@@ -1341,11 +1341,11 @@ button[type="submit"]:hover {
   background: var(--bg-elevated) !important;
 }
 
-a:not(.btn-primary):not([class*="Button"]) {
+a:not(.btn-primary):not([class*="Button"]):not(:is(.stack-scope, .stack-scope *)) {
   color: var(--accent-primary) !important;
 }
 
-a:not(.btn-primary):not([class*="Button"]):hover {
+a:not(.btn-primary):not([class*="Button"]):not(:is(.stack-scope, .stack-scope *)):hover {
   color: var(--accent-secondary) !important;
 }
 
