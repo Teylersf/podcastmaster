@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { stripe } from "@/lib/stripe";
 import prisma from "@/lib/prisma";
 import Stripe from "stripe";
+import { notifyAdminPayment } from "@/lib/adminNotify";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -71,6 +72,16 @@ export async function POST(request: Request) {
             },
           });
           console.log(`[WEBHOOK] HQ credit added for user ${userId}`);
+          await notifyAdminPayment({
+            kind: "hq_purchase",
+            amountCents: session.amount_total ?? 100,
+            currency: session.currency ?? "usd",
+            customerEmail: session.customer_details?.email ?? session.customer_email,
+            userId,
+            stripeCustomerId: session.customer as string | null,
+            stripeSessionId: session.id,
+            stripePaymentIntentId: session.payment_intent as string | null,
+          });
           break;
         }
 
@@ -91,6 +102,16 @@ export async function POST(request: Request) {
             },
           });
           console.log(`[WEBHOOK] Entitlement created for user ${userId}`);
+          await notifyAdminPayment({
+            kind: "single_master",
+            amountCents: session.amount_total ?? 200,
+            currency: session.currency ?? "usd",
+            customerEmail: session.customer_details?.email ?? session.customer_email,
+            userId,
+            stripeCustomerId: session.customer as string | null,
+            stripeSessionId: session.id,
+            stripePaymentIntentId: session.payment_intent as string | null,
+          });
           break;
         }
 
@@ -137,6 +158,18 @@ export async function POST(request: Request) {
               stripeCustomerId: session.customer as string,
               ...subscriptionData,
             },
+          });
+
+          await notifyAdminPayment({
+            kind: "subscription_new",
+            amountCents: session.amount_total ?? 1000,
+            currency: session.currency ?? "usd",
+            customerEmail: session.customer_details?.email ?? session.customer_email,
+            userId,
+            stripeCustomerId: session.customer as string | null,
+            stripeSubscriptionId: subscriptionId,
+            stripeSessionId: session.id,
+            periodEnd: subscriptionData.currentPeriodEnd ?? null,
           });
         }
         break;
@@ -197,6 +230,58 @@ export async function POST(request: Request) {
           data: {
             status: "past_due",
           },
+        });
+        break;
+      }
+
+      // Notify on subscription renewal payments. `invoice.paid` fires for
+      // BOTH the initial subscription checkout AND every renewal; we only
+      // want the renewals here (the initial checkout is already notified
+      // in the checkout.session.completed branch). `billing_reason ===
+      // "subscription_cycle"` is Stripe's flag for a recurring cycle.
+      case "invoice.paid": {
+        const invoice = event.data.object as unknown as {
+          id?: string;
+          customer?: string;
+          customer_email?: string;
+          amount_paid?: number;
+          currency?: string;
+          billing_reason?: string;
+          subscription?: string;
+          lines?: {
+            data?: Array<{
+              period?: { end?: number };
+            }>;
+          };
+        };
+
+        if (invoice.billing_reason !== "subscription_cycle") {
+          break;
+        }
+
+        const customerId = invoice.customer;
+        const sub = customerId
+          ? await prisma.subscription.findFirst({
+              where: { stripeCustomerId: customerId },
+              select: { userId: true },
+            })
+          : null;
+
+        const periodEndSec = invoice.lines?.data?.[0]?.period?.end;
+
+        await notifyAdminPayment({
+          kind: "subscription_renewal",
+          amountCents: invoice.amount_paid ?? 1000,
+          currency: invoice.currency ?? "usd",
+          customerEmail: invoice.customer_email ?? null,
+          userId: sub?.userId ?? null,
+          stripeCustomerId: customerId ?? null,
+          stripeSubscriptionId: invoice.subscription ?? null,
+          stripeInvoiceId: invoice.id ?? null,
+          periodEnd:
+            typeof periodEndSec === "number"
+              ? new Date(periodEndSec * 1000)
+              : null,
         });
         break;
       }
