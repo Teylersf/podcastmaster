@@ -1,5 +1,5 @@
 // Prisma schema for Free Podcast Mastering
-// Using Neon PostgreSQL database
+// Migrated 2026-06-28 from Neon to Linode Postgres 16 behind PgBouncer.
 
 generator client {
   provider = "prisma-client-js"
@@ -139,6 +139,69 @@ model HQPurchase {
   updatedAt              DateTime @updatedAt
 
   @@index([userId])
+}
+
+// Per-user profile keyed to the Stack Auth user id. This is the anchor for the
+// referral program (`referralCode` is the shareable identifier), the 7-day
+// unlimited-mastering perk (`unlimitedUntil`), and the anti-fraud signals we
+// capture at signup (`signupIpHash`, `signupVisitorId`, disposable email).
+// A row is created lazily via `getOrCreateUserProfile` the first time a
+// signed-in user hits the app.
+model UserProfile {
+  id              String    @id @default(cuid())
+  userId          String    @unique // Stack Auth user id
+  email           String?   // Cached from Stack Auth for disposable-email checks
+  referralCode    String    @unique // 8-char shareable code, generated on create
+  referredByCode  String?   // Referral code the user came in with (if any)
+  signupIpHash    String?   // SHA-256(ip + WEBHOOK_SECRET) — for same-IP fraud check
+  signupVisitorId String?   // FingerprintJS Pro visitor id — for cross-VPN fraud check
+  unlimitedUntil  DateTime? // Non-null = 7-day unlimited pass active until this time
+  firstMasterAt   DateTime? // Set the first time this user completes any master
+  firstPaidMasterAt DateTime? // Set the first time this user pays for a $2 master
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([referralCode])
+  @@index([referredByCode])
+  @@index([signupIpHash])
+}
+
+// One row per referral relationship. Created when the referee signs up with a
+// referral code in their cookie; sits `pending` until the referee completes
+// their first $2 paid master. At that point we run the fraud gates and either
+// mark it `granted` (extending the referrer's `unlimitedUntil` by 7 days) or
+// void it with a reason code. Voids are silent — the referrer is never notified.
+model Referral {
+  id           String    @id @default(cuid())
+  referrerId   String    // UserProfile.userId of the referrer
+  refereeId    String    @unique // UserProfile.userId of the referee (one referral per user)
+  refCode      String    // The referral code used
+  status       String    @default("pending") // pending | granted | void_same_ip | void_fingerprint | void_self | void_disposable_email | void_referrer_no_master
+  reason       String?   // Human-readable void reason for support
+  createdAt    DateTime  @default(now())
+  grantedAt    DateTime?
+
+  @@index([referrerId])
+  @@index([refCode])
+  @@index([status])
+}
+
+// A single paid-master entitlement created after a successful $2 Stripe
+// Checkout. `used` flips to true when the user actually starts an upload
+// against this entitlement. Prevents re-use of the same purchase for multiple
+// masters, and lets the paywall check "does this user have any unused entitlement".
+model MasterEntitlement {
+  id                    String    @id @default(cuid())
+  userId                String    // Stack Auth user id who paid
+  stripeSessionId       String?   @unique
+  stripePaymentIntentId String?   @unique
+  used                  Boolean   @default(false)
+  usedForJobId          String?   // The mastering job that consumed this entitlement
+  usedAt                DateTime?
+  createdAt             DateTime  @default(now())
+
+  @@index([userId])
+  @@index([used])
 }
 
 // Stores video render job notifications

@@ -1,0 +1,97 @@
+import crypto from "crypto";
+import prisma from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
+
+// Referral codes: 8 chars, uppercase-only. We drop the visually ambiguous
+// glyphs (0/O, 1/I/L) so a code copied off a phone screen still works.
+const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const CODE_LENGTH = 8;
+
+export function generateReferralCode(): string {
+  const bytes = crypto.randomBytes(CODE_LENGTH);
+  let out = "";
+  for (let i = 0; i < CODE_LENGTH; i++) {
+    out += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length];
+  }
+  return out;
+}
+
+// Hash an IP with the shared webhook secret so raw IPs never touch disk.
+// The same salt is used across the codebase (rate-limit route uses this
+// pattern too), so a rehash from the same IP always produces the same value.
+export function hashIp(ip: string): string {
+  const salt = process.env.WEBHOOK_SECRET || "default-salt";
+  return crypto
+    .createHash("sha256")
+    .update(ip + salt)
+    .digest("hex");
+}
+
+// Pulls the client's IP from the standard forwarding headers Vercel sets.
+// x-forwarded-for is a comma-separated chain of proxies; the leftmost entry
+// is the origin client. Falls back to x-real-ip, then "unknown".
+export function getClientIp(headers: Headers): string {
+  const fwd = headers.get("x-forwarded-for");
+  if (fwd) {
+    const first = fwd.split(",")[0]?.trim();
+    if (first) return first;
+  }
+  return headers.get("x-real-ip") || "unknown";
+}
+
+export type ProfileInitInput = {
+  userId: string;
+  email?: string | null;
+  ip?: string | null;
+  visitorId?: string | null;
+  referredByCode?: string | null;
+};
+
+// Idempotent: returns an existing profile or creates a new one with a unique
+// referral code. Collisions on the 8-char code are ~1 in 8e10 per attempt, but
+// we still retry a few times just in case rather than 500ing on the user.
+export async function getOrCreateUserProfile(input: ProfileInitInput) {
+  const existing = await prisma.userProfile.findUnique({
+    where: { userId: input.userId },
+  });
+  if (existing) return existing;
+
+  const ipHash = input.ip ? hashIp(input.ip) : null;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = generateReferralCode();
+    try {
+      return await prisma.userProfile.create({
+        data: {
+          userId: input.userId,
+          email: input.email ?? null,
+          referralCode: code,
+          referredByCode: input.referredByCode ?? null,
+          signupIpHash: ipHash,
+          signupVisitorId: input.visitorId ?? null,
+        },
+      });
+    } catch (err) {
+      if (isUniqueConstraintError(err) && attempt < 4) continue;
+      throw err;
+    }
+  }
+  throw new Error("Could not allocate unique referral code after 5 attempts");
+}
+
+function isUniqueConstraintError(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    (err as Prisma.PrismaClientKnownRequestError).code === "P2002"
+  );
+}
+
+// Whether the user's current time falls inside an active 7-day pass.
+export function hasUnlimitedActive(
+  profile: { unlimitedUntil: Date | null } | null,
+): boolean {
+  return (
+    !!profile?.unlimitedUntil && profile.unlimitedUntil.getTime() > Date.now()
+  );
+}
