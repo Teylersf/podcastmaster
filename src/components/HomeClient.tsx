@@ -838,7 +838,7 @@ export default function HomeClient() {
           <div className="mb-8 flex flex-col items-center gap-3">
             <a
               href="/handler/sign-up?after_auth_return_to=/?bonus=welcome24"
-              className="group inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-white text-[#1f1f1f] font-semibold text-base shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 border border-black/5"
+              className="group inline-flex items-center gap-3 px-6 py-3.5 rounded-full bg-white text-[#1f1f1f]! font-semibold text-base shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 border border-black/5"
             >
               {/* Official Google 'G' mark */}
               <svg
@@ -863,8 +863,8 @@ export default function HomeClient() {
                   d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
                 />
               </svg>
-              <span>Sign up with Google</span>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1f1f1f] text-white text-xs font-semibold whitespace-nowrap">
+              <span className="text-[#1f1f1f]!">Sign up with Google</span>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1f1f1f] text-white! text-xs font-semibold whitespace-nowrap">
                 <Sparkles className="w-3 h-3" />
                 24h free unlimited
               </span>
