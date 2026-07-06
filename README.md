@@ -297,7 +297,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Average On Purpose Podcast** — For exclusively using and promoting our tool
 - **The Podcast Community** — For feedback and feature suggestions
 - **Open Source Contributors** — For making this project possible
 

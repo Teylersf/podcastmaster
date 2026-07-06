@@ -12,7 +12,7 @@ All routes live under [src/app/](../src/app/) (Next.js App Router).
 **Layout:** Uses root [layout.tsx](../src/app/layout.tsx)
 
 Renders:
-- **Static, server-rendered:** Hero copy, "How It Works" 3-step section, Featured Podcast card (Average On Purpose), Why Use This Tool, link to the mastering guide, Privacy banner, Open-Source CTA, footer.
+- **Static, server-rendered:** Hero copy, "How It Works" 3-step section, Why Use This Tool, link to the mastering guide, Privacy banner, Open-Source CTA, footer.
 - **Dynamic client component:** [HomeClient](../src/components/HomeClient.tsx) — the actual upload + master interactive widget. Lazy-loaded via `next/dynamic` to keep the initial JS bundle small. A skeleton (`HomeLoadingSkeleton`) renders while it streams in.
 
 SEO: extensive `metadata` block in [layout.tsx](../src/app/layout.tsx), JSON-LD WebApplication schema, Google Ads gtag.

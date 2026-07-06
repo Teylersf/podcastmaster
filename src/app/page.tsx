@@ -2,13 +2,11 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
-  Headphones,
   Crown,
   Upload,
   Wand2,
   Volume2,
   CheckCircle2,
-  Play,
   BookOpen,
   ArrowRight,
   Sparkles,
@@ -117,45 +115,6 @@ function StaticSections() {
               <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{item.description}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Featured Podcast */}
-      <section className="mt-16 glass-card p-8 overflow-hidden relative">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-(--accent-muted) to-transparent rounded-bl-full" />
-        
-        <div className="relative flex flex-col md:flex-row items-center gap-6">
-          <a href="https://www.averageonpurpose.com/" target="_blank" rel="noopener noreferrer" className="shrink-0 group">
-            <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shadow-lg shadow-(--accent-muted) group-hover:scale-105 transition-transform">
-              <Headphones className="w-14 h-14 text-white/90" />
-            </div>
-          </a>
-          
-          <div className="flex-1 text-center md:text-left">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-(--accent-muted) text-xs font-medium text-(--accent-primary) mb-3">
-              <Sparkles className="w-3 h-3" />
-              Featured Podcast
-            </span>
-            <h3 className="text-xl font-bold mb-2">
-              <a href="https://www.averageonpurpose.com/" target="_blank" rel="noopener noreferrer" className="hover:text-(--accent-primary) transition-colors">
-                Average On Purpose
-              </a>
-            </h3>
-            <p className="text-sm text-[var(--text-secondary)] mb-4">
-              This podcast <strong className="text-[var(--text-primary)]">exclusively uses Free Podcast Mastering</strong> for all their audio mastering.
-            </p>
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <a
-                href="https://podcasts.apple.com/us/podcast/average-on-purpose/id1850387174"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-(--bg-elevated) hover:bg-(--bg-elevated) border border-(--border-medium) transition-all text-sm font-medium"
-              >
-                <Play className="w-4 h-4" />
-                Listen on Apple Podcasts
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 
