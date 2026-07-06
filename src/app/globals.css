@@ -1889,17 +1889,9 @@ a:not(.btn-primary):not([class*="Button"]):hover {
   box-shadow: none !important;
 }
 
-/* Any icon-container div that used gradient-to-br → solid ink circle,
-   white icon inside. Catch-all for the constellation of decorative
-   icon tiles across HomeClient / MasteringTool / dashboard. */
-[data-theme="anti-vibe-coded"] div[class*="bg-gradient-to-br"],
-[data-theme="anti-vibe-coded"] div[class*="bg-linear-to-br"] {
-  background: #171410 !important;
-  background-image: none !important;
-  color: #ffffff !important;
-}
-[data-theme="anti-vibe-coded"] div[class*="bg-gradient-to-br"] svg,
-[data-theme="anti-vibe-coded"] div[class*="bg-linear-to-br"] svg {
-  color: #ffffff !important;
-  fill: none !important;
-}
+/* Since the codebase now flows every color through CSS variables, we no
+   longer force-ink every `bg-gradient-to-br` div. The theme's `--accent-*`
+   values do the right thing on their own — the icon tiles come out ink-to-
+   bronze, the success chips come out muted forest, and larger decorative
+   gradients (featured-podcast card overlay, guide-section glow) fade out
+   correctly against the bone canvas without being nuked to solid black. */
