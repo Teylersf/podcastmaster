@@ -57,7 +57,7 @@ export default function TermsOfService() {
 
         {/* Key Points Banner */}
         <motion.div
-          className="mb-8 p-5 rounded-xl bg-(--success-muted) border border-[rgba(34,197,94,0.15)]"
+          className="mb-8 p-5 rounded-xl bg-(--success-muted) border border-(--success)/30"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.1 }}

@@ -54,7 +54,7 @@ const AudioPlayer = dynamic(() => import("@/components/AudioPlayer"), {
 
 const ThemeSelector = dynamic(() => import("@/components/ThemeSelector"), {
   ssr: false,
-  loading: () => <div className="w-10 h-10 rounded-lg bg-[rgba(255,255,255,0.1)] animate-pulse" />,
+  loading: () => <div className="w-10 h-10 rounded-lg bg-(--bg-elevated) animate-pulse" />,
 });
 
 const VideoGenerator = dynamic(() => import("@/components/video/VideoGenerator"), {
@@ -761,10 +761,10 @@ export default function HomeClient() {
       {/* Navigation */}
       <nav className="flex items-center justify-between mb-12 md:mb-16">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center shadow-lg shadow-[rgba(249,115,22,0.3)]">
+          <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
             <Headphones className="w-5 h-5 md:w-6 md:h-6 text-white" />
           </div>
-          <span className="font-bold text-lg hidden sm:inline bg-gradient-to-r from-[#f97316] to-[#3b82f6] bg-clip-text text-transparent">
+          <span className="font-bold text-lg hidden sm:inline bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) bg-clip-text text-transparent">
             Free Podcast Mastering
           </span>
         </div>
@@ -774,14 +774,14 @@ export default function HomeClient() {
           {user ? (
             <>
               {isSubscribed && (
-                <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[rgba(249,115,22,0.15)] to-[rgba(59,130,246,0.15)] border border-[rgba(249,115,22,0.2)] text-xs font-medium text-[#f97316]">
+                <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40 text-xs font-medium text-(--accent-primary)">
                   <Crown className="w-3.5 h-3.5" />
                   Unlimited
                 </span>
               )}
               <Link
                 href="/dashboard"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-[rgba(255,255,255,0.1)] hover:border-[#f97316] hover:bg-[rgba(249,115,22,0.1)] transition-all text-sm font-medium"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-(--bg-elevated) backdrop-blur-xl border border-(--border-medium) hover:border-(--accent-primary) hover:bg-(--accent-muted) transition-all text-sm font-medium"
               >
                 <User className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -798,7 +798,7 @@ export default function HomeClient() {
               </Link>
               <Link
                 href="/pricing"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f97316] to-[#ea580c] hover:from-[#fb923c] hover:to-[#f97316] transition-all text-sm font-semibold text-white shadow-lg shadow-[rgba(249,115,22,0.3)]"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) hover:from-(--accent-secondary) hover:to-(--accent-primary) transition-all text-sm font-semibold text-white shadow-lg shadow-(--accent-muted)"
               >
                 <Crown className="w-4 h-4" />
                 <span className="hidden sm:inline">Pricing</span>
@@ -815,8 +815,8 @@ export default function HomeClient() {
 
       {/* Hero Section */}
       <header className="text-center mb-12 md:mb-16">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.05)] backdrop-blur-xl border border-[rgba(255,255,255,0.1)] text-sm mb-6">
-          <span className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-(--bg-elevated) backdrop-blur-xl border border-(--border-medium) text-sm mb-6">
+          <span className="w-2 h-2 rounded-full bg-(--success) animate-pulse" />
           <span className="text-[var(--text-secondary)]">1 free master every day — $2 for extras</span>
         </div>
 
@@ -834,21 +834,21 @@ export default function HomeClient() {
         {/* Privacy Disclaimer */}
         <div className="max-w-2xl mx-auto mb-8">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#22c55e]/20 via-[#10b981]/20 to-[#22c55e]/20 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition duration-500" />
-            <div className="relative px-5 py-4 rounded-xl bg-[rgba(34,197,94,0.08)] backdrop-blur-md border border-[rgba(34,197,94,0.25)] hover:border-[rgba(34,197,94,0.4)] transition-all duration-300">
+            <div className="absolute -inset-1 bg-gradient-to-r from-(--success)/20 via-(--success)/20 to-(--success)/20 rounded-2xl blur-lg opacity-75 group-hover:opacity-100 transition duration-500" />
+            <div className="relative px-5 py-4 rounded-xl bg-(--success-muted) backdrop-blur-md border border-(--success)/40 hover:border-(--success)/70 transition-all duration-300">
               <div className="flex items-start gap-3">
-                <div className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-[#22c55e] to-[#10b981] flex items-center justify-center shadow-lg shadow-[#22c55e]/20">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-(--success) to-(--success) flex items-center justify-center shadow-lg shadow-(--success-muted)">
                   <span className="text-lg">🔒</span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-semibold text-[#22c55e]">Your Audio is 100% Private</span>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#22c55e]/20 text-[#22c55e] uppercase tracking-wider">Zero Training</span>
+                    <span className="text-sm font-semibold text-(--success)">Your Audio is 100% Private</span>
+                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-(--success)/20 text-(--success) uppercase tracking-wider">Zero Training</span>
                   </div>
                   <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    We <span className="text-[#22c55e] font-medium">never</span> train AI on your audio. We use it for <span className="text-[#22c55e] font-medium">absolutely nothing</span> except processing your file. 
+                    We <span className="text-(--success) font-medium">never</span> train AI on your audio. We use it for <span className="text-(--success) font-medium">absolutely nothing</span> except processing your file. 
                     Auto-deleted after 24 hours — honestly, we just don&apos;t want to pay for the storage. 
-                    <span className="inline-flex items-center gap-1 ml-1 text-[#22c55e]">
+                    <span className="inline-flex items-center gap-1 ml-1 text-(--success)">
                       <HardDrive className="w-3 h-3" />
                       <span className="font-medium">Your audio = your business.</span>
                     </span>
@@ -868,9 +868,9 @@ export default function HomeClient() {
           ].map((feature) => (
             <div
               key={feature.text}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.03)] backdrop-blur-sm border border-[rgba(255,255,255,0.08)] text-sm text-[var(--text-secondary)]"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-(--bg-elevated) backdrop-blur-sm border border-(--border-subtle) text-sm text-[var(--text-secondary)]"
             >
-              <feature.icon className="w-4 h-4 text-[#f97316]" />
+              <feature.icon className="w-4 h-4 text-(--accent-primary)" />
               {feature.text}
             </div>
           ))}
@@ -884,17 +884,17 @@ export default function HomeClient() {
         transition={{ delay: 0.2 }}
         className="mb-12"
       >
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#f43f9d]/20 via-[#1a0a1f] to-[#0a0612] border border-[#f43f9d]/30">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-(--accent-primary)/20 via-(--bg-secondary) to-(--bg-primary) border border-(--accent-primary)/30">
           {/* Animated background glow */}
           <div className="absolute inset-0">
-            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-[#f43f9d]/20 blur-[100px] animate-pulse" />
-            <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-[#38bdf8]/15 blur-[100px] animate-pulse delay-1000" />
+            <div className="absolute -top-1/2 -right-1/2 w-full h-full bg-(--accent-primary)/20 blur-[100px] animate-pulse" />
+            <div className="absolute -bottom-1/2 -left-1/2 w-full h-full bg-(--accent-tertiary)/15 blur-[100px] animate-pulse delay-1000" />
           </div>
 
           <div className="relative z-10 p-8 md:p-10">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               {/* Icon */}
-              <div className="shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#f43f9d] to-[#fb923c] flex items-center justify-center shadow-lg shadow-[#f43f9d]/30">
+              <div className="shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-secondary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
                 <Music className="w-8 h-8 text-white" />
               </div>
 
@@ -902,16 +902,16 @@ export default function HomeClient() {
               <div className="flex-1">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
                   <h2 className="text-2xl md:text-3xl font-bold">Master Music, Songs & Full Albums</h2>
-                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-[#22c55e] to-[#16a34a] text-white text-xs font-bold uppercase tracking-wider shadow-lg">
+                  <span className="px-3 py-1 rounded-full bg-gradient-to-r from-(--success) to-(--success) text-white text-xs font-bold uppercase tracking-wider shadow-lg">
                     FREE
                   </span>
-                  <span className="px-3 py-1 rounded-full bg-[#f43f9d]/20 border border-[#f43f9d]/40 text-[#f43f9d] text-xs font-bold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-(--accent-primary)/20 border border-(--accent-primary)/40 text-(--accent-primary) text-xs font-bold uppercase tracking-wider">
                     NEW
                   </span>
                 </div>
                 <p className="text-[var(--text-secondary)] text-lg mb-4">
                   Now mastering <strong className="text-[var(--text-primary)]">music</strong>, songs, albums, and any audio track —
-                  <span className="text-[#f43f9d] font-semibold"> a separate, music-tuned chain</span> with reference matching, true-peak limiting, and Spotify-spec loudness.
+                  <span className="text-(--accent-primary) font-semibold"> a separate, music-tuned chain</span> with reference matching, true-peak limiting, and Spotify-spec loudness.
                 </p>
 
                 {/* Feature highlights */}
@@ -924,9 +924,9 @@ export default function HomeClient() {
                   ].map((feature) => (
                     <div
                       key={feature.text}
-                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[rgba(244,63,157,0.1)] border border-[rgba(244,63,157,0.2)] text-sm"
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl bg-(--accent-muted) border border-(--accent-primary)/40 text-sm"
                     >
-                      <feature.icon className="w-4 h-4 text-[#f43f9d]" />
+                      <feature.icon className="w-4 h-4 text-(--accent-primary)" />
                       <span className="text-[var(--text-secondary)]">{feature.text}</span>
                     </div>
                   ))}
@@ -937,7 +937,7 @@ export default function HomeClient() {
               <div className="shrink-0">
                 <Link
                   href="/audio-mastering"
-                  className="group px-6 py-3 rounded-xl bg-gradient-to-r from-[#f43f9d] to-[#fb923c] hover:from-[#fb6cb6] hover:to-[#fca573] text-white font-semibold transition-all shadow-lg shadow-[#f43f9d]/30 flex items-center gap-2"
+                  className="group px-6 py-3 rounded-xl bg-gradient-to-r from-(--accent-primary) to-(--accent-secondary) hover:from-(--accent-hover) hover:to-(--accent-secondary) text-white font-semibold transition-all shadow-lg shadow-(--accent-muted) flex items-center gap-2"
                 >
                   Master Music
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -952,16 +952,16 @@ export default function HomeClient() {
       <AnimatePresence>
         {showHqSuccessToast && (
           <motion.div
-            className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[rgba(34,197,94,0.15)] backdrop-blur-xl border border-[rgba(34,197,94,0.3)] flex items-center gap-3"
+            className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-(--success-muted) backdrop-blur-xl border border-(--success)/50 flex items-center gap-3"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 50 }}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-(--success) to-(--success) flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="font-semibold text-[#22c55e]">HQ Export Unlocked!</p>
+              <p className="font-semibold text-(--success)">HQ Export Unlocked!</p>
               <p className="text-sm text-[var(--text-secondary)]">You have 1 high-quality 24-bit export credit</p>
             </div>
             <button onClick={() => setShowHqSuccessToast(false)} className="ml-4 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
@@ -975,7 +975,7 @@ export default function HomeClient() {
       <AnimatePresence>
         {error && (
           <motion.div
-            className="mb-8 p-4 rounded-2xl bg-[rgba(239,68,68,0.1)] backdrop-blur-xl border border-[rgba(239,68,68,0.3)] flex items-center gap-3"
+            className="mb-8 p-4 rounded-2xl bg-(--error-muted) backdrop-blur-xl border border-(--error)/50 flex items-center gap-3"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -1026,7 +1026,7 @@ export default function HomeClient() {
               >
                 <X className="w-5 h-5" />
               </button>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[rgba(234,179,8,0.2)] to-[rgba(234,179,8,0.1)] flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-(--warning-muted) to-(--warning-muted) flex items-center justify-center">
                 <AlertCircle className="w-8 h-8 text-[var(--warning)]" />
               </div>
               <h3 className="text-xl font-bold mb-2">Weekly Limit Reached</h3>
@@ -1067,7 +1067,7 @@ export default function HomeClient() {
               >
                 <X className="w-5 h-5" />
               </button>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[rgba(239,68,68,0.15)] flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-(--error-muted) flex items-center justify-center">
                 <HardDrive className="w-8 h-8 text-[var(--error)]" />
               </div>
               <h3 className="text-xl font-bold mb-2">Storage Full</h3>
@@ -1075,14 +1075,14 @@ export default function HomeClient() {
                 You&apos;ve reached your 5GB storage limit. Delete some files to free up space.
               </p>
               {storageInfo && (
-                <div className="mb-6 p-4 rounded-xl bg-[rgba(255,255,255,0.03)]">
+                <div className="mb-6 p-4 rounded-xl bg-(--bg-elevated)">
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-[var(--text-muted)]">Used</span>
                     <span className="font-medium">{formatFileSize(storageInfo.used)} / {formatFileSize(storageInfo.limit)}</span>
                   </div>
-                  <div className="h-2 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
+                  <div className="h-2 bg-(--bg-elevated) rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-[#ef4444] to-[#f97316] rounded-full"
+                      className="h-full bg-gradient-to-r from-(--error) to-(--accent-primary) rounded-full"
                       style={{ width: `${Math.min((storageInfo.used / storageInfo.limit) * 100, 100)}%` }}
                     />
                   </div>
@@ -1107,7 +1107,7 @@ export default function HomeClient() {
               className="w-full flex items-center justify-between gap-3 text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[rgba(234,179,8,0.2)] to-[rgba(234,179,8,0.1)] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-(--warning-muted) to-(--warning-muted) flex items-center justify-center">
                   <Lightbulb className="w-5 h-5 text-[var(--warning)]" />
                 </div>
                 <span className="font-semibold">Pro Tip: Best Practice for Voice Mastering</span>
@@ -1133,7 +1133,7 @@ export default function HomeClient() {
                     </p>
                     <Link
                       href="/how-to-master-podcast-audio"
-                      className="inline-flex items-center gap-2 text-[#f97316] hover:underline font-medium"
+                      className="inline-flex items-center gap-2 text-(--accent-primary) hover:underline font-medium"
                     >
                       Read the complete guide
                       <ArrowRight className="w-4 h-4" />
@@ -1149,7 +1149,7 @@ export default function HomeClient() {
             {/* File Upload */}
             <div className="glass-card p-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center shadow-lg shadow-[rgba(249,115,22,0.2)]">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
                   <Music2 className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -1169,7 +1169,7 @@ export default function HomeClient() {
                   </div>
                   <button
                     onClick={() => setTargetFile(null)}
-                    className="p-2 hover:bg-[rgba(255,255,255,0.05)] rounded-lg transition-colors"
+                    className="p-2 hover:bg-(--bg-elevated) rounded-lg transition-colors"
                   >
                     <X className="w-5 h-5 text-[var(--text-muted)]" />
                   </button>
@@ -1187,7 +1187,7 @@ export default function HomeClient() {
             {/* Mastering Preset */}
             <div className="glass-card p-6">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#3b82f6] to-[#2563eb] flex items-center justify-center shadow-lg shadow-[rgba(59,130,246,0.2)]">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-(--accent-tertiary) to-(--accent-secondary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -1211,7 +1211,7 @@ export default function HomeClient() {
               className="w-full p-5 flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[rgba(255,255,255,0.05)] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-(--bg-elevated) flex items-center justify-center">
                   <Settings className="w-5 h-5 text-[var(--text-secondary)]" />
                 </div>
                 <div className="text-left">
@@ -1249,8 +1249,8 @@ export default function HomeClient() {
                           onClick={() => setOutputQuality("standard")}
                           className={`p-4 rounded-xl border text-left transition-all ${
                             outputQuality === "standard"
-                              ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                              : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                              ? "border-(--accent-primary) bg-(--accent-muted)"
+                              : "border-(--border-medium) hover:border-(--border-hover)"
                           }`}
                         >
                           <p className="font-semibold">Standard (16-bit)</p>
@@ -1261,23 +1261,23 @@ export default function HomeClient() {
                           disabled={!canUseHqExport}
                           className={`p-4 rounded-xl border text-left transition-all ${
                             outputQuality === "high"
-                              ? "border-[#f43f9d] bg-[rgba(244,63,157,0.1)]"
+                              ? "border-(--accent-primary) bg-(--accent-muted)"
                               : !canUseHqExport
-                                ? "border-[rgba(255,255,255,0.05)] opacity-50 cursor-not-allowed"
-                                : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                                ? "border-(--border-subtle) opacity-50 cursor-not-allowed"
+                                : "border-(--border-medium) hover:border-(--border-hover)"
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2">
                             <p className="font-semibold">High Quality (24-bit)</p>
                             {HQ_PROMO ? (
-                              <span className="text-[10px] uppercase tracking-wider font-bold bg-[rgba(244,63,157,0.18)] text-[#f43f9d] px-2 py-0.5 rounded-full border border-[rgba(244,63,157,0.35)] whitespace-nowrap">
+                              <span className="text-[10px] uppercase tracking-wider font-bold bg-(--accent-muted) text-(--accent-primary) px-2 py-0.5 rounded-full border border-(--accent-primary)/60 whitespace-nowrap">
                                 Free · v3
                               </span>
                             ) : (
                               <>
                                 {!canUseHqExport && <Crown className="w-4 h-4 text-[var(--warning)]" />}
                                 {hqCredits > 0 && !isSubscribed && (
-                                  <span className="text-xs bg-[rgba(34,197,94,0.15)] text-[#22c55e] px-2 py-0.5 rounded-full">
+                                  <span className="text-xs bg-(--success-muted) text-(--success) px-2 py-0.5 rounded-full">
                                     {hqCredits} credit
                                   </span>
                                 )}
@@ -1297,9 +1297,9 @@ export default function HomeClient() {
                       </div>
 
                       {HQ_PROMO ? (
-                        <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-[rgba(244,63,157,0.12)] via-[rgba(251,146,60,0.1)] to-[rgba(56,189,248,0.12)] border border-[rgba(244,63,157,0.25)]">
+                        <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-(--accent-muted) via-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40">
                           <div className="flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-[#f43f9d] shrink-0" />
+                            <Sparkles className="w-5 h-5 text-(--accent-primary) shrink-0" />
                             <div>
                               <p className="font-semibold text-sm">
                                 Launch promo — 3 free 24-bit HQ exports
@@ -1312,11 +1312,11 @@ export default function HomeClient() {
                         </div>
                       ) : (
                         !isSubscribed && hqCredits === 0 && (
-                          <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-[rgba(249,115,22,0.1)] to-[rgba(59,130,246,0.1)] border border-[rgba(249,115,22,0.2)]">
+                          <div className="mt-4 p-4 rounded-xl bg-gradient-to-r from-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40">
                             <div className="flex items-center justify-between gap-4">
                               <div>
                                 <div className="flex items-center gap-2 mb-1">
-                                  <Sparkles className="w-4 h-4 text-[#f97316]" />
+                                  <Sparkles className="w-4 h-4 text-(--accent-primary)" />
                                   <p className="font-semibold">Try 24-bit HQ for $1</p>
                                 </div>
                                 <p className="text-xs text-[var(--text-secondary)]">
@@ -1326,7 +1326,7 @@ export default function HomeClient() {
                               <button
                                 onClick={handleHqPurchase}
                                 disabled={hqCheckoutLoading}
-                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f97316] to-[#ea580c] text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-[rgba(249,115,22,0.3)]"
+                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-(--accent-muted)"
                               >
                                 {hqCheckoutLoading ? (
                                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1362,8 +1362,8 @@ export default function HomeClient() {
                             onClick={() => setLoudnessTarget(mode.id as "conservative" | "standard" | "loud")}
                             className={`p-3 rounded-xl border text-center transition-all ${
                               loudnessTarget === mode.id
-                                ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                                : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                                ? "border-(--accent-primary) bg-(--accent-muted)"
+                                : "border-(--border-medium) hover:border-(--border-hover)"
                             }`}
                           >
                             <p className="font-semibold">{mode.name}</p>
@@ -1380,8 +1380,8 @@ export default function HomeClient() {
                         onClick={() => setNoiseReduction((v) => !v)}
                         className={`w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between ${
                           noiseReduction
-                            ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                            : "border-[rgba(255,255,255,0.1)] hover:border-[rgba(255,255,255,0.2)]"
+                            ? "border-(--accent-primary) bg-(--accent-muted)"
+                            : "border-(--border-medium) hover:border-(--border-hover)"
                         }`}
                       >
                         <div>
@@ -1395,7 +1395,7 @@ export default function HomeClient() {
                         </div>
                         <div
                           className={`w-10 h-6 rounded-full relative transition-colors shrink-0 ${
-                            noiseReduction ? "bg-[#f97316]" : "bg-[rgba(255,255,255,0.15)]"
+                            noiseReduction ? "bg-(--accent-primary)" : "bg-(--border-medium)"
                           }`}
                         >
                           <div
@@ -1462,14 +1462,14 @@ export default function HomeClient() {
               />
             </div>
           </div>
-          <p className="text-2xl font-bold bg-gradient-to-r from-[#f97316] to-[#3b82f6] bg-clip-text text-transparent mb-8">
+          <p className="text-2xl font-bold bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) bg-clip-text text-transparent mb-8">
             {status?.progress || 0}%
           </p>
 
           {/* Email notification */}
-          <div className="max-w-md mx-auto p-5 rounded-2xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
+          <div className="max-w-md mx-auto p-5 rounded-2xl bg-(--bg-elevated) border border-(--border-subtle)">
             {user?.primaryEmail ? (
-              <div className="flex items-center justify-center gap-2 text-[#22c55e]">
+              <div className="flex items-center justify-center gap-2 text-(--success)">
                 <Mail className="w-5 h-5" />
                 <span className="text-sm font-medium">
                   We&apos;ll email you at {user.primaryEmail} when ready!
@@ -1478,7 +1478,7 @@ export default function HomeClient() {
             ) : !emailSubscribed ? (
               <>
                 <div className="flex items-center justify-center gap-2 mb-3">
-                  <Bell className="w-4 h-4 text-[#f97316]" />
+                  <Bell className="w-4 h-4 text-(--accent-primary)" />
                   <span className="font-semibold text-sm">Get notified when ready</span>
                 </div>
                 <div className="flex gap-2">
@@ -1496,7 +1496,7 @@ export default function HomeClient() {
                   <button
                     onClick={subscribeToNotifications}
                     disabled={!notificationEmail || emailSubscribing}
-                    className="px-5 py-3 rounded-xl bg-[#f97316] text-white font-semibold text-sm disabled:opacity-50"
+                    className="px-5 py-3 rounded-xl bg-(--accent-primary) text-white font-semibold text-sm disabled:opacity-50"
                   >
                     {emailSubscribing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Notify Me"}
                   </button>
@@ -1504,7 +1504,7 @@ export default function HomeClient() {
                 {emailError && <p className="text-xs text-[var(--error)] mt-2">{emailError}</p>}
               </>
             ) : (
-              <div className="flex items-center justify-center gap-2 text-[#22c55e]">
+              <div className="flex items-center justify-center gap-2 text-(--success)">
                 <CheckCircle2 className="w-5 h-5" />
                 <span className="text-sm font-medium">We&apos;ll email you when ready!</span>
               </div>
@@ -1515,7 +1515,7 @@ export default function HomeClient() {
         /* Completed View */
         <div className="glass-card p-10 md:p-16 text-center">
           <motion.div
-            className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center shadow-lg shadow-[rgba(34,197,94,0.3)]"
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-(--success) to-(--success) flex items-center justify-center shadow-lg shadow-(--success-muted)"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 200 }}
@@ -1531,12 +1531,12 @@ export default function HomeClient() {
           {isSubscribed && (
             <div className="mb-6">
               {savingToCloud ? (
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[rgba(255,255,255,0.05)] text-sm">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-(--bg-elevated) text-sm">
                   <Loader2 className="w-4 h-4 animate-spin" />
                   Saving to cloud...
                 </span>
               ) : savedToCloud ? (
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[rgba(34,197,94,0.15)] text-[#22c55e] text-sm">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-(--success-muted) text-(--success) text-sm">
                   <CheckCircle2 className="w-4 h-4" />
                   Saved to cloud
                 </span>
@@ -1547,7 +1547,7 @@ export default function HomeClient() {
           {!isSubscribed && (
             <p className="text-xs text-[var(--text-muted)] mb-6">
               ⏰ This download link expires in 24 hours.{" "}
-              <Link href="/pricing" className="text-[#f97316] hover:underline">Subscribe</Link> to keep forever.
+              <Link href="/pricing" className="text-(--accent-primary) hover:underline">Subscribe</Link> to keep forever.
             </p>
           )}
 
@@ -1584,7 +1584,7 @@ export default function HomeClient() {
                     setShowVideoGenerator(true);
                   });
                 }}
-                className="px-8 py-4 rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                className="px-8 py-4 rounded-xl bg-gradient-to-r from-(--accent-tertiary) to-(--accent-secondary) text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
                 <Video className="w-5 h-5" />
                 Generate Video
@@ -1592,7 +1592,7 @@ export default function HomeClient() {
             </div>
             <button
               onClick={resetSession}
-              className="px-8 py-4 rounded-xl border border-[rgba(255,255,255,0.15)] hover:border-[#f97316] hover:bg-[rgba(249,115,22,0.1)] transition-all flex items-center justify-center gap-2 font-semibold"
+              className="px-8 py-4 rounded-xl border border-(--border-medium) hover:border-(--accent-primary) hover:bg-(--accent-muted) transition-all flex items-center justify-center gap-2 font-semibold"
             >
               <RefreshCw className="w-5 h-5" />
               Master Another
@@ -1602,7 +1602,7 @@ export default function HomeClient() {
       ) : isFailed ? (
         /* Failed View */
         <div className="glass-card p-10 md:p-16 text-center">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[rgba(239,68,68,0.15)] flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-(--error-muted) flex items-center justify-center">
             <AlertCircle className="w-10 h-10 text-[var(--error)]" />
           </div>
           <h2 className="text-2xl md:text-3xl font-bold mb-3">Mastering Failed</h2>

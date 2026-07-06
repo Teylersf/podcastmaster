@@ -120,7 +120,7 @@ function Step({ number, title, children }: { number: number; title: string; chil
 // Pro tip component
 function ProTip({ children }: { children: React.ReactNode }) {
   return (
-    <div className="p-4 rounded-xl bg-[rgba(234,179,8,0.1)] border border-[rgba(234,179,8,0.2)] my-4">
+    <div className="p-4 rounded-xl bg-(--warning-muted) border border-(--warning)/40 my-4">
       <div className="flex gap-3">
         <Lightbulb className="w-5 h-5 text-(--warning) shrink-0 mt-0.5" />
         <div className="text-sm text-(--text-secondary)">{children}</div>
@@ -132,7 +132,7 @@ function ProTip({ children }: { children: React.ReactNode }) {
 // Warning component
 function Warning({ children }: { children: React.ReactNode }) {
   return (
-    <div className="p-4 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] my-4">
+    <div className="p-4 rounded-xl bg-(--error-muted) border border-(--error)/40 my-4">
       <div className="flex gap-3">
         <AlertTriangle className="w-5 h-5 text-(--error) shrink-0 mt-0.5" />
         <div className="text-sm text-(--text-secondary)">{children}</div>
@@ -364,7 +364,7 @@ export default function HowToMasterPodcastAudio() {
                   to detail, and respect for your audience. It builds trust and credibility with your listeners.
                 </p>
 
-                <div className="p-6 rounded-xl bg-(--success-muted) border border-[rgba(34,197,94,0.2)] mt-8">
+                <div className="p-6 rounded-xl bg-(--success-muted) border border-(--success)/40 mt-8">
                   <h4 className="font-semibold text-(--success) mb-3 flex items-center gap-2">
                     <Zap className="w-5 h-5" />
                     The Good News

@@ -108,9 +108,9 @@ function getCountdownColor(expiresAt: string): string {
   const diff = expiry.getTime() - now.getTime();
   const hoursLeft = diff / (1000 * 60 * 60);
   
-  if (hoursLeft <= 2) return "text-[#ef4444]";
-  if (hoursLeft <= 6) return "text-[#eab308]";
-  return "text-[#22c55e]";
+  if (hoursLeft <= 2) return "text-(--error)";
+  if (hoursLeft <= 6) return "text-(--warning)";
+  return "text-(--success)";
 }
 
 export default function DashboardPage() {
@@ -360,7 +360,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full border-2 border-[#f97316] border-t-transparent animate-spin" />
+        <div className="w-10 h-10 rounded-full border-2 border-(--accent-primary) border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -420,16 +420,16 @@ export default function DashboardPage() {
           <AnimatePresence>
             {showSuccessToast && (
               <motion.div
-                className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[rgba(34,197,94,0.15)] backdrop-blur-xl border border-[rgba(34,197,94,0.3)] flex items-center gap-3"
+                className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-(--success-muted) backdrop-blur-xl border border-(--success)/50 flex items-center gap-3"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-(--success) to-(--success) flex items-center justify-center">
                   <Check className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#22c55e]">Subscription Activated!</p>
+                  <p className="font-semibold text-(--success)">Subscription Activated!</p>
                   <p className="text-sm text-(--text-secondary)">Welcome to Unlimited Mastering</p>
                 </div>
                 <button onClick={() => setShowSuccessToast(false)} className="ml-4 text-(--text-muted) hover:text-foreground">
@@ -442,16 +442,16 @@ export default function DashboardPage() {
           <AnimatePresence>
             {showHqSuccessToast && (
               <motion.div
-                className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-[rgba(34,197,94,0.15)] backdrop-blur-xl border border-[rgba(34,197,94,0.3)] flex items-center gap-3"
+                className="fixed top-6 right-6 z-50 p-4 rounded-2xl bg-(--success-muted) backdrop-blur-xl border border-(--success)/50 flex items-center gap-3"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#22c55e] to-[#16a34a] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-(--success) to-(--success) flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-[#22c55e]">HQ Export Unlocked!</p>
+                  <p className="font-semibold text-(--success)">HQ Export Unlocked!</p>
                   <p className="text-sm text-(--text-secondary)">You have 1 high-quality 24-bit export credit</p>
                 </div>
                 <button onClick={() => setShowHqSuccessToast(false)} className="ml-4 text-(--text-muted) hover:text-foreground">
@@ -487,8 +487,8 @@ export default function DashboardPage() {
                     <X className="w-5 h-5" />
                   </button>
                   
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[rgba(239,68,68,0.15)] flex items-center justify-center">
-                    <Trash2 className="w-8 h-8 text-[#ef4444]" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-(--error-muted) flex items-center justify-center">
+                    <Trash2 className="w-8 h-8 text-(--error)" />
                   </div>
                   
                   <h3 className="text-xl font-bold mb-2 text-center">Delete File?</h3>
@@ -498,21 +498,21 @@ export default function DashboardPage() {
                   <p className="text-(--text-muted) text-xs mb-4 text-center font-mono truncate px-4">
                     {fileToDelete.fileName}
                   </p>
-                  <p className="text-[#ef4444] text-xs mb-6 text-center">
+                  <p className="text-(--error) text-xs mb-6 text-center">
                     This action cannot be undone.
                   </p>
                   
                   <div className="flex gap-3">
                     <button
                       onClick={closeDeleteModal}
-                      className="flex-1 px-4 py-3 rounded-xl border border-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.3)] transition-colors font-medium"
+                      className="flex-1 px-4 py-3 rounded-xl border border-(--border-medium) hover:border-(--border-hover) transition-colors font-medium"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={confirmDeleteFile}
                       disabled={deletingFileId === fileToDelete.id}
-                      className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-[#ef4444] to-[#dc2626] font-semibold transition-colors flex items-center justify-center gap-2 text-white"
+                      className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-(--error) to-(--error) font-semibold transition-colors flex items-center justify-center gap-2 text-white"
                     >
                       {deletingFileId === fileToDelete.id ? (
                         <Loader2 className="w-5 h-5 animate-spin" />
@@ -546,7 +546,7 @@ export default function DashboardPage() {
                 <ThemeSelector />
                 <button
                   onClick={() => user.signOut()}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-(--text-secondary) hover:text-foreground hover:bg-[rgba(255,255,255,0.05)] transition-all text-sm font-medium"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-(--text-secondary) hover:text-foreground hover:bg-(--bg-elevated) transition-all text-sm font-medium"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">Sign Out</span>
@@ -555,11 +555,11 @@ export default function DashboardPage() {
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center shadow-lg shadow-[rgba(249,115,22,0.3)]">
+              <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
                 <Headphones className="w-7 h-7 md:w-8 md:h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#f97316] to-[#3b82f6] bg-clip-text text-transparent">
+                <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) bg-clip-text text-transparent">
                   Dashboard
                 </h1>
                 <p className="text-(--text-secondary) text-sm truncate max-w-[200px] sm:max-w-none">{user.primaryEmail}</p>
@@ -575,7 +575,7 @@ export default function DashboardPage() {
             transition={{ delay: 0.1 }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center shadow-lg shadow-[rgba(249,115,22,0.2)]">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
                 <Music2 className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -598,10 +598,10 @@ export default function DashboardPage() {
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                   isSubscribed 
-                    ? "bg-gradient-to-br from-[rgba(234,179,8,0.2)] to-[rgba(234,179,8,0.1)]" 
-                    : "bg-[rgba(255,255,255,0.05)]"
+                    ? "bg-gradient-to-br from-(--warning-muted) to-(--warning-muted)" 
+                    : "bg-(--bg-elevated)"
                 }`}>
-                  <Crown className={`w-6 h-6 ${isSubscribed ? "text-[#eab308]" : "text-(--text-muted)"}`} />
+                  <Crown className={`w-6 h-6 ${isSubscribed ? "text-(--warning)" : "text-(--text-muted)"}`} />
                 </div>
                 <div>
                   <h2 className="font-bold text-lg">{isSubscribed ? "Unlimited Mastering" : "Free Plan"}</h2>
@@ -620,7 +620,7 @@ export default function DashboardPage() {
                 <button
                   onClick={handleManageSubscription}
                   disabled={portalLoading}
-                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-[rgba(255,255,255,0.15)] hover:border-[#f97316] hover:bg-[rgba(249,115,22,0.1)] transition-all font-medium"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-(--border-medium) hover:border-(--accent-primary) hover:bg-(--accent-muted) transition-all font-medium"
                 >
                   {portalLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -654,9 +654,9 @@ export default function DashboardPage() {
                   { icon: HardDrive, text: "24-bit HQ Exports" },
                   { icon: Check, text: "5GB Cloud Storage" },
                 ].map((feature) => (
-                  <div key={feature.text} className="p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
+                  <div key={feature.text} className="p-4 rounded-xl bg-(--bg-elevated) border border-(--border-subtle)">
                     <div className="flex items-center gap-2">
-                      <feature.icon className="w-4 h-4 text-[#22c55e]" />
+                      <feature.icon className="w-4 h-4 text-(--success)" />
                       <span className="text-sm font-medium">{feature.text}</span>
                     </div>
                   </div>
@@ -664,7 +664,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
+                <div className="p-4 rounded-xl bg-(--bg-elevated) border border-(--border-subtle)">
                   <p className="text-sm text-(--text-secondary) mb-3">Your free plan includes:</p>
                   <div className="flex flex-wrap gap-4 text-sm">
                     <span className="flex items-center gap-2">
@@ -683,14 +683,14 @@ export default function DashboardPage() {
                 </div>
 
                 {/* HQ Credits */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-[rgba(249,115,22,0.1)] to-[rgba(59,130,246,0.1)] border border-[rgba(249,115,22,0.2)]">
+                <div className="p-4 rounded-xl bg-gradient-to-r from-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-[#f97316]" />
+                        <Sparkles className="w-4 h-4 text-(--accent-primary)" />
                         <p className="font-semibold">24-bit HQ Export</p>
                         {hqCredits > 0 && (
-                          <span className="text-xs bg-[rgba(34,197,94,0.15)] text-[#22c55e] px-2 py-0.5 rounded-full">
+                          <span className="text-xs bg-(--success-muted) text-(--success) px-2 py-0.5 rounded-full">
                             {hqCredits} credit{hqCredits !== 1 ? "s" : ""}
                           </span>
                         )}
@@ -706,7 +706,7 @@ export default function DashboardPage() {
                       <button
                         onClick={handleHqPurchase}
                         disabled={hqCheckoutLoading}
-                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#f97316] to-[#ea580c] text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-[rgba(249,115,22,0.3)]"
+                        className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) text-white text-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-(--accent-muted)"
                       >
                         {hqCheckoutLoading ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -739,7 +739,7 @@ export default function DashboardPage() {
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
                 <h2 className="font-bold text-lg flex items-center gap-2">
-                  <HardDrive className="w-5 h-5 text-[#f97316]" />
+                  <HardDrive className="w-5 h-5 text-(--accent-primary)" />
                   Your Files
                 </h2>
                 <span className="text-sm text-(--text-secondary)">
@@ -749,9 +749,9 @@ export default function DashboardPage() {
 
               {/* Storage Bar */}
               <div className="mb-6">
-                <div className="h-2 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
+                <div className="h-2 bg-(--bg-elevated) rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-[#f97316] to-[#3b82f6] rounded-full transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary) rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(storagePercentage, 100)}%` }}
                   />
                 </div>
@@ -772,11 +772,11 @@ export default function DashboardPage() {
                   {files.map((file) => (
                     <div
                       key={file.id}
-                      className="flex items-center justify-between gap-3 p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(249,115,22,0.3)] transition-all"
+                      className="flex items-center justify-between gap-3 p-4 rounded-xl bg-(--bg-elevated) border border-(--border-subtle) hover:border-(--accent-primary)/50 transition-all"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[rgba(249,115,22,0.2)] to-[rgba(59,130,246,0.2)] flex items-center justify-center shrink-0">
-                          <FileAudio className="w-5 h-5 text-[#f97316]" />
+                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-(--accent-muted) to-(--accent-muted) flex items-center justify-center shrink-0">
+                          <FileAudio className="w-5 h-5 text-(--accent-primary)" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium truncate">{file.fileName}</p>
@@ -791,7 +791,7 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2 shrink-0">
                         <button
                           onClick={() => openVideoGenerator(file.url, file.fileName)}
-                          className="p-2.5 rounded-xl hover:bg-[rgba(139,92,246,0.1)] text-(--text-secondary) hover:text-[#8b5cf6] transition-colors"
+                          className="p-2.5 rounded-xl hover:bg-(--accent-muted) text-(--text-secondary) hover:text-(--accent-tertiary) transition-colors"
                           title="Generate video"
                         >
                           <Video className="w-5 h-5" />
@@ -799,7 +799,7 @@ export default function DashboardPage() {
                         <button
                           onClick={() => handleDownload(file.url, file.fileName, file.id)}
                           disabled={downloadingFileId === file.id}
-                          className="p-2.5 rounded-xl hover:bg-[rgba(249,115,22,0.1)] text-(--text-secondary) hover:text-[#f97316] transition-colors disabled:opacity-50"
+                          className="p-2.5 rounded-xl hover:bg-(--accent-muted) text-(--text-secondary) hover:text-(--accent-primary) transition-colors disabled:opacity-50"
                           title="Download file"
                         >
                           {downloadingFileId === file.id ? (
@@ -811,7 +811,7 @@ export default function DashboardPage() {
                         <button
                           onClick={() => openDeleteModal(file)}
                           disabled={deletingFileId === file.id}
-                          className="p-2.5 rounded-xl hover:bg-[rgba(239,68,68,0.1)] text-(--text-secondary) hover:text-[#ef4444] transition-colors"
+                          className="p-2.5 rounded-xl hover:bg-(--error-muted) text-(--text-secondary) hover:text-(--error) transition-colors"
                           title="Delete file"
                         >
                           {deletingFileId === file.id ? (
@@ -838,7 +838,7 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between gap-2 mb-6">
                 <h2 className="font-bold text-lg flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-[#f97316]" />
+                  <Clock className="w-5 h-5 text-(--accent-primary)" />
                   Recent Files
                 </h2>
                 <span className="text-xs text-(--text-muted) flex items-center gap-1">
@@ -858,11 +858,11 @@ export default function DashboardPage() {
                   {freeUserFiles.map((file) => (
                     <div
                       key={file.id}
-                      className="flex items-center justify-between gap-3 p-4 rounded-xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(249,115,22,0.3)] transition-all"
+                      className="flex items-center justify-between gap-3 p-4 rounded-xl bg-(--bg-elevated) border border-(--border-subtle) hover:border-(--accent-primary)/50 transition-all"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[rgba(249,115,22,0.2)] to-[rgba(59,130,246,0.2)] flex items-center justify-center shrink-0">
-                          <FileAudio className="w-5 h-5 text-[#f97316]" />
+                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-(--accent-muted) to-(--accent-muted) flex items-center justify-center shrink-0">
+                          <FileAudio className="w-5 h-5 text-(--accent-primary)" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium truncate">{file.fileName}</p>
@@ -886,7 +886,7 @@ export default function DashboardPage() {
                               `free-${file.id}`
                             )}
                             disabled={downloadingFileId === `free-${file.id}`}
-                            className="p-2.5 rounded-xl hover:bg-[rgba(249,115,22,0.1)] text-(--text-secondary) hover:text-[#f97316] transition-colors disabled:opacity-50"
+                            className="p-2.5 rounded-xl hover:bg-(--accent-muted) text-(--text-secondary) hover:text-(--accent-primary) transition-colors disabled:opacity-50"
                             title="Download file"
                           >
                             {downloadingFileId === `free-${file.id}` ? (
@@ -916,8 +916,8 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
             >
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[rgba(234,179,8,0.2)] to-[rgba(234,179,8,0.1)] flex items-center justify-center">
-                <Crown className="w-8 h-8 text-[#eab308]" />
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-(--warning-muted) to-(--warning-muted) flex items-center justify-center">
+                <Crown className="w-8 h-8 text-(--warning)" />
               </div>
               <h3 className="text-xl font-bold mb-2">Unlock Unlimited</h3>
               <p className="text-(--text-secondary) text-sm mb-6 max-w-md mx-auto">

@@ -200,10 +200,10 @@ function MasteringToolSkeleton() {
     <div className="animate-pulse">
       <div className="glass-card p-6 mb-6">
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="h-48 rounded-xl bg-[rgba(255,255,255,0.05)]" />
-          <div className="h-48 rounded-xl bg-[rgba(255,255,255,0.05)]" />
+          <div className="h-48 rounded-xl bg-(--bg-elevated)" />
+          <div className="h-48 rounded-xl bg-(--bg-elevated)" />
         </div>
-        <div className="mt-6 h-14 rounded-xl bg-[rgba(255,255,255,0.1)] w-full" />
+        <div className="mt-6 h-14 rounded-xl bg-(--bg-elevated) w-full" />
       </div>
     </div>
   );
@@ -212,13 +212,13 @@ function MasteringToolSkeleton() {
 function MusicHero() {
   return (
     <header className="text-center mb-10 md:mb-14">
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(244,63,157,0.15)] border border-[rgba(244,63,157,0.3)] text-xs font-semibold uppercase tracking-wider text-[#f43f9d] mb-6">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-(--accent-muted) border border-(--accent-primary)/50 text-xs font-semibold uppercase tracking-wider text-(--accent-primary) mb-6">
         <Sparkles className="w-3.5 h-3.5" />
         New — Audio · Music · Song · Album · Track Mastering
       </div>
 
       <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-4">
-        <span className="bg-gradient-to-r from-[#f43f9d] via-[#fb923c] to-[#38bdf8] bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-(--accent-primary) via-(--accent-secondary) to-(--accent-tertiary) bg-clip-text text-transparent">
           Free AI Music Mastering
         </span>
       </h1>
@@ -239,9 +239,9 @@ function MusicHero() {
         ].map((p) => (
           <div
             key={p.text}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] text-sm text-[var(--text-secondary)]"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-(--bg-elevated) border border-(--border-medium) text-sm text-[var(--text-secondary)]"
           >
-            <p.icon className="w-4 h-4 text-[#f43f9d]" />
+            <p.icon className="w-4 h-4 text-(--accent-primary)" />
             {p.text}
           </div>
         ))}
@@ -315,7 +315,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
             },
           ].map((item) => (
             <div key={item.title} className="glass-card p-5">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f43f9d] to-[#fb923c] flex items-center justify-center mb-4 shadow-lg shadow-[rgba(244,63,157,0.25)]">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-secondary) flex items-center justify-center mb-4 shadow-lg shadow-(--accent-muted)">
                 <item.icon className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-bold mb-1">{item.title}</h3>
@@ -356,7 +356,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
             },
           ].map((s) => (
             <div key={s.step} className="glass-card p-6">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#f43f9d] to-[#fb923c] flex items-center justify-center mb-5 shadow-lg">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-secondary) flex items-center justify-center mb-5 shadow-lg">
                 <s.icon className="w-7 h-7 text-white" />
               </div>
               <p className="text-xs text-[var(--text-muted)] font-mono mb-2">
@@ -391,7 +391,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
             { label: "Loudness targets", note: "Hit -14 LUFS for Spotify, -16 for Apple, or -12 for broadcast. Iterative gain converges within 0.3 dB of the target." },
           ].map((b) => (
             <div key={b.label} className="flex gap-3">
-              <CheckCircle2 className="w-5 h-5 text-[#22c55e] shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-sm">{b.label}</p>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">{b.note}</p>
@@ -410,9 +410,9 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
           {FAQ_ITEMS.map((f) => (
             <details
               key={f.q}
-              className="border-b border-[rgba(255,255,255,0.08)] pb-4 last:border-0"
+              className="border-b border-(--border-subtle) pb-4 last:border-0"
             >
-              <summary className="cursor-pointer font-semibold text-[var(--text-primary)] hover:text-[#f43f9d] transition-colors">
+              <summary className="cursor-pointer font-semibold text-[var(--text-primary)] hover:text-(--accent-primary) transition-colors">
                 {f.q}
               </summary>
               <p className="mt-3 text-sm text-[var(--text-secondary)] leading-relaxed">
@@ -427,10 +427,10 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
           the podcast domain. On freemusicmaster.com it would be visually
           off-brand to surface the podcast tool that prominently. */}
       {!isMusicHost && (
-        <section className="mt-12 p-6 rounded-2xl bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.08)]">
+        <section className="mt-12 p-6 rounded-2xl bg-(--bg-elevated) border border-(--border-subtle)">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#f97316] to-[#3b82f6] flex items-center justify-center shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shrink-0">
                 <Mic className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -442,7 +442,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
             </div>
             <Link
               href="/"
-              className="px-5 py-2.5 rounded-xl bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.15)] hover:border-[rgba(255,255,255,0.3)] text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap"
+              className="px-5 py-2.5 rounded-xl bg-(--bg-elevated) border border-(--border-medium) hover:border-(--border-hover) text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap"
             >
               Podcast mastering
               <ArrowRight className="w-4 h-4" />
@@ -452,7 +452,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
       )}
 
       {/* Footer */}
-      <footer className="mt-16 pt-8 border-t border-[rgba(255,255,255,0.08)] text-center">
+      <footer className="mt-16 pt-8 border-t border-(--border-subtle) text-center">
         <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm mb-6">
           <a
             href={podcastHomeHref}
@@ -460,21 +460,21 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
           >
             Podcast Mastering
           </a>
-          <span className="text-[rgba(255,255,255,0.2)]">|</span>
+          <span className="text-(--border-medium)">|</span>
           <Link
             href="/pricing"
             className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             Pricing
           </Link>
-          <span className="text-[rgba(255,255,255,0.2)]">|</span>
+          <span className="text-(--border-medium)">|</span>
           <Link
             href="/terms"
             className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
           >
             Terms
           </Link>
-          <span className="text-[rgba(255,255,255,0.2)]">|</span>
+          <span className="text-(--border-medium)">|</span>
           <a
             href="https://github.com/Teylersf/podcastmaster"
             target="_blank"
@@ -484,7 +484,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
             <Github className="w-3 h-3" />
             Open Source
           </a>
-          <span className="text-[rgba(255,255,255,0.2)]">|</span>
+          <span className="text-(--border-medium)">|</span>
           <a
             href="mailto:support@freepodcastmastering.com"
             className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors flex items-center gap-1"
@@ -493,7 +493,7 @@ function StaticSections({ isMusicHost }: { isMusicHost: boolean }) {
             Support
           </a>
         </div>
-        <p className="font-bold text-lg bg-gradient-to-r from-[#f43f9d] via-[#fb923c] to-[#38bdf8] bg-clip-text text-transparent mb-2">
+        <p className="font-bold text-lg bg-gradient-to-r from-(--accent-primary) via-(--accent-secondary) to-(--accent-tertiary) bg-clip-text text-transparent mb-2">
           {isMusicHost ? "freemusicmaster.com" : "freepodcastmastering.com"}
         </p>
         <p className="text-xs text-[var(--text-muted)]">

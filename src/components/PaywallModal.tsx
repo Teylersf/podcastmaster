@@ -90,7 +90,7 @@ export default function PaywallModal({
           >
             <div className="flex items-center justify-between px-6 pt-6 pb-3">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] flex items-center justify-center">
+                <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-secondary) flex items-center justify-center">
                   <Sparkles className="w-6 h-6 text-[var(--bg-primary)]" />
                 </div>
                 <h2 className="font-bold text-lg">Master another podcast</h2>
@@ -128,7 +128,7 @@ export default function PaywallModal({
               </ul>
 
               {err && (
-                <div className="mb-4 p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] text-sm text-[var(--error)] flex items-start gap-2">
+                <div className="mb-4 p-3 rounded-lg bg-(--error-muted) border border-(--error)/30 text-sm text-[var(--error)] flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                   <span>{err}</span>
                 </div>

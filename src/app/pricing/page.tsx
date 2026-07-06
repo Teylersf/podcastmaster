@@ -231,7 +231,7 @@ export default function PricingPage() {
             <button
               onClick={handleSubscribe}
               disabled={checkoutLoading}
-              className="w-full mb-8 px-6 py-4 rounded-xl bg-linear-to-r from-[#c9a066] to-[#b8956a] hover:from-[#d4ad74] hover:to-[#c9a066] text-[#1a1612] font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-[rgba(201,160,102,0.2)]"
+              className="w-full mb-8 px-6 py-4 rounded-xl bg-linear-to-r from-(--accent-primary) to-(--accent-tertiary) hover:from-(--accent-hover) hover:to-(--accent-primary) text-(--bg-primary) font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-(--accent-muted)"
             >
               {checkoutLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -306,10 +306,10 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
         >
-          <div className="glass-card p-6 sm:p-8 bg-linear-to-r from-[rgba(224,122,76,0.05)] to-[rgba(196,105,61,0.05)] border border-[rgba(224,122,76,0.2)]">
+          <div className="glass-card p-6 sm:p-8 bg-linear-to-r from-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
               <div className="flex items-center gap-4 text-center sm:text-left">
-                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-[#e07a4c] to-[#c4693d] flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-linear-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shrink-0">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -325,7 +325,7 @@ export default function PricingPage() {
               <button
                 onClick={handleHqPurchase}
                 disabled={hqCheckoutLoading}
-                className="px-6 py-3 rounded-xl bg-linear-to-r from-[#e07a4c] to-[#c4693d] text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-[rgba(224,122,76,0.2)]"
+                className="px-6 py-3 rounded-xl bg-linear-to-r from-(--accent-primary) to-(--accent-tertiary) text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shadow-lg shadow-(--accent-muted)"
               >
                 {hqCheckoutLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />

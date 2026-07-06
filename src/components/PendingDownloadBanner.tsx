@@ -45,10 +45,10 @@ export default function PendingDownloadBanner({ activeJobId }: Props) {
   };
 
   return (
-    <div className="mb-6 rounded-2xl border border-[rgba(34,197,94,0.35)] bg-[rgba(34,197,94,0.08)] p-5">
+    <div className="mb-6 rounded-2xl border border-(--success)/50 bg-(--success-muted) p-5">
       <div className="flex items-start gap-4">
-        <div className="shrink-0 w-11 h-11 rounded-full bg-[rgba(34,197,94,0.15)] flex items-center justify-center">
-          <CheckCircle2 className="w-6 h-6 text-[#22c55e]" />
+        <div className="shrink-0 w-11 h-11 rounded-full bg-(--success-muted) flex items-center justify-center">
+          <CheckCircle2 className="w-6 h-6 text-(--success)" />
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-bold text-lg">Your mastered file is ready</p>

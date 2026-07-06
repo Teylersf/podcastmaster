@@ -483,27 +483,27 @@ export default function VideoGenerator({
       <div className="absolute inset-0 bg-black/85 backdrop-blur-xl" onClick={!isExporting ? onClose : undefined} />
 
       <motion.div
-        className="relative z-10 w-full max-w-6xl max-h-[92vh] bg-[#0c0c0c] rounded-3xl border border-[rgba(255,255,255,0.08)] overflow-hidden flex flex-col shadow-2xl"
+        className="relative z-10 w-full max-w-6xl max-h-[92vh] bg-(--bg-card) rounded-3xl border border-(--border-subtle) overflow-hidden flex flex-col shadow-2xl"
         initial={{ scale: 0.96, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.96, opacity: 0, y: 20 }}
         style={{ height: "auto", maxHeight: "92vh" }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-[rgba(255,255,255,0.06)] bg-gradient-to-r from-[rgba(249,115,22,0.05)] to-transparent">
+        <div className="flex items-center justify-between p-5 border-b border-(--border-subtle) bg-gradient-to-r from-[rgba(249,115,22,0.05)] to-transparent">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f97316] to-[#ea580c] flex items-center justify-center shadow-lg shadow-[rgba(249,115,22,0.3)]">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-(--accent-primary) to-(--accent-tertiary) flex items-center justify-center shadow-lg shadow-(--accent-muted)">
               <Film className="w-6 h-6 text-white" />
             </div>
             <div>
               <h2 className="font-bold text-xl">Video Studio</h2>
-              <p className="text-sm text-[rgba(255,255,255,0.45)]">
+              <p className="text-sm text-(--text-muted)">
                 Professional video generation on your device
               </p>
             </div>
           </div>
           {!isExporting && (
-            <button onClick={onClose} className="p-2.5 hover:bg-[rgba(255,255,255,0.08)] rounded-xl transition-colors">
+            <button onClick={onClose} className="p-2.5 hover:bg-(--bg-elevated) rounded-xl transition-colors">
               <X className="w-5 h-5" />
             </button>
           )}
@@ -525,20 +525,20 @@ export default function VideoGenerator({
                 className="max-w-md w-full mx-6"
               >
                 <div className="text-center mb-8">
-                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[rgba(139,92,246,0.15)] flex items-center justify-center border border-[rgba(139,92,246,0.3)]">
-                    <Mail className="w-10 h-10 text-[#a78bfa]" />
+                  <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-(--accent-muted) flex items-center justify-center border border-(--accent-tertiary)/50">
+                    <Mail className="w-10 h-10 text-(--accent-tertiary)" />
                   </div>
                   <h3 className="text-2xl font-bold mb-2">Get Notified When Ready</h3>
-                  <p className="text-[rgba(255,255,255,0.5)] text-sm">
+                  <p className="text-(--text-muted) text-sm">
                     Video rendering can take {timeEstimate}. We&apos;ll email you the download link when it&apos;s done so you don&apos;t have to wait.
                   </p>
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)]">
-                    <Clock className="w-5 h-5 text-[#f97316]" />
+                  <div className="flex items-center gap-3 p-4 rounded-xl bg-(--bg-elevated) border border-(--border-medium)">
+                    <Clock className="w-5 h-5 text-(--accent-primary)" />
                     <div className="text-sm">
-                      <span className="text-[rgba(255,255,255,0.6)]">Estimated render time: </span>
+                      <span className="text-(--text-secondary)">Estimated render time: </span>
                       <span className="font-medium text-white">{timeEstimate}</span>
                     </div>
                   </div>
@@ -552,7 +552,7 @@ export default function VideoGenerator({
                         setEmailError(null);
                       }}
                       placeholder="your@email.com"
-                      className="flex-1 px-4 py-3 bg-[#161616] border border-[rgba(255,255,255,0.08)] rounded-xl text-sm focus:border-[#f97316] focus:outline-none"
+                      className="flex-1 px-4 py-3 bg-(--bg-elevated) border border-(--border-subtle) rounded-xl text-sm focus:border-(--accent-primary) focus:outline-none"
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && notificationEmail) {
                           startRender();
@@ -562,19 +562,19 @@ export default function VideoGenerator({
                     <button
                       onClick={startRender}
                       disabled={!notificationEmail || emailSubscribing}
-                      className="px-6 py-3 rounded-xl bg-[#f97316] text-white font-semibold text-sm disabled:opacity-50 whitespace-nowrap"
+                      className="px-6 py-3 rounded-xl bg-(--accent-primary) text-white font-semibold text-sm disabled:opacity-50 whitespace-nowrap"
                     >
                       {emailSubscribing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Start Render"}
                     </button>
                   </div>
                   
                   {emailError && (
-                    <p className="text-xs text-[#ef4444]">{emailError}</p>
+                    <p className="text-xs text-(--error)">{emailError}</p>
                   )}
 
                   <button
                     onClick={() => setShowEmailInput(false)}
-                    className="w-full py-3 text-sm text-[rgba(255,255,255,0.4)] hover:text-white transition-colors"
+                    className="w-full py-3 text-sm text-(--text-muted) hover:text-white transition-colors"
                   >
                     Cancel
                   </button>
@@ -590,17 +590,17 @@ export default function VideoGenerator({
             <motion.div 
               initial={{ scale: 0 }} 
               animate={{ scale: 1 }} 
-              className="w-24 h-24 rounded-full bg-[rgba(34,197,94,0.15)] flex items-center justify-center mb-8 border border-[rgba(34,197,94,0.3)]"
+              className="w-24 h-24 rounded-full bg-(--success-muted) flex items-center justify-center mb-8 border border-(--success)/50"
             >
-              <CheckCircle2 className="w-12 h-12 text-[#22c55e]" />
+              <CheckCircle2 className="w-12 h-12 text-(--success)" />
             </motion.div>
             <h3 className="text-3xl font-bold mb-3">Video Ready!</h3>
-            <p className="text-[rgba(255,255,255,0.5)] mb-8 text-center max-w-md">
+            <p className="text-(--text-muted) mb-8 text-center max-w-md">
               Your professional video has been generated with {settings.enableCaptions ? "AI captions" : "custom styling"}.
             </p>
             
             {emailSubscribed && (
-              <div className="flex items-center gap-2 mb-6 text-sm text-[#22c55e]">
+              <div className="flex items-center gap-2 mb-6 text-sm text-(--success)">
                 <Mail className="w-4 h-4" />
                 <span>We also sent a download link to your email</span>
               </div>
@@ -611,7 +611,7 @@ export default function VideoGenerator({
                 <Download className="w-5 h-5" />
                 Download MP4
               </button>
-              <button onClick={() => { setExportStatus("idle"); setExportedVideoUrl(null); setEmailSubscribed(false); }} className="px-6 py-4 rounded-xl border border-[rgba(255,255,255,0.15)] hover:border-[#f97316] transition-colors">
+              <button onClick={() => { setExportStatus("idle"); setExportedVideoUrl(null); setEmailSubscribed(false); }} className="px-6 py-4 rounded-xl border border-(--border-medium) hover:border-(--accent-primary) transition-colors">
                 Create Another
               </button>
             </div>
@@ -621,11 +621,11 @@ export default function VideoGenerator({
         {/* Error View */}
         {exportStatus === "error" && (
           <div className="flex-1 flex flex-col items-center justify-center p-12">
-            <div className="w-24 h-24 rounded-full bg-[rgba(239,68,68,0.15)] flex items-center justify-center mb-8 border border-[rgba(239,68,68,0.3)]">
-              <AlertCircle className="w-12 h-12 text-[#ef4444]" />
+            <div className="w-24 h-24 rounded-full bg-(--error-muted) flex items-center justify-center mb-8 border border-(--error)/50">
+              <AlertCircle className="w-12 h-12 text-(--error)" />
             </div>
             <h3 className="text-3xl font-bold mb-3">{transcriptionJobId ? "Transcription Failed" : "Export Failed"}</h3>
-            <p className="text-[rgba(255,255,255,0.5)] mb-8 text-center max-w-md">{errorMessage || "An unknown error occurred"}</p>
+            <p className="text-(--text-muted) mb-8 text-center max-w-md">{errorMessage || "An unknown error occurred"}</p>
             <div className="flex gap-4">
               <button 
                 onClick={() => {
@@ -641,7 +641,7 @@ export default function VideoGenerator({
               >
                 {transcriptionJobId ? "Back to Settings" : "Try Again"}
               </button>
-              <button onClick={onClose} className="px-6 py-3 rounded-xl border border-[rgba(255,255,255,0.15)]">Close</button>
+              <button onClick={onClose} className="px-6 py-3 rounded-xl border border-(--border-medium)">Close</button>
             </div>
           </div>
         )}
@@ -650,7 +650,7 @@ export default function VideoGenerator({
         {!showEmailInput && !["complete", "error"].includes(exportStatus) && (
           <>
             {/* Tabs */}
-            <div className="flex border-b border-[rgba(255,255,255,0.06)] px-4">
+            <div className="flex border-b border-(--border-subtle) px-4">
               {["preview", "settings"].map((tab) => (
                 <button
                   key={tab}
@@ -658,8 +658,8 @@ export default function VideoGenerator({
                   disabled={isExporting}
                   className={`px-6 py-4 text-sm font-medium transition-all flex items-center gap-2 capitalize ${
                     activeTab === tab
-                      ? "text-[#f97316] border-b-2 border-[#f97316]"
-                      : "text-[rgba(255,255,255,0.4)] hover:text-white"
+                      ? "text-(--accent-primary) border-b-2 border-(--accent-primary)"
+                      : "text-(--text-muted) hover:text-white"
                   }`}
                 >
                   {tab === "preview" ? <Play className="w-4 h-4" /> : <Settings className="w-4 h-4" />}
@@ -672,7 +672,7 @@ export default function VideoGenerator({
             <div className="flex-1 overflow-hidden">
               <div className="flex flex-col lg:flex-row h-full">
                 {/* Preview */}
-                <div className={`flex-1 p-8 flex items-center justify-center bg-[#050505] ${activeTab === "preview" ? "flex" : "hidden lg:flex"}`}>
+                <div className={`flex-1 p-8 flex items-center justify-center bg-(--bg-primary) ${activeTab === "preview" ? "flex" : "hidden lg:flex"}`}>
                   <div ref={playerContainerRef} className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-[rgba(255,255,255,0.1)]" style={{ width: playerWidth, height: playerHeight }}>
                     <Player
                       ref={playerRef}
@@ -690,12 +690,12 @@ export default function VideoGenerator({
                 </div>
 
                 {/* Settings Panel */}
-                <div className={`w-full lg:w-[420px] border-l border-[rgba(255,255,255,0.06)] bg-[#0f0f0f] overflow-y-auto max-h-[calc(92vh-140px)] ${activeTab === "settings" ? "block" : "hidden lg:block"}`}>
+                <div className={`w-full lg:w-[420px] border-l border-(--border-subtle) bg-(--bg-secondary) overflow-y-auto max-h-[calc(92vh-140px)] ${activeTab === "settings" ? "block" : "hidden lg:block"}`}>
                   <div className="p-5 space-y-6 pb-24">
                     
                     {/* Format */}
                     <div>
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider mb-3 block">Format</label>
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3 block">Format</label>
                       <div className="grid grid-cols-2 gap-2">
                         {[
                           { id: "16:9", icon: Monitor, label: "YouTube" },
@@ -707,8 +707,8 @@ export default function VideoGenerator({
                             disabled={isExporting}
                             className={`p-3 rounded-xl border flex items-center justify-center gap-2 transition-all ${
                               settings.aspectRatio === fmt.id
-                                ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                                : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)]"
+                                ? "border-(--accent-primary) bg-(--accent-muted)"
+                                : "border-(--border-subtle) hover:border-(--border-medium)"
                             }`}
                           >
                             <fmt.icon className="w-4 h-4" />
@@ -720,7 +720,7 @@ export default function VideoGenerator({
 
                     {/* Templates */}
                     <div>
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider mb-3 block flex items-center gap-2">
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3 block flex items-center gap-2">
                         <LayoutGrid className="w-3.5 h-3.5" /> Visualization
                       </label>
                       <div className="grid grid-cols-5 gap-2">
@@ -731,8 +731,8 @@ export default function VideoGenerator({
                             disabled={isExporting}
                             className={`p-3 rounded-xl border text-center transition-all ${
                               settings.template === t.id
-                                ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                                : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.15)]"
+                                ? "border-(--accent-primary) bg-(--accent-muted)"
+                                : "border-(--border-subtle) hover:border-(--border-medium)"
                             }`}
                           >
                             <span className="text-xl block mb-1">{t.icon}</span>
@@ -744,7 +744,7 @@ export default function VideoGenerator({
 
                     {/* Text */}
                     <div>
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider mb-3 block flex items-center gap-2">
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3 block flex items-center gap-2">
                         <Type className="w-3.5 h-3.5" /> Text
                       </label>
                       <input
@@ -752,7 +752,7 @@ export default function VideoGenerator({
                         value={settings.title}
                         onChange={e => setSettings(s => ({ ...s, title: e.target.value }))}
                         disabled={isExporting}
-                        className="w-full px-4 py-3 bg-[#161616] border border-[rgba(255,255,255,0.08)] rounded-xl text-sm mb-2 focus:border-[#f97316] focus:outline-none"
+                        className="w-full px-4 py-3 bg-(--bg-elevated) border border-(--border-subtle) rounded-xl text-sm mb-2 focus:border-(--accent-primary) focus:outline-none"
                         placeholder="Video Title"
                       />
                       <input
@@ -760,15 +760,15 @@ export default function VideoGenerator({
                         value={settings.subtitle}
                         onChange={e => setSettings(s => ({ ...s, subtitle: e.target.value }))}
                         disabled={isExporting}
-                        className="w-full px-4 py-3 bg-[#161616] border border-[rgba(255,255,255,0.08)] rounded-xl text-sm focus:border-[#f97316] focus:outline-none"
+                        className="w-full px-4 py-3 bg-(--bg-elevated) border border-(--border-subtle) rounded-xl text-sm focus:border-(--accent-primary) focus:outline-none"
                         placeholder="Subtitle"
                       />
                     </div>
 
                     {/* AI Captions */}
-                    <div className="p-4 rounded-xl bg-gradient-to-r from-[rgba(139,92,246,0.1)] to-[rgba(59,130,246,0.1)] border border-[rgba(139,92,246,0.2)]">
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-[rgba(139,92,246,0.1)] to-[rgba(59,130,246,0.1)] border border-(--accent-tertiary)/40">
                         <div className="flex items-center gap-2 mb-3">
-                          <Sparkles className="w-4 h-4 text-[#a78bfa]" />
+                          <Sparkles className="w-4 h-4 text-(--accent-tertiary)" />
                           <span className="font-medium">AI Captions</span>
                         </div>
                         
@@ -778,12 +778,12 @@ export default function VideoGenerator({
                             <button
                               onClick={startTranscription}
                               disabled={isExporting}
-                              className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#8b5cf6] to-[#6366f1] text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                              className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-(--accent-tertiary) to-(--accent-secondary) text-white text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
                             >
                               Generate AI Captions
                             </button>
                             {audioDuration > 600 && (
-                              <p className="mt-2 text-xs text-[rgba(255,255,255,0.4)]">
+                              <p className="mt-2 text-xs text-(--text-muted)">
                                 ⏱️ Long audio ({Math.round(audioDuration / 60)} min). Transcription may take 5-15 minutes.
                               </p>
                             )}
@@ -792,13 +792,13 @@ export default function VideoGenerator({
                         
                         {/* Status messages */}
                         {exportStatus === "transcribing" && (
-                          <div className="mt-3 flex items-center gap-2 text-xs text-[#a78bfa]">
+                          <div className="mt-3 flex items-center gap-2 text-xs text-(--accent-tertiary)">
                             <Loader2 className="w-3 h-3 animate-spin" />
                             <span>{exportStage || "Generating captions... Please wait"}</span>
                           </div>
                         )}
                         {captions.length > 0 && (
-                          <div className="mt-3 flex items-center gap-2 text-xs text-[#4ade80]">
+                          <div className="mt-3 flex items-center gap-2 text-xs text-(--success)">
                             <CheckCircle2 className="w-3 h-3" />
                             <span>✓ {captions.length} captions ready</span>
                             <button 
@@ -807,7 +807,7 @@ export default function VideoGenerator({
                                 setTranscriptionJobId(null);
                                 setSettings(s => ({ ...s, enableCaptions: false }));
                               }}
-                              className="ml-auto text-[rgba(255,255,255,0.4)] hover:text-white"
+                              className="ml-auto text-(--text-muted) hover:text-white"
                             >
                               Remove
                             </button>
@@ -817,7 +817,7 @@ export default function VideoGenerator({
 
                     {/* Colors */}
                     <div>
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider mb-3 block flex items-center gap-2">
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3 block flex items-center gap-2">
                         <Palette className="w-3.5 h-3.5" /> Theme
                       </label>
                       <div className="grid grid-cols-6 gap-2">
@@ -837,7 +837,7 @@ export default function VideoGenerator({
 
                     {/* Accent */}
                     <div>
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider mb-3 block">Accent</label>
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3 block">Accent</label>
                       <div className="flex gap-2">
                         {["#f97316", "#3b82f6", "#22c55e", "#ef4444", "#a855f7", "#ec4899", "#ffffff"].map(c => (
                           <button
@@ -855,7 +855,7 @@ export default function VideoGenerator({
 
                     {/* Quality */}
                     <div>
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider mb-3 block flex items-center gap-2">
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider mb-3 block flex items-center gap-2">
                         <Zap className="w-3.5 h-3.5" /> Quality
                       </label>
                       <div className="grid grid-cols-3 gap-2">
@@ -866,8 +866,8 @@ export default function VideoGenerator({
                             disabled={isExporting}
                             className={`p-2.5 rounded-xl border text-xs transition-all ${
                               settings.quality === key
-                                ? "border-[#f97316] bg-[rgba(249,115,22,0.1)]"
-                                : "border-[rgba(255,255,255,0.08)]"
+                                ? "border-(--accent-primary) bg-(--accent-muted)"
+                                : "border-(--border-subtle)"
                             }`}
                           >
                             {settings_q.label}
@@ -878,18 +878,18 @@ export default function VideoGenerator({
 
                     {/* Images */}
                     <div className="space-y-3">
-                      <label className="text-xs font-semibold text-[rgba(255,255,255,0.4)] uppercase tracking-wider block flex items-center gap-2">
+                      <label className="text-xs font-semibold text-(--text-muted) uppercase tracking-wider block flex items-center gap-2">
                         <ImageIcon className="w-3.5 h-3.5" /> Images
                       </label>
                       
                       {/* Logo */}
                       <div className="flex items-center gap-2">
-                        <label className={`flex-1 px-3 py-2.5 bg-[#161616] border border-[rgba(255,255,255,0.08)] border-dashed rounded-lg text-xs text-center cursor-pointer ${isExporting ? "opacity-50" : ""}`}>
+                        <label className={`flex-1 px-3 py-2.5 bg-(--bg-elevated) border border-(--border-subtle) border-dashed rounded-lg text-xs text-center cursor-pointer ${isExporting ? "opacity-50" : ""}`}>
                           {settings.logoUrl ? "Change Logo" : "Add Logo"}
                           <input type="file" accept="image/*" onChange={e => handleFileUpload(e, "logo")} className="hidden" disabled={isExporting} />
                         </label>
                         {settings.logoUrl && (
-                          <button onClick={() => setSettings(s => ({ ...s, logoUrl: null }))} disabled={isExporting} className="p-2.5 hover:bg-[rgba(255,255,255,0.08)] rounded-lg">
+                          <button onClick={() => setSettings(s => ({ ...s, logoUrl: null }))} disabled={isExporting} className="p-2.5 hover:bg-(--bg-elevated) rounded-lg">
                             <X className="w-4 h-4" />
                           </button>
                         )}
@@ -897,12 +897,12 @@ export default function VideoGenerator({
 
                       {/* Background */}
                       <div className="flex items-center gap-2">
-                        <label className={`flex-1 px-3 py-2.5 bg-[#161616] border border-[rgba(255,255,255,0.08)] border-dashed rounded-lg text-xs text-center cursor-pointer ${isExporting ? "opacity-50" : ""}`}>
+                        <label className={`flex-1 px-3 py-2.5 bg-(--bg-elevated) border border-(--border-subtle) border-dashed rounded-lg text-xs text-center cursor-pointer ${isExporting ? "opacity-50" : ""}`}>
                           {settings.backgroundImageUrl ? "Change Background" : "Custom Background"}
                           <input type="file" accept="image/*" onChange={e => handleFileUpload(e, "background")} className="hidden" disabled={isExporting} />
                         </label>
                         {settings.backgroundImageUrl && (
-                          <button onClick={() => setSettings(s => ({ ...s, backgroundImageUrl: null }))} disabled={isExporting} className="p-2.5 hover:bg-[rgba(255,255,255,0.08)] rounded-lg">
+                          <button onClick={() => setSettings(s => ({ ...s, backgroundImageUrl: null }))} disabled={isExporting} className="p-2.5 hover:bg-(--bg-elevated) rounded-lg">
                             <X className="w-4 h-4" />
                           </button>
                         )}
@@ -911,22 +911,22 @@ export default function VideoGenerator({
 
                     {/* Toggles */}
                     <div className="space-y-2">
-                      <label className="flex items-center justify-between p-3.5 bg-[#161616] rounded-xl cursor-pointer">
+                      <label className="flex items-center justify-between p-3.5 bg-(--bg-elevated) rounded-xl cursor-pointer">
                         <span className="text-sm flex items-center gap-2"><Music className="w-4 h-4" /> Show Visualization</span>
                         <button
                           onClick={() => setSettings(s => ({ ...s, showWaveform: !s.showWaveform }))}
                           disabled={isExporting}
-                          className={`w-10 h-5 rounded-full transition-colors relative ${settings.showWaveform ? "bg-[#f97316]" : "bg-[#333]"}`}
+                          className={`w-10 h-5 rounded-full transition-colors relative ${settings.showWaveform ? "bg-(--accent-primary)" : "bg-(--bg-tertiary)"}`}
                         >
                           <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${settings.showWaveform ? "translate-x-5" : "translate-x-0.5"}`} />
                         </button>
                       </label>
-                      <label className="flex items-center justify-between p-3.5 bg-[#161616] rounded-xl cursor-pointer">
+                      <label className="flex items-center justify-between p-3.5 bg-(--bg-elevated) rounded-xl cursor-pointer">
                         <span className="text-sm">Progress Bar</span>
                         <button
                           onClick={() => setSettings(s => ({ ...s, showProgressBar: !s.showProgressBar }))}
                           disabled={isExporting}
-                          className={`w-10 h-5 rounded-full transition-colors relative ${settings.showProgressBar ? "bg-[#f97316]" : "bg-[#333]"}`}
+                          className={`w-10 h-5 rounded-full transition-colors relative ${settings.showProgressBar ? "bg-(--accent-primary)" : "bg-(--bg-tertiary)"}`}
                         >
                           <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${settings.showProgressBar ? "translate-x-5" : "translate-x-0.5"}`} />
                         </button>
@@ -938,8 +938,8 @@ export default function VideoGenerator({
             </div>
 
             {/* Footer */}
-            <div className="p-5 border-t border-[rgba(255,255,255,0.06)] flex items-center justify-between bg-[#0a0a0a]">
-              <div className="text-sm text-[rgba(255,255,255,0.4)]">
+            <div className="p-5 border-t border-(--border-subtle) flex items-center justify-between bg-(--bg-secondary)">
+              <div className="text-sm text-(--text-muted)">
                 {Math.round(audioDuration)}s • {fps}fps • {settings.aspectRatio}
               </div>
               <button onClick={handleExport} disabled={isExporting} className="btn-primary px-8">
@@ -973,35 +973,35 @@ export default function VideoGenerator({
                 <div className="w-28 h-28 mx-auto mb-8 relative">
                   {/* Outer spinning ring */}
                   <motion.div
-                    className="absolute inset-0 rounded-full border-4 border-[rgba(249,115,22,0.2)] border-t-[#f97316]"
+                    className="absolute inset-0 rounded-full border-4 border-(--accent-primary)/30 border-t-(--accent-primary)"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                   />
                   {/* Inner spinning ring */}
                   <motion.div
-                    className="absolute inset-3 rounded-full border-4 border-[rgba(139,92,246,0.2)] border-b-[#8b5cf6]"
+                    className="absolute inset-3 rounded-full border-4 border-(--accent-tertiary)/40 border-b-[#8b5cf6]"
                     animate={{ rotate: -360 }}
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                   />
                   {/* Center icon */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     {exportStatus === "transcribing" ? (
-                      <Sparkles className="w-10 h-10 text-[#a78bfa]" />
+                      <Sparkles className="w-10 h-10 text-(--accent-tertiary)" />
                     ) : exportStatus === "muxing" ? (
-                      <Wand2 className="w-10 h-10 text-[#22c55e]" />
+                      <Wand2 className="w-10 h-10 text-(--success)" />
                     ) : (
-                      <Video className="w-10 h-10 text-[#f97316]" />
+                      <Video className="w-10 h-10 text-(--accent-primary)" />
                     )}
                   </div>
                 </div>
                 
                 {/* Working Badge */}
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[rgba(249,115,22,0.15)] border border-[rgba(249,115,22,0.3)] mb-4">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-(--accent-muted) border border-(--accent-primary)/50 mb-4">
                   <span className="relative flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f97316] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#f97316]"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-(--accent-primary) opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-(--accent-primary)"></span>
                   </span>
-                  <span className="text-[#f97316] font-semibold text-sm">Working</span>
+                  <span className="text-(--accent-primary) font-semibold text-sm">Working</span>
                 </div>
                 
                 {/* Stage title */}
@@ -1012,7 +1012,7 @@ export default function VideoGenerator({
                 </h3>
                 
                 {/* Detailed stage message */}
-                <p className="text-[rgba(255,255,255,0.6)] mb-6 text-sm leading-relaxed">
+                <p className="text-(--text-secondary) mb-6 text-sm leading-relaxed">
                   {exportStatus === "transcribing" && exportStage.includes("Loading AI model") ? (
                     <>
                       🧠 <strong>Loading AI model...</strong><br/>
@@ -1034,12 +1034,12 @@ export default function VideoGenerator({
 
                 {/* Time Warning for long videos - always show for video rendering */}
                 {exportStatus === "recording" && (
-                  <div className="mb-6 p-4 rounded-xl bg-[rgba(34,197,94,0.1)] border border-[rgba(34,197,94,0.2)]">
+                  <div className="mb-6 p-4 rounded-xl bg-(--success-muted) border border-(--success)/40">
                     <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-[#22c55e] shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
                       <div className="text-left">
-                        <p className="text-sm text-[#22c55e] font-medium mb-1">You can close this window!</p>
-                        <p className="text-xs text-[rgba(255,255,255,0.5)]">
+                        <p className="text-sm text-(--success) font-medium mb-1">You can close this window!</p>
+                        <p className="text-xs text-(--text-muted)">
                           We&apos;re rendering your video on our servers. You can close this window anytime and we&apos;ll email you the download link when it&apos;s ready.
                         </p>
                       </div>
@@ -1048,12 +1048,12 @@ export default function VideoGenerator({
                 )}
                 
                 {/* Progress bar */}
-                <div className="w-72 h-2 bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden mx-auto">
+                <div className="w-72 h-2 bg-(--bg-elevated) rounded-full overflow-hidden mx-auto">
                   <motion.div
                     className={`h-full rounded-full ${
-                      exportStatus === "transcribing" ? "bg-gradient-to-r from-[#a78bfa] to-[#7c3aed]" :
-                      exportStatus === "muxing" ? "bg-gradient-to-r from-[#22c55e] to-[#16a34a]" :
-                      "bg-gradient-to-r from-[#f97316] to-[#ea580c]"
+                      exportStatus === "transcribing" ? "bg-gradient-to-r from-(--accent-tertiary) to-(--accent-secondary)" :
+                      exportStatus === "muxing" ? "bg-gradient-to-r from-(--success) to-(--success)" :
+                      "bg-gradient-to-r from-(--accent-primary) to-(--accent-tertiary)"
                     }`}
                     initial={{ width: 0 }}
                     animate={{ width: `${exportProgress}%` }}
@@ -1062,16 +1062,16 @@ export default function VideoGenerator({
                 
                 {/* Percentage */}
                 <p className={`mt-4 text-sm font-bold ${
-                  exportStatus === "transcribing" ? "text-[#a78bfa]" :
-                  exportStatus === "muxing" ? "text-[#22c55e]" :
-                  "text-[#f97316]"
+                  exportStatus === "transcribing" ? "text-(--accent-tertiary)" :
+                  exportStatus === "muxing" ? "text-(--success)" :
+                  "text-(--accent-primary)"
                 }`}>
                   {Math.round(exportProgress)}%
                 </p>
                 
                 {/* Email notification info - only for video rendering, not transcription */}
                 {exportStatus === "recording" && (emailSubscribed || user?.primaryEmail) && (
-                  <div className="mt-6 flex items-center justify-center gap-2 text-sm text-[rgba(255,255,255,0.5)]">
+                  <div className="mt-6 flex items-center justify-center gap-2 text-sm text-(--text-muted)">
                     <Mail className="w-4 h-4" />
                     <span>We&apos;ll email you when it&apos;s ready</span>
                   </div>
@@ -1079,7 +1079,7 @@ export default function VideoGenerator({
                 
                 {/* Helper text for first-time model download */}
                 {exportStatus === "transcribing" && exportStage.includes("Loading AI model") && (
-                  <p className="mt-4 text-xs text-[rgba(255,255,255,0.4)]">
+                  <p className="mt-4 text-xs text-(--text-muted)">
                     💡 Tip: Future transcriptions will be much faster!
                   </p>
                 )}

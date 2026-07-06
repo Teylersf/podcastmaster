@@ -806,7 +806,7 @@ export default function MasteringTool({
       <AnimatePresence>
         {showHqSuccessToast && (
           <motion.div
-            className="mb-6 p-4 rounded-xl bg-(--success-muted) border border-[rgba(34,197,94,0.3)] flex items-center gap-3"
+            className="mb-6 p-4 rounded-xl bg-(--success-muted) border border-(--success)/50 flex items-center gap-3"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -830,7 +830,7 @@ export default function MasteringTool({
       <AnimatePresence>
         {error && (
           <motion.div
-            className="mb-6 p-4 rounded-xl bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.3)] flex items-center gap-3"
+            className="mb-6 p-4 rounded-xl bg-(--error-muted) border border-(--error)/50 flex items-center gap-3"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -872,7 +872,7 @@ export default function MasteringTool({
               >
                 <X className="w-5 h-5" />
               </button>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(234,179,8,0.1)] flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-(--warning-muted) flex items-center justify-center">
                 <AlertCircle className="w-8 h-8 text-(--warning)" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-center">Weekly Limit Reached</h3>
@@ -913,7 +913,7 @@ export default function MasteringTool({
               >
                 <X className="w-5 h-5" />
               </button>
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(239,68,68,0.1)] flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-(--error-muted) flex items-center justify-center">
                 <HardDrive className="w-8 h-8 text-(--error)" />
               </div>
               <h3 className="text-xl font-semibold mb-2 text-center">Storage Full</h3>
@@ -1101,7 +1101,7 @@ export default function MasteringTool({
                         </div>
                       ) : (
                         !isSubscribed && hqCredits === 0 && (
-                          <div className="mt-3 p-3 rounded-lg bg-linear-to-r from-[rgba(224,122,76,0.08)] to-[rgba(196,105,61,0.08)] border border-[rgba(224,122,76,0.25)]">
+                          <div className="mt-3 p-3 rounded-lg bg-linear-to-r from-(--accent-muted) to-(--accent-muted) border border-(--accent-primary)/40">
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex-1">
                                 <p className="text-sm font-medium">Try 24-bit HQ Export — $1</p>
@@ -1110,7 +1110,7 @@ export default function MasteringTool({
                               <button
                                 onClick={handleHqPurchase}
                                 disabled={hqCheckoutLoading}
-                                className="px-4 py-2 rounded-lg bg-linear-to-r from-[#e07a4c] to-[#c4693d] text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
+                                className="px-4 py-2 rounded-lg bg-linear-to-r from-(--accent-primary) to-(--accent-tertiary) text-white text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap"
                               >
                                 {hqCheckoutLoading ? (
                                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1281,7 +1281,7 @@ export default function MasteringTool({
         /* Completed View */
         <div className="glass-card p-8 text-center">
           <motion.div
-            className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(16,185,129,0.1)] flex items-center justify-center"
+            className="w-16 h-16 mx-auto mb-4 rounded-full bg-(--success-muted) flex items-center justify-center"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
           >
@@ -1348,7 +1348,7 @@ export default function MasteringTool({
                     setShowVideoGenerator(true);
                   });
                 }}
-                className="px-4 py-3 rounded-xl bg-gradient-to-r from-[#8b5cf6] to-[#7c3aed] text-white font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+                className="px-4 py-3 rounded-xl bg-gradient-to-r from-(--accent-tertiary) to-(--accent-secondary) text-white font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
               >
                 <Video className="w-5 h-5" />
                 Generate Video
@@ -1366,7 +1366,7 @@ export default function MasteringTool({
       ) : (
         /* Failed View */
         <div className="glass-card p-8 text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[rgba(239,68,68,0.1)] flex items-center justify-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-(--error-muted) flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-(--error)" />
           </div>
           <h2 className="text-xl font-semibold mb-2">Mastering Failed</h2>

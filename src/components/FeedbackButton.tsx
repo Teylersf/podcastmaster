@@ -192,7 +192,7 @@ export default function FeedbackButton() {
                 </div>
 
                 {error && (
-                  <div className="p-3 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[rgba(239,68,68,0.2)] text-sm text-[var(--error)] flex items-start gap-2">
+                  <div className="p-3 rounded-lg bg-(--error-muted) border border-(--error)/30 text-sm text-[var(--error)] flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
                     <span>{error}</span>
                   </div>
