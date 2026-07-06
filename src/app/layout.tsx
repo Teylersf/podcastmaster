@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { DM_Sans, IBM_Plex_Mono, Caveat, Patrick_Hand } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
@@ -215,7 +216,12 @@ export default function RootLayout({
             <ThemeProvider>
               <div className="noise-texture" />
               {children}
-              <ProfileHydrator />
+              {/* useUser() reads the Stack Auth session, which suspends during
+                  prerender. Root layout.tsx is not auto-wrapped in Suspense,
+                  so we do it ourselves for anything that reads auth state. */}
+              <Suspense fallback={null}>
+                <ProfileHydrator />
+              </Suspense>
               <FeedbackButton />
               <Analytics />
             </ThemeProvider>
