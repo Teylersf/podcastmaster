@@ -38,7 +38,9 @@ import {
 } from "lucide-react";
 import FileDropzone from "@/components/FileDropzone";
 import TemplatePicker from "@/components/TemplatePicker";
+import PendingDownloadBanner from "@/components/PendingDownloadBanner";
 import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
+import { savePendingDownload } from "@/lib/pendingDownload";
 
 // Dynamic imports for components not needed on initial load
 const WaveformAnimation = dynamic(() => import("@/components/WaveformAnimation"), {
@@ -586,8 +588,23 @@ export default function HomeClient() {
 
   const downloadResult = () => {
     if (!jobId) return;
-    window.open(`${API_URL}/download/${jobId}`, "_blank");
+    // Route through /api/mastering/download/[jobId] which gates on Stack Auth
+    // sign-in and redirects to the Modal backend on success. The UI already
+    // shows a "Sign up to download" CTA when !user, so this path is only
+    // taken by signed-in users; kept as a fallback in case any handler still
+    // wires the download button to this function.
+    window.open(`/api/mastering/download/${jobId}`, "_blank");
   };
+
+  // Persist the completed job into localStorage so the mastered file survives
+  // the user leaving to sign up. On return the PendingDownloadBanner picks it
+  // up and offers a one-click download. Also handles the "user refreshed the
+  // page after mastering" case.
+  useEffect(() => {
+    if (status?.status === "completed" && jobId && targetFile) {
+      savePendingDownload({ jobId, fileName: targetFile.name, audioType: "podcast" });
+    }
+  }, [status?.status, jobId, targetFile]);
 
   const [savedToCloud, setSavedToCloud] = useState(false);
   const [savingToCloud, setSavingToCloud] = useState(false);
@@ -764,6 +781,11 @@ export default function HomeClient() {
           )}
         </div>
       </nav>
+
+      {/* When a mastered file is waiting in localStorage (from a previous
+          session or a sign-up detour), surface it before anything else so
+          the user's next click is the download. */}
+      <PendingDownloadBanner activeJobId={jobId} />
 
       {/* Hero Section */}
       <header className="text-center mb-12 md:mb-16">
@@ -1502,10 +1524,23 @@ export default function HomeClient() {
 
           <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={downloadResult} className="btn-primary text-lg px-8 py-4">
-                <Download className="w-6 h-6" />
-                Download Mastered Audio
-              </button>
+              {user ? (
+                <a
+                  href={`/api/mastering/download/${jobId}`}
+                  className="btn-primary text-lg px-8 py-4"
+                >
+                  <Download className="w-6 h-6" />
+                  Download Mastered Audio
+                </a>
+              ) : (
+                <Link
+                  href={`/handler/sign-up?after_auth_return_to=${encodeURIComponent("/")}`}
+                  className="btn-primary text-lg px-8 py-4"
+                >
+                  <LogIn className="w-6 h-6" />
+                  Sign up to download
+                </Link>
+              )}
               <button
                 onClick={() => {
                   const audio = new Audio(`${API_URL}/download/${jobId}`);

@@ -27,7 +27,10 @@ import FileDropzone from "@/components/FileDropzone";
 import WaveformAnimation from "@/components/WaveformAnimation";
 import AudioPlayer from "@/components/AudioPlayer";
 import TemplatePicker from "@/components/TemplatePicker";
+import PendingDownloadBanner from "@/components/PendingDownloadBanner";
 import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
+import { savePendingDownload } from "@/lib/pendingDownload";
+import { LogIn } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const VideoGenerator = dynamic(() => import("@/components/video/VideoGenerator"), {
@@ -699,8 +702,19 @@ export default function MasteringTool({
 
   const downloadResult = () => {
     if (!jobId) return;
-    window.open(`${API_URL}/download/${jobId}`, "_blank");
+    // Route through the sign-in-gated Next endpoint. The button below is
+    // rendered as a <Link> to /handler/sign-up when !user, so this path
+    // is only taken by signed-in users.
+    window.open(`/api/mastering/download/${jobId}`, "_blank");
   };
+
+  // Persist a completed job so the mastered file survives sign-up detours
+  // and page refreshes. PendingDownloadBanner picks this up at page load.
+  useEffect(() => {
+    if (status?.status === "completed" && jobId && targetFile) {
+      savePendingDownload({ jobId, fileName: targetFile.name, audioType });
+    }
+  }, [status?.status, jobId, targetFile, audioType]);
 
   const resetSession = () => {
     setTargetFile(null);
@@ -751,6 +765,10 @@ export default function MasteringTool({
 
   return (
     <div className={compact ? "" : ""}>
+      {/* If a mastered file is waiting in localStorage from an earlier
+          session, surface it above the tool so downloading is one click. */}
+      <PendingDownloadBanner activeJobId={jobId} />
+
       {/* HQ Purchase Success Toast */}
       <AnimatePresence>
         {showHqSuccessToast && (
@@ -1271,10 +1289,23 @@ export default function MasteringTool({
 
           <div className="flex flex-col gap-3">
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button onClick={downloadResult} className="btn-primary">
-                <Download className="w-5 h-5" />
-                Download Audio
-              </button>
+              {user ? (
+                <a
+                  href={`/api/mastering/download/${jobId}`}
+                  className="btn-primary"
+                >
+                  <Download className="w-5 h-5" />
+                  Download Audio
+                </a>
+              ) : (
+                <Link
+                  href={`/handler/sign-up?after_auth_return_to=${encodeURIComponent(audioType === "music" ? "/audio-mastering" : "/")}`}
+                  className="btn-primary"
+                >
+                  <LogIn className="w-5 h-5" />
+                  Sign up to download
+                </Link>
+              )}
               <button
                 onClick={() => {
                   // Get audio duration before opening video generator
