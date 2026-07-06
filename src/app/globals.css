@@ -1629,6 +1629,12 @@ a:not(.btn-primary):not([class*="Button"]):hover {
   border: 1px solid rgba(148, 163, 184, 0.15) !important;
 }
 
+[data-theme="glassmorphism"] input:focus,
+[data-theme="glassmorphism"] textarea:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+}
+
 [data-theme="anti-vibe-coded"] input:focus,
 [data-theme="anti-vibe-coded"] textarea:focus {
   border-color: #000000 !important;
@@ -1836,6 +1842,4 @@ a:not(.btn-primary):not([class*="Button"]):hover {
   outline: 1px dotted #000000 !important;
   outline-offset: -3px !important;
   box-shadow: none !important;
-}
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
 }
