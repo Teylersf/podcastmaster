@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import MasteringTool from "@/components/MasteringTool";
 import ThemeSelector from "@/components/ThemeSelector";
+import ReferralsSection from "@/components/ReferralsSection";
 import dynamic from "next/dynamic";
 
 const VideoGenerator = dynamic(() => import("@/components/video/VideoGenerator"), {
@@ -722,6 +723,11 @@ export default function DashboardPage() {
               </div>
             )}
           </motion.div>
+
+          {/* Referrals — visible to everyone signed in. Shows link, code,
+              stats, unlimited-pass status, and the "why didn't my bonus
+              land?" FAQ when there are voided rows to explain. */}
+          <ReferralsSection />
 
           {/* Storage & Files (Subscribers only) */}
           {isSubscribed && (
