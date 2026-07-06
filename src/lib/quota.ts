@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { getOrCreateUserProfile, hasUnlimitedActive } from "@/lib/userProfile";
+import { settlePendingReferral } from "@/lib/referralSettle";
 
 // The new pricing model: 1 free mastered audio per user per rolling 24-hour
 // window. Beyond that, either an active 7-day unlimited pass (won by
@@ -116,6 +117,31 @@ export async function consumeQuota(
     where: { userId, firstMasterAt: null },
     data: { firstMasterAt: new Date() },
   });
+
+  // If this was the referee's first paid master, mark it and try to settle
+  // any pending Referral (grants the referrer their 7-day pass if the fraud
+  // gates all pass; silently voids the row otherwise). Non-fatal — a
+  // settlement failure never blocks the master itself.
+  if (isPaidDecision(decision)) {
+    await prisma.userProfile
+      .updateMany({
+        where: { userId, firstPaidMasterAt: null },
+        data: { firstPaidMasterAt: new Date() },
+      })
+      .catch((err) =>
+        console.error("[QUOTA] Failed to stamp firstPaidMasterAt:", err),
+      );
+    try {
+      const outcome = await settlePendingReferral(userId);
+      if (outcome.settled) {
+        console.log(
+          `[REFERRAL] Settled ${outcome.referralId} → ${outcome.result}`,
+        );
+      }
+    } catch (err) {
+      console.error("[REFERRAL] Settlement failed:", err);
+    }
+  }
 }
 
 // Whether this decision was made against a paid entitlement — used by the

@@ -50,6 +50,11 @@ export type ProfileInitInput = {
 // Idempotent: returns an existing profile or creates a new one with a unique
 // referral code. Collisions on the 8-char code are ~1 in 8e10 per attempt, but
 // we still retry a few times just in case rather than 500ing on the user.
+//
+// Side effect on first create: if `referredByCode` matches an existing user
+// and that user isn't the caller (self-signup would be void_self), inserts
+// a Referral row in `pending` state. The fraud gates + bonus grant happen
+// later, at the referee's first paid $2 master (see settlePendingReferral).
 export async function getOrCreateUserProfile(input: ProfileInitInput) {
   const existing = await prisma.userProfile.findUnique({
     where: { userId: input.userId },
@@ -58,10 +63,11 @@ export async function getOrCreateUserProfile(input: ProfileInitInput) {
 
   const ipHash = input.ip ? hashIp(input.ip) : null;
 
+  let created;
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateReferralCode();
     try {
-      return await prisma.userProfile.create({
+      created = await prisma.userProfile.create({
         data: {
           userId: input.userId,
           email: input.email ?? null,
@@ -71,12 +77,44 @@ export async function getOrCreateUserProfile(input: ProfileInitInput) {
           signupVisitorId: input.visitorId ?? null,
         },
       });
+      break;
     } catch (err) {
       if (isUniqueConstraintError(err) && attempt < 4) continue;
       throw err;
     }
   }
-  throw new Error("Could not allocate unique referral code after 5 attempts");
+  if (!created) {
+    throw new Error("Could not allocate unique referral code after 5 attempts");
+  }
+
+  // Non-fatal: create the Referral row if the user came in with a valid code.
+  // A missing/unknown code or a self-referral is silently skipped; a Postgres
+  // unique-violation on refereeId means the row already exists (idempotent
+  // recovery from a mid-flight retry). Any other error would risk blocking
+  // signup, so we swallow-log and continue.
+  if (input.referredByCode) {
+    try {
+      const referrer = await prisma.userProfile.findUnique({
+        where: { referralCode: input.referredByCode },
+        select: { userId: true },
+      });
+      if (referrer && referrer.userId !== input.userId) {
+        await prisma.referral.create({
+          data: {
+            referrerId: referrer.userId,
+            refereeId: input.userId,
+            refCode: input.referredByCode,
+          },
+        });
+      }
+    } catch (err) {
+      if (!isUniqueConstraintError(err)) {
+        console.error("[REFERRAL] Failed to create referral row:", err);
+      }
+    }
+  }
+
+  return created;
 }
 
 function isUniqueConstraintError(err: unknown): boolean {
