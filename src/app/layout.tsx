@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { DM_Sans, IBM_Plex_Mono, Caveat, Patrick_Hand } from "next/font/google";
+import { DM_Sans, IBM_Plex_Mono, Caveat, Patrick_Hand, Fraunces } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
@@ -41,6 +41,18 @@ const patrickHand = Patrick_Hand({
   weight: ["400"],
   display: "swap",
   preload: false, // Only used by specific themes
+});
+
+// Editorial serif for the "Anti-Vibe Coded" luxury-brand theme. Loaded on
+// every page (so the theme switch is instant) but not preloaded — most
+// visitors will never see this theme.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  style: ["normal"],
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -210,7 +222,7 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${dmSans.variable} ${ibmPlexMono.variable} ${caveat.variable} ${patrickHand.variable} antialiased`}>
+      <body className={`${dmSans.variable} ${ibmPlexMono.variable} ${caveat.variable} ${patrickHand.variable} ${fraunces.variable} antialiased`}>
         <StackProvider app={stackServerApp}>
           <StackTheme>
             <ThemeProvider>

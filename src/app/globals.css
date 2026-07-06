@@ -741,46 +741,52 @@
    utility that Legal made you use to submit a timesheet.
    ============================================ */
 [data-theme="anti-vibe-coded"] {
-  --bg-primary: #c0c0c0;       /* Windows 3.1 desktop */
-  --bg-secondary: #d4d0c8;     /* Classic dialog gray */
-  --bg-tertiary: #ffffff;      /* Text field white */
-  --bg-card: #c0c0c0;          /* Panels don't stand out — they blend in */
+  /* Warm bone canvas with clean-white cards on top. The palette lives in a
+     narrow tonal band (bone → cream → ink) so nothing shouts, which is what
+     makes it read as "expensive" rather than "generated". */
+  --bg-primary: #f4efe4;       /* Warm bone canvas */
+  --bg-secondary: #ede4d1;     /* Deeper stone, for zoning */
+  --bg-tertiary: #ffffff;      /* Pure white — for input fields */
+  --bg-card: #ffffff;          /* Editorial white cards on the bone canvas */
   --bg-elevated: #ffffff;
 
-  --accent-primary: #000080;   /* Win95 title bar navy */
-  --accent-secondary: #0000ee; /* Netscape link blue */
-  --accent-tertiary: #551a8b;  /* Netscape visited purple */
-  --accent-muted: #d4d0c8;
-  --accent-hover: #000060;
+  /* Ink primary, warm neutral secondary, restrained warm-bronze accent used
+     only for the rarest moments (link underlines, focused states). */
+  --accent-primary: #171410;   /* Editorial ink */
+  --accent-secondary: #6c655a; /* Warm neutral for muted UI */
+  --accent-tertiary: #8a6f47;  /* Whisper of bronze — used sparingly */
+  --accent-muted: #ede4d1;
+  --accent-hover: #000000;
 
-  --text-primary: #000000;
-  --text-secondary: #000000;   /* No hierarchy. Every word matters equally. */
-  --text-muted: #4a4a4a;
+  --text-primary: #171410;
+  --text-secondary: #423b32;
+  --text-muted: #8a8175;
 
-  --wave-primary: #000080;
-  --wave-secondary: #808080;
-  --wave-glow: transparent;    /* No glow. Never glow. */
+  --wave-primary: #171410;
+  --wave-secondary: #8a6f47;
+  --wave-glow: transparent;    /* Nothing glows. */
 
-  --success: #006400;          /* Solid dark green */
-  --success-muted: #d4d0c8;
-  --error: #a00000;            /* Warning-label maroon */
-  --warning: #806000;
+  --success: #4a6b3f;          /* Muted forest — luxury doesn't use vivid greens */
+  --success-muted: #eaead0;
+  --error: #8a2c2c;            /* Muted burgundy */
+  --warning: #8a6d1c;
 
-  --border-subtle: #808080;
-  --border-medium: #000000;    /* All borders are aggressive */
-  --border-hover: #000000;
+  --border-subtle: #dfd3bd;    /* Hairline tan */
+  --border-medium: #c8b898;
+  --border-hover: #171410;
 
-  --font-body: 'MS Sans Serif', 'Tahoma', 'Arial', sans-serif;
-  --font-heading: 'Times New Roman', Times, serif;
-  --noise-opacity: 0;          /* No artistic noise. This is a form. */
-  --card-radius: 0;            /* Corners are sharp. Fingers are risk. */
+  --font-body: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif;
+  --font-heading: var(--font-fraunces), 'Fraunces', 'Cormorant Garamond',
+    Georgia, 'Times New Roman', serif;
+  --noise-opacity: 0;
+  --card-radius: 4px;          /* Whisper chamfer, not a bubble */
 
   --glass-blur: 0;
-  --glass-bg: #c0c0c0;
-  --glass-border: #808080;
-  --glass-shadow: none;
-  --gradient-primary: #000080;
-  --gradient-secondary: #808080;
+  --glass-bg: #ffffff;
+  --glass-border: #dfd3bd;
+  --glass-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+  --gradient-primary: #171410;
+  --gradient-secondary: #8a6f47;
   --gradient-bg: none;
 }
 
@@ -1635,211 +1641,261 @@ a:not(.btn-primary):not([class*="Button"]):hover {
   box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
 }
 
-[data-theme="anti-vibe-coded"] input:focus,
-[data-theme="anti-vibe-coded"] textarea:focus {
-  border-color: #000000 !important;
-  box-shadow: none !important;
-  outline: 1px dotted #000000;
-  outline-offset: -3px;
-}
-
 /* ============================================
-   ANTI-VIBE-CODED — surgical overrides
-   Below is the part that actually delivers the identity: everywhere the
-   Tailwind classes on the page bake in rounded corners, gradients, blur,
-   soft shadows, or transitions, we override with the enterprise-utility
-   equivalent. Aggressive selectors + !important because Tailwind utility
-   classes use utility specificity that we'd otherwise lose to.
+   ANTI-VIBE-CODED — editorial luxury overrides
+   Target aesthetic: a very expensive 2026 custom brand website (Hermès,
+   Loro Piana, Aesop, The Row). Not a stripped-down document, not a 90s
+   utility — a *considered*, editorial site. Restraint = expensive.
    ============================================ */
 
-/* Every font on the entire page: system sans, no exceptions. */
+/* Body defaults: bone canvas, tight-tracking DM Sans, near-black ink.
+   Slightly larger base + generous line-height for editorial rhythm. */
 [data-theme="anti-vibe-coded"] body,
-[data-theme="anti-vibe-coded"] * {
-  font-family: 'MS Sans Serif', 'Tahoma', Arial, sans-serif !important;
-  letter-spacing: 0 !important;
+[data-theme="anti-vibe-coded"] html {
+  background: #f4efe4 !important;
+  color: #171410 !important;
+  font-family: var(--font-dm-sans), 'DM Sans', system-ui, sans-serif !important;
+  letter-spacing: -0.005em !important;
 }
+[data-theme="anti-vibe-coded"] main {
+  background: transparent !important;
+}
+[data-theme="anti-vibe-coded"] p,
+[data-theme="anti-vibe-coded"] li {
+  line-height: 1.65 !important;
+}
+
+/* All headings run in Fraunces (an editorial modern serif). Medium weight,
+   tight negative tracking — the "luxury-brand-front-page" hero move. */
 [data-theme="anti-vibe-coded"] h1,
 [data-theme="anti-vibe-coded"] h2,
 [data-theme="anti-vibe-coded"] h3,
 [data-theme="anti-vibe-coded"] h4 {
-  font-family: 'Times New Roman', Times, serif !important;
-  font-weight: bold !important;
-  color: #000000 !important;
+  font-family: var(--font-fraunces), 'Fraunces', 'Cormorant Garamond',
+    Georgia, serif !important;
+  color: #171410 !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.05 !important;
+  font-style: normal;
 }
+[data-theme="anti-vibe-coded"] h1 { font-weight: 400 !important; }
+[data-theme="anti-vibe-coded"] h2 { font-weight: 500 !important; }
 
-/* No rounded corners. Anywhere. Full stop. */
-[data-theme="anti-vibe-coded"] * {
-  border-radius: 0 !important;
-}
-
-/* No transitions, no animations. Nothing pulses. */
+/* Kill blur, glow, gradient backgrounds, animated pulses. Keep the layout,
+   remove the visual noise — that's what "expensive" looks like. */
 [data-theme="anti-vibe-coded"] *,
 [data-theme="anti-vibe-coded"] *::before,
 [data-theme="anti-vibe-coded"] *::after {
-  transition: none !important;
-  animation: none !important;
-  box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  filter: none !important;
   text-shadow: none !important;
 }
+[data-theme="anti-vibe-coded"] *:not(button):not(.btn-primary):not(a) {
+  animation: none !important;
+}
 
-/* Kill every gradient background and every custom bg color. Panels are
-   plain silver; text fields are white. */
-[data-theme="anti-vibe-coded"] .glass-card,
+/* Every gradient utility → solid bone / white based on where it lives.
+   The pattern in the codebase is `bg-gradient-to-*` + `from-[hex]` + `to-[hex]`
+   so we neutralize each half. */
 [data-theme="anti-vibe-coded"] [class*="bg-gradient"],
-[data-theme="anti-vibe-coded"] [class*="bg-linear"],
-[data-theme="anti-vibe-coded"] [class*="from-["],
-[data-theme="anti-vibe-coded"] [class*="via-["],
-[data-theme="anti-vibe-coded"] [class*="to-["] {
-  background: #c0c0c0 !important;
+[data-theme="anti-vibe-coded"] [class*="bg-linear"] {
   background-image: none !important;
 }
 
-/* Chiseled Win95 bevel on every card and panel. */
-[data-theme="anti-vibe-coded"] .glass-card {
-  border: 2px solid !important;
-  border-color: #ffffff #808080 #808080 #ffffff !important;
-  padding: 12px !important;
+/* Decorative radial-gradient blur orbs on the homepage — hidden. Real
+   luxury sites don't decorate with abstract shapes; they use whitespace. */
+[data-theme="anti-vibe-coded"] main > .fixed.inset-0 > div {
+  display: none !important;
 }
 
-/* Buttons: outset bevel, tight padding, blocky. */
-[data-theme="anti-vibe-coded"] button,
+/* Kill the noise texture overlay entirely — a solid bone canvas reads
+   more premium than a subtly-noisy one. */
+[data-theme="anti-vibe-coded"] .noise-texture,
+[data-theme="anti-vibe-coded"] .noise-texture::before,
+[data-theme="anti-vibe-coded"] .noise-texture::after {
+  background: #f4efe4 !important;
+  background-image: none !important;
+  opacity: 1 !important;
+}
+
+/* Cards: pure white on the bone canvas with a hairline tan border and
+   the whisper of a shadow. This is the "clean" of a Hermès product page. */
+[data-theme="anti-vibe-coded"] .glass-card {
+  background: #ffffff !important;
+  border: 1px solid #dfd3bd !important;
+  border-radius: 4px !important;
+  box-shadow: 0 1px 0 rgba(23, 20, 16, 0.03) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+[data-theme="anti-vibe-coded"] .glass-card:hover {
+  border-color: #c8b898 !important;
+  box-shadow: 0 1px 0 rgba(23, 20, 16, 0.03) !important;
+}
+
+/* Primary buttons: solid ink, cream text, thin — no gradient fills, no
+   glow. Bumped horizontal padding, letter-tracking, uppercase for that
+   "commerce brand" CTA feel. */
 [data-theme="anti-vibe-coded"] .btn-primary,
 [data-theme="anti-vibe-coded"] a.btn-primary,
 [data-theme="anti-vibe-coded"] button.btn-primary {
-  background: #c0c0c0 !important;
+  background: #171410 !important;
   background-image: none !important;
-  color: #000000 !important;
-  border: 2px solid !important;
-  border-color: #ffffff #808080 #808080 #ffffff !important;
-  padding: 4px 12px !important;
-  font-size: 12px !important;
-  font-weight: normal !important;
-  letter-spacing: 0 !important;
+  color: #f4efe4 !important;
+  border: 1px solid #171410 !important;
+  border-radius: 999px !important;
+  padding: 0.875rem 1.75rem !important;
+  font-family: var(--font-dm-sans), 'DM Sans', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  box-shadow: none !important;
   transform: none !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
 }
-[data-theme="anti-vibe-coded"] button:hover,
-[data-theme="anti-vibe-coded"] .btn-primary:hover {
-  background: #c0c0c0 !important;
-  color: #000000 !important;
+[data-theme="anti-vibe-coded"] .btn-primary:hover,
+[data-theme="anti-vibe-coded"] a.btn-primary:hover,
+[data-theme="anti-vibe-coded"] button.btn-primary:hover {
+  background: #f4efe4 !important;
+  color: #171410 !important;
   transform: none !important;
-}
-/* Pressed state: reverse the bevel so the button looks pushed in. */
-[data-theme="anti-vibe-coded"] button:active,
-[data-theme="anti-vibe-coded"] .btn-primary:active {
-  border-color: #808080 #ffffff #ffffff #808080 !important;
-  padding: 5px 11px 3px 13px !important;
+  box-shadow: none !important;
 }
 
-/* Every link is blue and underlined. Visited is purple. */
-[data-theme="anti-vibe-coded"] a:not(.btn-primary):not(button) {
-  color: #0000ee !important;
-  text-decoration: underline !important;
-}
-[data-theme="anti-vibe-coded"] a:not(.btn-primary):not(button):visited {
-  color: #551a8b !important;
+/* Secondary buttons (all the non-primary <button>s scattered across the
+   completion view, dashboard tabs, etc.): outline style — no fill,
+   hairline black border, black text. */
+[data-theme="anti-vibe-coded"] button:not(.btn-primary):not([class*="rounded-full"]):not([data-radix-collection-item]),
+[data-theme="anti-vibe-coded"] a[class*="rounded-xl"]:not(.btn-primary) {
+  background-image: none !important;
 }
 
-/* Inputs: white field, inset bevel. */
+/* Inputs: hairline tan border on white, no fat background fill, no glow
+   focus ring. Editorial. */
 [data-theme="anti-vibe-coded"] input:not([type="file"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(.sr-only),
 [data-theme="anti-vibe-coded"] input[type="text"],
 [data-theme="anti-vibe-coded"] input[type="email"],
 [data-theme="anti-vibe-coded"] input[type="password"],
 [data-theme="anti-vibe-coded"] textarea {
   background: #ffffff !important;
-  color: #000000 !important;
-  border: 2px solid !important;
-  border-color: #808080 #ffffff #ffffff #808080 !important;
-  padding: 3px 5px !important;
-  font-size: 12px !important;
+  color: #171410 !important;
+  border: 1px solid #dfd3bd !important;
+  border-radius: 2px !important;
+  font-size: 14px !important;
+  padding: 12px 14px !important;
+  letter-spacing: -0.005em !important;
+}
+[data-theme="anti-vibe-coded"] input:focus,
+[data-theme="anti-vibe-coded"] textarea:focus {
+  border-color: #171410 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
-/* The three decorative radial-gradient orbs on the homepage — gone. */
-[data-theme="anti-vibe-coded"] main > div.fixed > div {
-  display: none !important;
-}
-[data-theme="anti-vibe-coded"] main {
-  background: #c0c0c0 !important;
-}
-
-/* Background page color, kill the noise texture overlay entirely. */
-[data-theme="anti-vibe-coded"] body,
-[data-theme="anti-vibe-coded"] html {
-  background: #c0c0c0 !important;
-}
-[data-theme="anti-vibe-coded"] .noise-texture,
-[data-theme="anti-vibe-coded"] .noise-texture::before,
-[data-theme="anti-vibe-coded"] .noise-texture::after {
-  background: #c0c0c0 !important;
-  background-image: none !important;
-  opacity: 1 !important;
-}
-
-/* Dropzone: dashed but hostile. */
+/* Dropzone: bone-tinted card with a hairline dashed tan border. Editorial. */
 [data-theme="anti-vibe-coded"] .dropzone {
-  background: #ffffff !important;
-  border: 2px dashed #000000 !important;
-  padding: 24px 16px !important;
+  background: #faf6ed !important;
+  border: 1px dashed #c8b898 !important;
+  border-radius: 4px !important;
+  padding: 3rem 2rem !important;
 }
 [data-theme="anti-vibe-coded"] .dropzone:hover,
 [data-theme="anti-vibe-coded"] .dropzone.active {
-  background: #ffffcc !important;   /* Legal-pad yellow on hover */
-  border-color: #000000 !important;
+  background: #ffffff !important;
+  border-color: #171410 !important;
 }
 
-/* Progress bar: chunked, monospace-count style like MSI installer. */
+/* Progress bar: 1-pixel ink hairline in a tan track. */
 [data-theme="anti-vibe-coded"] .progress-container {
-  background: #ffffff !important;
-  border: 2px solid !important;
-  border-color: #808080 #ffffff #ffffff #808080 !important;
-  height: 20px !important;
+  background: #ede4d1 !important;
+  height: 2px !important;
+  border-radius: 999px !important;
 }
 [data-theme="anti-vibe-coded"] .progress-bar {
-  background: #000080 !important;
+  background: #171410 !important;
   background-image: none !important;
 }
-
-/* Waveform bars: no gradient, no glow, solid navy. */
-[data-theme="anti-vibe-coded"] .waveform-bar {
-  background: #000080 !important;
-  border-radius: 0 !important;
+[data-theme="anti-vibe-coded"] .progress-bar::after {
+  display: none !important;   /* Kill the shimmer sweep */
 }
 
-/* The text-gradient utility: strip the fill-transparent trick, just black. */
+/* Waveform bars: solid ink, no glow. */
+[data-theme="anti-vibe-coded"] .waveform-bar {
+  background: #171410 !important;
+}
+
+/* The text-gradient utility (used on the hero headline etc): fall back
+   to solid ink. Gradient text is the ur-vibe-code move. */
 [data-theme="anti-vibe-coded"] .text-gradient,
 [data-theme="anti-vibe-coded"] [class*="bg-clip-text"] {
   background: none !important;
   background-image: none !important;
-  -webkit-text-fill-color: #000000 !important;
-  color: #000000 !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #171410 !important;
+  color: #171410 !important;
 }
 
-/* All the pretty accent-tinted "pill" chips → plain gray boxes with a
-   hairline border, no color. */
-[data-theme="anti-vibe-coded"] [class*="rounded-full"],
-[data-theme="anti-vibe-coded"] .status-badge,
-[data-theme="anti-vibe-coded"] .file-info,
+/* Chips + pills: pure white with hairline tan border, uppercase micro-label,
+   letter-tracked. That's how a fashion brand does a status pill. */
+[data-theme="anti-vibe-coded"] [class*="rounded-full"] {
+  background-image: none !important;
+  letter-spacing: 0.08em !important;
+}
+[data-theme="anti-vibe-coded"] span[class*="rounded-full"] {
+  background: transparent !important;
+  color: #171410 !important;
+  border: 1px solid #dfd3bd !important;
+  padding: 0.35rem 0.75rem !important;
+  text-transform: uppercase !important;
+  font-size: 0.65rem !important;
+  font-weight: 500 !important;
+}
+
+/* File info + file-icon panels: match the card system. */
+[data-theme="anti-vibe-coded"] .file-info {
+  background: #faf6ed !important;
+  border: 1px solid #dfd3bd !important;
+  border-radius: 4px !important;
+}
 [data-theme="anti-vibe-coded"] .file-icon {
-  background: #c0c0c0 !important;
-  color: #000000 !important;
-  border: 1px solid #000000 !important;
-  padding: 2px 6px !important;
+  background: #ffffff !important;
+  color: #171410 !important;
+  border: 1px solid #dfd3bd !important;
+  border-radius: 4px !important;
 }
 
-/* Modals: silver Windows-dialog frame with a chunky title-bar-ish header. */
+/* Modals: white sheet on top of the bone canvas, hairline tan border,
+   just a whisper of shadow. */
 [data-theme="anti-vibe-coded"] [role="dialog"] {
-  background: #c0c0c0 !important;
-  border: 2px solid !important;
-  border-color: #ffffff #808080 #808080 #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid #dfd3bd !important;
+  border-radius: 6px !important;
+  box-shadow: 0 20px 60px -20px rgba(23, 20, 16, 0.15) !important;
 }
 
-/* No more focus rings glowing pink. Dotted outline, black, DOS-style. */
+/* Focus ring: hairline ink line, not a colored glow. */
 [data-theme="anti-vibe-coded"] button:focus-visible,
 [data-theme="anti-vibe-coded"] a:focus-visible,
 [data-theme="anti-vibe-coded"] input:focus-visible {
-  outline: 1px dotted #000000 !important;
-  outline-offset: -3px !important;
+  outline: 1px solid #171410 !important;
+  outline-offset: 3px !important;
   box-shadow: none !important;
+}
+
+/* Any icon-container div that used gradient-to-br → solid ink circle,
+   white icon inside. Catch-all for the constellation of decorative
+   icon tiles across HomeClient / MasteringTool / dashboard. */
+[data-theme="anti-vibe-coded"] div[class*="bg-gradient-to-br"],
+[data-theme="anti-vibe-coded"] div[class*="bg-linear-to-br"] {
+  background: #171410 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+[data-theme="anti-vibe-coded"] div[class*="bg-gradient-to-br"] svg,
+[data-theme="anti-vibe-coded"] div[class*="bg-linear-to-br"] svg {
+  color: #ffffff !important;
+  fill: none !important;
 }
