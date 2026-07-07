@@ -38,8 +38,14 @@ export async function POST(request: Request) {
       });
     }
 
-    // Construct download URL if not provided
-    const finalDownloadUrl = downloadUrl || `${API_URL}/download/${jobId}`;
+    // Always route through our sign-in-gated redirect. The old default
+    // was the raw Modal URL, which let anyone with the email download
+    // without an account. Callers that pass an explicit downloadUrl are
+    // trusted (webhook already builds the gated URL).
+    const siteOrigin =
+      process.env.NEXT_PUBLIC_SITE_URL || "https://freepodcastmastering.com";
+    const finalDownloadUrl =
+      downloadUrl || `${siteOrigin}/api/mastering/download/${jobId}`;
 
     // Render the email HTML
     const emailHtml = await render(
@@ -130,8 +136,11 @@ export async function GET() {
         const status = await statusResponse.json();
 
         if (status.status === "completed") {
-          // Job is complete, send the email
-          const downloadUrl = `${API_URL}/download/${notification.jobId}`;
+          // Job is complete, send the email — same gated URL as above.
+          const siteOrigin =
+            process.env.NEXT_PUBLIC_SITE_URL ||
+            "https://freepodcastmastering.com";
+          const downloadUrl = `${siteOrigin}/api/mastering/download/${notification.jobId}`;
           
           const emailHtml = await render(
             <MasteringCompleteEmail downloadUrl={downloadUrl} />

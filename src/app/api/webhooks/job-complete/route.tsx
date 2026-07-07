@@ -146,8 +146,14 @@ export async function POST(request: Request) {
 
     console.log(`[WEBHOOK] Job ${jobId} completed with status: ${status}, blobData: ${blobData ? 'yes' : 'no'}`);
 
-    // Construct download URL (R2)
-    const downloadUrl = `${API_URL}/download/${jobId}`;
+    // Route the emailed link through our own sign-in-gated redirect
+    // instead of Modal's public URL. Anyone who lands on this link has
+    // to authenticate (Stack Auth) before the file is served — closes
+    // the loophole that let anon "notify me" subscribers download
+    // without ever creating an account.
+    const siteOrigin =
+      process.env.NEXT_PUBLIC_SITE_URL || "https://freepodcastmastering.com";
+    const downloadUrl = `${siteOrigin}/api/mastering/download/${jobId}`;
 
     // Handle premium users - save blob data to database
     // Modal has already uploaded the file directly to Vercel Blob!
