@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
+import { notifyAdminSignup } from "@/lib/adminNotify";
 
 // Referral codes: 8 chars, uppercase-only. We drop the visually ambiguous
 // glyphs (0/O, 1/I/L) so a code copied off a phone screen still works.
@@ -86,6 +87,17 @@ export async function getOrCreateUserProfile(input: ProfileInitInput) {
   if (!created) {
     throw new Error("Could not allocate unique referral code after 5 attempts");
   }
+
+  // Admin notification — one email per real signup. Fire-and-forget so a
+  // Resend outage never blocks the signup path; notifyAdminSignup swallows
+  // its own errors internally. This branch only runs on the true first
+  // insert (the `if (existing) return existing` guard above prevents
+  // duplicate fires on returning users).
+  void notifyAdminSignup({
+    userId: created.userId,
+    email: created.email,
+    referredByCode: created.referredByCode,
+  });
 
   // Non-fatal: create the Referral row if the user came in with a valid code.
   // A missing/unknown code or a self-referral is silently skipped; a Postgres

@@ -117,3 +117,72 @@ export async function notifyAdminPayment(details: PaymentDetails): Promise<void>
     console.error("[ADMIN-NOTIFY] Unexpected error:", err);
   }
 }
+
+type SignupDetails = {
+  userId: string;
+  email?: string | null;
+  referredByCode?: string | null;
+  host?: string | null;
+};
+
+// Fires when a UserProfile row is created for the first time — i.e., the
+// user just signed up (Google OAuth or email) and hit an endpoint that
+// lazy-created their profile. Called from userProfile.ts inside the
+// create branch so it can never fire twice for the same user.
+export async function notifyAdminSignup(details: SignupDetails): Promise<void> {
+  try {
+    const host = details.host || "freepodcastmastering.com";
+    const who = details.email || details.userId;
+    const subject = `[${host}] 🎉 New signup — ${who}`;
+
+    const rows: [string, string][] = [
+      ["User id (Stack Auth)", details.userId],
+    ];
+    if (details.email) rows.push(["Email", details.email]);
+    if (details.referredByCode) rows.push(["Referred by code", details.referredByCode]);
+    rows.push(["Signed up at", new Date().toISOString()]);
+
+    const html = `
+      <div style="font-family: -apple-system, system-ui, sans-serif; max-width: 640px; margin: 0 auto; padding: 24px;">
+        <h2 style="margin: 0 0 8px 0; font-size: 20px;">New signup</h2>
+        <p style="margin: 0 0 20px 0; font-size: 22px; font-weight: 700; color: #111;">${escapeHtml(who)}</p>
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;" />
+        <table style="width: 100%; font-size: 13px; color: #555; border-collapse: collapse;">
+          ${rows
+            .map(
+              ([k, v]) => `
+            <tr>
+              <td style="padding: 4px 16px 4px 0; vertical-align: top; white-space: nowrap; color: #666;">${escapeHtml(k)}</td>
+              <td style="padding: 4px 0; word-break: break-all; color: #111;">${escapeHtml(v)}</td>
+            </tr>
+          `,
+            )
+            .join("")}
+        </table>
+      </div>
+    `;
+
+    const text = [
+      "New signup",
+      "",
+      who,
+      "",
+      "---",
+      ...rows.map(([k, v]) => `${k}: ${v}`),
+    ].join("\n");
+
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [ADMIN_EMAIL],
+      subject,
+      html,
+      text,
+    });
+
+    if (error) {
+      console.error("[ADMIN-NOTIFY] Signup resend error:", error);
+    }
+  } catch (err) {
+    console.error("[ADMIN-NOTIFY] Signup unexpected error:", err);
+  }
+}
