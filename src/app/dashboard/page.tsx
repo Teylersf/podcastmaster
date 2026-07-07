@@ -52,7 +52,9 @@ interface FreeUserFile {
   downloadUrl: string | null;
   status: string;
   createdAt: string;
-  expiresAt: string;
+  // NULL = permanent single-slot storage (see FreeUserFile.expiresAt in
+  // schema.prisma). Legacy 24h rows still carry a real date.
+  expiresAt: string | null;
 }
 
 interface SubscriptionData {
@@ -86,28 +88,32 @@ function formatDate(dateString: string): string {
   });
 }
 
-function formatCountdown(expiresAt: string): string {
+function formatCountdown(expiresAt: string | null): string {
+  if (!expiresAt) return "Saved to your account";
+
   const now = new Date();
   const expiry = new Date(expiresAt);
   const diff = expiry.getTime() - now.getTime();
-  
+
   if (diff <= 0) return "Expired";
-  
+
   const hours = Math.floor(diff / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  
+
   if (hours > 0) {
     return `${hours}h ${minutes}m left`;
   }
   return `${minutes}m left`;
 }
 
-function getCountdownColor(expiresAt: string): string {
+function getCountdownColor(expiresAt: string | null): string {
+  if (!expiresAt) return "text-(--success)";
+
   const now = new Date();
   const expiry = new Date(expiresAt);
   const diff = expiry.getTime() - now.getTime();
   const hoursLeft = diff / (1000 * 60 * 60);
-  
+
   if (hoursLeft <= 2) return "text-(--error)";
   if (hoursLeft <= 6) return "text-(--warning)";
   return "text-(--success)";

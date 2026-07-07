@@ -6,16 +6,17 @@ import prisma from "@/lib/prisma";
 export async function GET() {
   try {
     const user = await stackServerApp.getUser();
-    
+
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user's free files that haven't expired
+    // Include the permanent slot (expiresAt IS NULL) alongside any legacy
+    // rows that still have a future expiry date.
     const files = await prisma.freeUserFile.findMany({
       where: {
         userId: user.id,
-        expiresAt: { gt: new Date() },
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
       },
       orderBy: { createdAt: "desc" },
     });
@@ -27,11 +28,18 @@ export async function GET() {
   }
 }
 
-// POST - Create a new free user file record when mastering starts
+// POST - Create a new FreeUserFile row when a signed-in free user starts
+// mastering. Every free account has a single permanent slot — this
+// endpoint rotates it: any pre-existing row for the caller is deleted
+// before the new one is inserted, so the dashboard only ever shows the
+// most recent master. expiresAt is set to NULL to mark the row as
+// permanent (the row lives forever; the underlying Modal-hosted file
+// still expires after 24h until the Modal-side change lands to persist
+// the audio to Vercel Blob).
 export async function POST(request: Request) {
   try {
     const user = await stackServerApp.getUser();
-    
+
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -42,8 +50,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Create expiration date (24 hours from now)
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    // Rotate the slot: delete any older rows this user has that are not
+    // the one we're about to create. Uses deleteMany so a mid-flight
+    // second call is idempotent (nothing to delete → no error).
+    await prisma.freeUserFile.deleteMany({
+      where: {
+        userId: user.id,
+        jobId: { not: jobId },
+      },
+    });
 
     const file = await prisma.freeUserFile.create({
       data: {
@@ -51,7 +66,7 @@ export async function POST(request: Request) {
         jobId,
         fileName,
         fileSize: fileSize || 0,
-        expiresAt,
+        expiresAt: null,
       },
     });
 

@@ -34,10 +34,6 @@ export async function POST(request: Request) {
   }
 
   const fileName = (fileNameInput || "Mastered file").slice(0, 255);
-  // Free-user files currently expire in 24h. Phase 3 flips this to a
-  // permanent 1-slot storage model — the expiry will be pushed out and
-  // a "rotate on new master" cleanup added.
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   const existing = await prisma.freeUserFile.findUnique({
     where: { jobId },
@@ -50,6 +46,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "already_owned" }, { status: 403 });
   }
 
+  // Rotate the 1-slot storage: drop any older row this user owns before
+  // inserting the new claim so the dashboard only ever shows the most
+  // recent master.
+  await prisma.freeUserFile.deleteMany({
+    where: {
+      userId: user.id,
+      jobId: { not: jobId },
+    },
+  });
+
   try {
     await prisma.freeUserFile.create({
       data: {
@@ -58,7 +64,8 @@ export async function POST(request: Request) {
         fileName,
         fileSize: 0,
         status: "completed",
-        expiresAt,
+        // Permanent slot — see FreeUserFile.expiresAt in schema.prisma.
+        expiresAt: null,
       },
     });
   } catch (err) {

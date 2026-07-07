@@ -63,7 +63,7 @@ async function checkFiles() {
       console.log(`     Status: ${file.status}`);
       console.log(`     downloadUrl: ${file.downloadUrl ? "✅ Present" : "❌ MISSING"}`);
       console.log(`     Created: ${file.createdAt.toISOString()}`);
-      console.log(`     Expires: ${file.expiresAt.toISOString()}\n`);
+      console.log(`     Expires: ${file.expiresAt ? file.expiresAt.toISOString() : "never (permanent slot)"}\n`);
     }
 
   } catch (error) {

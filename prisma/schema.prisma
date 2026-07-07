@@ -98,15 +98,19 @@ model SubscriberFile {
 
 // Temporary files for free users (expires after 24 hours on R2)
 model FreeUserFile {
-  id          String   @id @default(cuid())
-  userId      String   // Stack Auth user ID (for signed-in free users)
-  jobId       String   @unique // Mastering job ID
-  fileName    String   // Original file name
-  fileSize    Int      // Size in bytes
-  downloadUrl String?  // R2 download URL (set when mastering completes)
-  status      String   @default("processing") // processing, completed, expired
-  createdAt   DateTime @default(now())
-  expiresAt   DateTime // 24 hours after creation
+  id          String    @id @default(cuid())
+  userId      String    // Stack Auth user ID (for signed-in free users)
+  jobId       String    @unique // Mastering job ID
+  fileName    String    // Original file name
+  fileSize    Int       // Size in bytes
+  downloadUrl String?   // R2 download URL (set when mastering completes)
+  status      String    @default("processing") // processing, completed, expired
+  createdAt   DateTime  @default(now())
+  // NULL = permanent single-slot storage. Free users get one file kept
+  // forever; the next master rotates the slot (previous row deleted).
+  // Non-null values are retained for legacy 24h rows and any future
+  // expiring paths.
+  expiresAt   DateTime?
 
   @@index([userId])
   @@index([status])
