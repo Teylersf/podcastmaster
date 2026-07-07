@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import FeedbackButton from "@/components/FeedbackButton";
 import ProfileHydrator from "@/components/ProfileHydrator";
 import WelcomeBonusClaimer from "@/components/WelcomeBonusClaimer";
+import PostSignInClaimer from "@/components/PostSignInClaimer";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -235,6 +236,7 @@ export default function RootLayout({
               <Suspense fallback={null}>
                 <ProfileHydrator />
                 <WelcomeBonusClaimer />
+                <PostSignInClaimer />
               </Suspense>
               <FeedbackButton />
               <Analytics />
