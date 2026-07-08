@@ -88,12 +88,14 @@ export async function getOrCreateUserProfile(input: ProfileInitInput) {
     throw new Error("Could not allocate unique referral code after 5 attempts");
   }
 
-  // Admin notification — one email per real signup. Fire-and-forget so a
-  // Resend outage never blocks the signup path; notifyAdminSignup swallows
-  // its own errors internally. This branch only runs on the true first
-  // insert (the `if (existing) return existing` guard above prevents
-  // duplicate fires on returning users).
-  void notifyAdminSignup({
+  // Admin notification — one email per real signup. Awaited, not
+  // fire-and-forget: on Vercel serverless the function process is
+  // terminated the moment the response is sent, so `void <promise>`
+  // did not reliably deliver the email (this bug ate the notifications
+  // for four out of five real signups on 07-06–07-08). notifyAdminSignup
+  // swallows its own errors internally, so awaiting can only add ~300ms
+  // to the very first hit — safe.
+  await notifyAdminSignup({
     userId: created.userId,
     email: created.email,
     referredByCode: created.referredByCode,
