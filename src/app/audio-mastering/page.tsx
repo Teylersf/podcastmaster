@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const title =
     "Free AI Music Mastering | Master Songs, Albums & Audio Tracks Online Free";
   const description =
-    "Free AI-powered music mastering. Master songs, full albums, and audio tracks to professional quality in minutes. Works for pop, rock, electronic, hip-hop, jazz, acoustic, and more. No signup, no watermarks, unlimited uses.";
+    "Free AI-powered music mastering. Master songs, full albums, and audio tracks to professional quality in minutes. Works for pop, rock, electronic, hip-hop, jazz, acoustic. One-click Google sign-in — 24h unlimited on signup, then 1 free master/day.";
 
   return {
     title,
@@ -66,6 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
       "free track mastering",
       "AI music mastering",
       "AI song mastering",
+      "7 day free trial music mastering",
       "online music mastering",
       "master my song free",
       "master my album free",
@@ -111,7 +112,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Free AI Music Mastering | Songs, Albums & Tracks",
       description:
-        "Master songs, albums and audio tracks free. Pro-quality AI mastering with no signup.",
+        "Master songs, albums and audio tracks free. Pro-quality AI mastering — one-click Google sign-in, 24h unlimited on signup + 1 free master/day.",
       images: ["/og-image.png"],
     },
     robots: { index: true, follow: true },
@@ -123,7 +124,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const FAQ_ITEMS: { q: string; a: string }[] = [
   {
     q: "Is the music mastering really free?",
-    a: "Yes — unlimited free use for everyone, no signup, no credit card. 24-bit HQ exports are also free during the v3 launch promo. We pay for compute so musicians don't have to.",
+    a: "Yes. One-click Google sign-in (no card) unlocks 24 hours of unlimited HQ mastering as a welcome bonus, then 1 free master per day forever. Your latest master is saved permanently to your dashboard. If you want unlimited past the first 24h, there's an optional 7-day free trial of unlimited HQ + 5 GB cloud storage — card required, cancel anytime, no charge for the 7 days.",
   },
   {
     q: "What audio formats can I upload?",
@@ -147,7 +148,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: "Do you train AI on my music?",
-    a: "No. We don't train on uploads, we don't keep them past 24 hours (free tier), and the source code is open on GitHub so you can verify this yourself.",
+    a: "No. We don't train on uploads. Free-tier accounts get a single permanent slot in your dashboard — each new master replaces the previous one, so we're always only holding your latest. Paid tiers keep every file in 5 GB cloud storage. The source code is open on GitHub so you can verify all of this yourself.",
   },
   {
     q: "What's the difference between this and your podcast mastering tool?",
@@ -227,7 +228,8 @@ function MusicHero() {
         <strong className="text-[var(--text-primary)]">full albums</strong>, and{" "}
         <strong className="text-[var(--text-primary)]">audio tracks</strong> to
         professional broadcast quality. Works for vocals, instrumentals, full
-        mixes — any genre. Unlimited and free, no signup, no watermarks.
+        mixes — any genre. Free — sign in with Google in one click, no card,
+        24 hours unlimited on us + 7-day trial of 24-bit HQ available.
       </p>
 
       <div className="flex flex-wrap justify-center gap-3">

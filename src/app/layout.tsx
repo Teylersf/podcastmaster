@@ -59,7 +59,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: "Free AI Podcast Mastering | Free Online Podcast Mastering Tool",
-  description: "Free AI podcast mastering tool. Master your podcast audio to broadcast quality instantly - no signup required. Professional podcast mastering with AI-powered audio processing. Upload, master, download - 100% free.",
+  description: "Free AI podcast mastering tool. Master your podcast audio to broadcast quality instantly. One-click Google sign-in — 24 hours unlimited on signup + 1 free master/day forever. Professional AI-powered audio processing. Upload, master, download.",
   keywords: [
     "free podcast mastering",
     "free AI podcast mastering", 
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
     url: "https://freepodcastmastering.com",
     siteName: "Free Podcast Mastering",
     title: "Free AI Podcast Mastering - Master Your Podcast Online Free",
-    description: "Free AI-powered podcast mastering tool. Get broadcast-ready audio in minutes. No signup, no watermarks, 100% free. Upload your podcast and download professionally mastered audio.",
+    description: "Free AI-powered podcast mastering tool. Get broadcast-ready audio in minutes. Sign in with Google (no card) — 24 hours unlimited + 1 free master/day. Optional 7-day HQ trial. Upload, master, download.",
     images: [
       {
         url: "/og-image.png",
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Free AI Podcast Mastering - Master Your Podcast Free",
-    description: "Free AI-powered podcast mastering. Get broadcast-ready audio in minutes. No signup required, 100% free.",
+    description: "Free AI-powered podcast mastering. Get broadcast-ready audio in minutes. One-click Google sign-in — 24h unlimited + 1 free master/day.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -133,7 +133,7 @@ const jsonLd = {
   "@type": "WebApplication",
   "name": "Free Podcast Mastering",
   "url": "https://freepodcastmastering.com",
-  "description": "Free AI-powered podcast mastering tool. Master your podcast audio to broadcast quality instantly with no signup required.",
+  "description": "Free AI-powered podcast mastering tool. Master your podcast audio to broadcast quality with one-click Google sign-in — 24 hours unlimited on signup + 1 free master per day.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Any",
   "offers": {
@@ -143,7 +143,7 @@ const jsonLd = {
   },
   "featureList": [
     "Free AI podcast mastering",
-    "No signup required",
+    "One-click Google sign-in",
     "Instant audio processing",
     "Professional broadcast quality",
     "Multiple output formats",

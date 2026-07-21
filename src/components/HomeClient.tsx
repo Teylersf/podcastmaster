@@ -1349,7 +1349,7 @@ export default function HomeClient() {
                                 Launch promo — 3 free 24-bit HQ exports
                               </p>
                               <p className="text-xs text-[var(--text-secondary)]">
-                                For everyone, no signup, for the next 2 months.
+                                Free for everyone with a Google sign-in — no card.
                               </p>
                             </div>
                           </div>

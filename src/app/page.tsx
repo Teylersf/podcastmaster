@@ -124,7 +124,7 @@ function StaticSections() {
         <div className="grid md:grid-cols-2 gap-6">
           {[
             { title: "Professional Quality", desc: "Broadcast-ready audio that sounds great on Spotify, Apple Podcasts, and all major platforms." },
-            { title: "No Signup Required", desc: "Start immediately. No account, no email verification, no credit card needed." },
+            { title: "One-Click Google Sign-in", desc: "Free forever, no card. 24 hours unlimited on signup + 1 free master/day after. 7-day HQ trial available." },
             { title: "AI-Powered Processing", desc: "Our audio engine applies EQ, compression, and loudness optimization tailored for voice." },
             { title: "Podcast Optimized", desc: "Specifically designed for spoken word content, ensuring clear and engaging audio." },
           ].map((feature) => (

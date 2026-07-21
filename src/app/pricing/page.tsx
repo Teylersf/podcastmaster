@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@stackframe/stack";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import {
@@ -26,19 +26,63 @@ export default function PricingPage() {
   const user = useUser();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [singleMasterLoading, setSingleMasterLoading] = useState(false);
+  // Determines whether the Unlimited CTA leads with the 7-day trial
+  // (default) or goes straight to paid checkout for users who've
+  // already burned their one trial. Fetched lazily; the button falls
+  // through to the trial endpoint if we haven't heard back yet — the
+  // server rejects duplicate trials so this is safe.
+  const [hasUsedTrial, setHasUsedTrial] = useState(false);
+  const [isTrialing, setIsTrialing] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    fetch("/api/subscription/status")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        setHasUsedTrial(!!data.hasUsedTrial);
+        setIsTrialing(!!data.isTrialing);
+        setIsSubscribed(!!data.isSubscribed);
+      })
+      .catch(() => {});
+  }, [user]);
+
+  const trialEligible = !hasUsedTrial && !isSubscribed;
 
   const handleSubscribe = async () => {
     if (!user) {
-      window.location.href = "/handler/sign-up?after_auth_return_to=/pricing";
+      // Guests always land on the trial pitch — most conversions come
+      // from the "free first, card later" framing. If they've already
+      // used the trial on a previous session, the server rejects the
+      // trial and the fallback below sends them to paid checkout.
+      window.location.href =
+        "/handler/sign-up?after_auth_return_to=/pricing?start_trial=1";
       return;
     }
 
     setCheckoutLoading(true);
     try {
-      const res = await fetch("/api/stripe/create-checkout", { method: "POST" });
+      const endpoint = trialEligible
+        ? "/api/stripe/start-trial"
+        : "/api/stripe/create-checkout";
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ returnPath: "/dashboard" }),
+      });
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+        return;
+      }
+      // If the server rejected the trial (e.g. race condition where the
+      // client thought they were eligible), transparently retry the
+      // paid checkout so the button never dead-ends.
+      if (data?.error === "trial_already_used" || data?.error === "already_subscribed") {
+        const retry = await fetch("/api/stripe/create-checkout", { method: "POST" });
+        const retryData = await retry.json();
+        if (retryData.url) window.location.href = retryData.url;
       }
     } catch (error) {
       console.error("Checkout error:", error);
@@ -46,6 +90,23 @@ export default function PricingPage() {
       setCheckoutLoading(false);
     }
   };
+
+  // On mount, if we arrived from a signed-out CTA that stashed
+  // ?start_trial=1 in the return URL, kick the trial checkout as soon
+  // as the user hydrates.
+  useEffect(() => {
+    if (!user) return;
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("start_trial") === "1" && !isSubscribed && !isTrialing) {
+      // Clean the URL first so a refresh doesn't retrigger.
+      const url = new URL(window.location.href);
+      url.searchParams.delete("start_trial");
+      window.history.replaceState(null, "", url.pathname + url.search);
+      handleSubscribe();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isSubscribed, isTrialing]);
 
   // Single-master entitlement ($2 one-time). Same endpoint the in-flow
   // paywall modal uses; on success the user gets one entitlement they can
@@ -117,11 +178,17 @@ export default function PricingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
+          {trialEligible && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-(--accent-muted) border border-(--accent-primary)/40 text-xs font-semibold uppercase tracking-wider text-(--accent-primary) mb-6">
+              <Gift className="w-3.5 h-3.5" />
+              7 days unlimited free · card required · cancel anytime
+            </div>
+          )}
           <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
             <span className="text-gradient">Simple, Transparent Pricing</span>
           </h1>
           <p className="text-lg text-(--text-secondary) max-w-xl mx-auto">
-            Free every day. Pay $2 when you need more. $10/month if you master a lot.
+            Free every day. Pay $2 when you need more. Or try Unlimited free for a week.
           </p>
         </motion.div>
 
@@ -287,10 +354,15 @@ export default function PricingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex gap-2">
               <span className="px-4 py-1 rounded-full bg-(--accent-primary) text-white text-xs font-medium whitespace-nowrap">
                 Most Popular
               </span>
+              {trialEligible && (
+                <span className="px-4 py-1 rounded-full bg-(--success) text-white text-xs font-medium whitespace-nowrap">
+                  7 days free
+                </span>
+              )}
             </div>
 
             <div className="mb-6">
@@ -302,24 +374,42 @@ export default function PricingPage() {
             </div>
 
             <div className="mb-6">
-              <span className="text-4xl font-bold">$10</span>
-              <span className="text-(--text-muted)">/month</span>
+              {trialEligible ? (
+                <>
+                  <span className="text-4xl font-bold">$0</span>
+                  <span className="text-(--text-muted)"> today · </span>
+                  <span className="text-sm text-(--text-secondary)">$10/mo starts day 8</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-4xl font-bold">$10</span>
+                  <span className="text-(--text-muted)">/month</span>
+                </>
+              )}
             </div>
 
             <button
               onClick={handleSubscribe}
               disabled={checkoutLoading}
-              className="w-full mb-8 px-6 py-4 rounded-xl bg-linear-to-r from-(--accent-primary) to-(--accent-tertiary) hover:from-(--accent-hover) hover:to-(--accent-primary) text-(--bg-primary) font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-(--accent-muted)"
+              className="w-full mb-2 px-6 py-4 rounded-xl bg-linear-to-r from-(--accent-primary) to-(--accent-tertiary) hover:from-(--accent-hover) hover:to-(--accent-primary) text-(--bg-primary) font-semibold transition-all flex items-center justify-center gap-2 shadow-lg shadow-(--accent-muted)"
             >
               {checkoutLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
                   <Crown className="w-5 h-5" />
-                  <span>Subscribe</span>
+                  <span>
+                    {trialEligible ? "Start 7 days free" : isTrialing ? "Trial active" : isSubscribed ? "Manage subscription" : "Subscribe · $10/mo"}
+                  </span>
                 </>
               )}
             </button>
+            {trialEligible && (
+              <p className="text-[11px] text-(--text-muted) text-center mb-6">
+                Card required · cancel anytime from your dashboard, even day one
+              </p>
+            )}
+            {!trialEligible && <div className="mb-6" />}
 
             <div className="space-y-4 mt-auto">
               <p className="text-sm font-medium text-(--text-secondary) mb-3">Everything else, plus:</p>
@@ -423,6 +513,13 @@ export default function PricingPage() {
           <h2 className="text-2xl font-semibold text-center mb-8">Frequently Asked Questions</h2>
 
           <div className="space-y-4">
+            <div className="glass-card p-5">
+              <h3 className="font-medium mb-2">How does the 7-day free trial work?</h3>
+              <p className="text-sm text-(--text-secondary)">
+                One trial per account. Enter a card, get 7 days of unlimited HQ mastering + 5 GB cloud storage. You&apos;re not charged today. On day 8 you&apos;re charged $10 for the first month. Cancel any time before day 8 from your dashboard and you keep unlimited access until the end of the trial — no charge, no email, no hassle.
+              </p>
+            </div>
+
             <div className="glass-card p-5">
               <h3 className="font-medium mb-2">Do I need to sign up?</h3>
               <p className="text-sm text-(--text-secondary)">

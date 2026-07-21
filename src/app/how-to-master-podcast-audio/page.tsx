@@ -1439,7 +1439,7 @@ export default function HowToMasterPodcastAudio() {
                 {[
                   {
                     q: "Is Free Podcast Mastering really free?",
-                    a: "Yes! Free users can master 2 files per week at no cost. There are no watermarks, no quality restrictions, and no signup required. Premium users get unlimited mastering and additional features."
+                    a: "Yes. One-click Google sign-in (no card) unlocks 24 hours of unlimited HQ mastering as a welcome bonus, then 1 free master per day forever with no watermarks and no quality restrictions. If you want unlimited past 24h, there's an optional 7-day free trial of unlimited HQ + 5 GB cloud storage — cancel anytime before day 8 with no charge."
                   },
                   {
                     q: "What file formats do you support?",
