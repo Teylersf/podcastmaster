@@ -138,7 +138,7 @@ export default function PricingPage() {
           >
             <div className="mb-6">
               <h3 className="text-xl font-semibold mb-2">Free</h3>
-              <p className="text-(--text-secondary) text-sm">Try it out. No card, no signup to master.</p>
+              <p className="text-(--text-secondary) text-sm">One-click Google sign-in. No card, ever.</p>
             </div>
 
             <div className="mb-6">
@@ -147,7 +147,7 @@ export default function PricingPage() {
             </div>
 
             <Link
-              href={user ? "/" : "/handler/sign-up"}
+              href={user ? "/" : "/handler/sign-up?after_auth_return_to=/?bonus=welcome24"}
               className="w-full mb-8 px-6 py-3 rounded-lg border border-(--border-subtle) hover:border-(--accent-primary) transition-colors flex items-center justify-center gap-2 font-medium text-sm"
             >
               {user ? "Start mastering" : "Get started"}
@@ -156,10 +156,26 @@ export default function PricingPage() {
 
             <div className="space-y-4 mt-auto">
               <div className="flex items-start gap-3">
+                <Gift className="w-5 h-5 text-(--accent-primary) shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">24 hours unlimited on signup</p>
+                  <p className="text-xs text-(--text-muted)">Welcome bonus — master as many files as you want your first day</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
                 <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium">1 mastered file per day</p>
+                  <p className="text-sm font-medium">1 free master per day after</p>
                   <p className="text-xs text-(--text-muted)">Resets every 24 hours</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-(--success) shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium">Latest master saved to your account</p>
+                  <p className="text-xs text-(--text-muted)">Permanent single slot in your dashboard</p>
                 </div>
               </div>
 
@@ -182,11 +198,11 @@ export default function PricingPage() {
               <div className="pt-4 border-t border-(--border-subtle) space-y-2">
                 <div className="flex items-start gap-3 text-(--text-muted)">
                   <X className="w-5 h-5 shrink-0 mt-0.5 opacity-50" />
-                  <p className="text-sm">Files delete after 24h</p>
+                  <p className="text-sm">New master overwrites the previous slot</p>
                 </div>
                 <div className="flex items-start gap-3 text-(--text-muted)">
                   <X className="w-5 h-5 shrink-0 mt-0.5 opacity-50" />
-                  <p className="text-sm">Signup required to download</p>
+                  <p className="text-sm">Standard export only (no 24-bit HQ)</p>
                 </div>
               </div>
             </div>
@@ -407,6 +423,20 @@ export default function PricingPage() {
           <h2 className="text-2xl font-semibold text-center mb-8">Frequently Asked Questions</h2>
 
           <div className="space-y-4">
+            <div className="glass-card p-5">
+              <h3 className="font-medium mb-2">Do I need to sign up?</h3>
+              <p className="text-sm text-(--text-secondary)">
+                Yes — one click with Google. No card, no password to remember. Your first 24 hours are unlimited as a welcome bonus, and your latest master stays in your dashboard permanently on the free tier.
+              </p>
+            </div>
+
+            <div className="glass-card p-5">
+              <h3 className="font-medium mb-2">Do I keep my file on the free tier?</h3>
+              <p className="text-sm text-(--text-secondary)">
+                Yes — every free account has one permanent slot in the dashboard for your latest master. The next master you run replaces it. Paid tiers keep every file (5 GB pool).
+              </p>
+            </div>
+
             <div className="glass-card p-5">
               <h3 className="font-medium mb-2">Do the $2 credits expire?</h3>
               <p className="text-sm text-(--text-secondary)">
