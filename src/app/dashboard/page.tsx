@@ -28,6 +28,7 @@ import {
 import MasteringTool from "@/components/MasteringTool";
 import ThemeSelector from "@/components/ThemeSelector";
 import ReferralsSection from "@/components/ReferralsSection";
+import TrialCta from "@/components/TrialCta";
 import dynamic from "next/dynamic";
 
 const VideoGenerator = dynamic(() => import("@/components/video/VideoGenerator"), {
@@ -59,10 +60,14 @@ interface FreeUserFile {
 
 interface SubscriptionData {
   isSubscribed: boolean;
+  isTrialing?: boolean;
+  trialEndsAt?: string | null;
+  hasUsedTrial?: boolean;
   subscription: {
     status: string;
     currentPeriodEnd: string;
     cancelAtPeriodEnd: boolean;
+    trialEndsAt?: string | null;
   } | null;
   storage: {
     used: number;
@@ -179,6 +184,28 @@ export default function DashboardPage() {
       setShowHqSuccessToast(true);
       setHqCredits(1);
       setTimeout(() => setShowHqSuccessToast(false), 5000);
+      router.replace("/dashboard", { scroll: false });
+    }
+    // Deep-link from the trial-offer email: skip the confirmation UI
+    // and drop the user straight into Stripe checkout with the trial
+    // preselected. Idempotent: if the fetch returns "already used" the
+    // TrialCta shows the error inline instead of looping.
+    if (searchParams.get("start_trial") === "1") {
+      router.replace("/dashboard", { scroll: false });
+      fetch("/api/stripe/start-trial", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ returnPath: "/dashboard" }),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          if (data?.url) window.location.href = data.url;
+        })
+        .catch(() => {});
+    }
+    if (searchParams.get("trial") === "started") {
+      setShowSuccessToast(true);
+      setTimeout(() => setShowSuccessToast(false), 6000);
       router.replace("/dashboard", { scroll: false });
     }
   }, [searchParams, router]);
@@ -376,7 +403,14 @@ export default function DashboardPage() {
   }
 
   const isSubscribed = subscriptionData?.isSubscribed || false;
+  const isTrialing = subscriptionData?.isTrialing || false;
+  const hasUsedTrial = subscriptionData?.hasUsedTrial || false;
+  const trialEndsAt = subscriptionData?.trialEndsAt || null;
   const storagePercentage = (storage.used / storage.limit) * 100;
+
+  const trialDaysLeft = trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
 
   return (
     <main className="min-h-screen relative overflow-hidden">
@@ -593,6 +627,13 @@ export default function DashboardPage() {
             <MasteringTool compact />
           </motion.div>
 
+          {/* Free-tier users who haven't taken the 7-day trial yet get a
+              prominent banner up top — pitched once, not spammed (the
+              hasUsedTrial gate hides it forever after the first attempt). */}
+          {!isSubscribed && !hasUsedTrial && (
+            <TrialCta variant="dashboard" returnPath="/dashboard" />
+          )}
+
           {/* Subscription Status Card */}
           <motion.div
             className="glass-card p-6 md:p-8 mb-8"
@@ -610,14 +651,23 @@ export default function DashboardPage() {
                   <Crown className={`w-6 h-6 ${isSubscribed ? "text-(--warning)" : "text-(--text-muted)"}`} />
                 </div>
                 <div>
-                  <h2 className="font-bold text-lg">{isSubscribed ? "Unlimited Mastering" : "Free Plan"}</h2>
+                  <h2 className="font-bold text-lg">
+                    {isTrialing
+                      ? "Unlimited (7-day trial)"
+                      : isSubscribed
+                        ? "Unlimited Mastering"
+                        : "Free Plan"}
+                  </h2>
                   <p className="text-sm text-(--text-secondary)">
-                    {isSubscribed 
-                      ? subscriptionData?.subscription?.cancelAtPeriodEnd 
-                        ? `Cancels ${formatDate(subscriptionData.subscription.currentPeriodEnd)}`
-                        : `Renews ${formatDate(subscriptionData?.subscription?.currentPeriodEnd || "")}`
-                      : "2 files per week limit"
-                    }
+                    {isTrialing
+                      ? subscriptionData?.subscription?.cancelAtPeriodEnd
+                        ? `Trial ends ${formatDate(trialEndsAt || "")} — no charge`
+                        : `${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} left · first charge ${formatDate(trialEndsAt || "")}`
+                      : isSubscribed
+                        ? subscriptionData?.subscription?.cancelAtPeriodEnd
+                          ? `Cancels ${formatDate(subscriptionData.subscription.currentPeriodEnd)}`
+                          : `Renews ${formatDate(subscriptionData?.subscription?.currentPeriodEnd || "")}`
+                        : "1 free master per day"}
                   </p>
                 </div>
               </div>

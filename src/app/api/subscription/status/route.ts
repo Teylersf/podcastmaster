@@ -35,23 +35,40 @@ export async function GET() {
       },
     });
 
-    if (!subscription || subscription.status !== "active") {
+    // Trialing subs unlock the same product as active subs — the card
+    // is on file, the user is inside the paying funnel. The webhook
+    // clears `status` back to "canceled" or "incomplete_expired" if
+    // the trial ends without a valid payment method, so this is safe
+    // to trust.
+    const isTrialing =
+      subscription?.status === "trialing" &&
+      subscription.trialEndsAt !== null &&
+      subscription.trialEndsAt.getTime() > Date.now();
+    const isActive = subscription?.status === "active";
+
+    if (!subscription || (!isActive && !isTrialing)) {
       return NextResponse.json({
         isSubscribed: false,
+        isTrialing: false,
+        trialEndsAt: null,
+        hasUsedTrial: subscription?.trialEndsAt !== null && subscription?.trialEndsAt !== undefined,
         subscription: null,
         storage: null,
       });
     }
 
-    // Calculate storage used
     const storageUsed = subscription.files.reduce((sum, file) => sum + file.fileSize, 0);
 
     return NextResponse.json({
       isSubscribed: true,
+      isTrialing,
+      trialEndsAt: subscription.trialEndsAt,
+      hasUsedTrial: subscription.trialEndsAt !== null,
       subscription: {
         status: subscription.status,
         currentPeriodEnd: subscription.currentPeriodEnd,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        trialEndsAt: subscription.trialEndsAt,
       },
       storage: {
         used: storageUsed,

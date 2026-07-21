@@ -115,16 +115,19 @@ export async function POST(request: Request) {
           break;
         }
 
-        // Handle subscription checkout
+        // Handle subscription checkout — covers both immediate paid subs
+        // and trial-first subs (trial_period_days set in the checkout call).
         const subscriptionId = session.subscription as string;
 
         if (userId && subscriptionId) {
-          // Get subscription details from Stripe
           const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId);
-
           const { start: periodStart, end: periodEnd } = extractPeriod(stripeSubscription);
+          const isTrialing = stripeSubscription.status === "trialing";
 
-          // Build data with safe date handling
+          // Preserve Stripe's own status so the DB reflects "trialing"
+          // when a trial is active (previously we hardcoded "active",
+          // which lied to the subscription-status API and broke the
+          // trial-as-subscribed check).
           const subscriptionData: {
             stripeSubscriptionId: string;
             stripePriceId?: string;
@@ -132,19 +135,22 @@ export async function POST(request: Request) {
             currentPeriodStart?: Date;
             currentPeriodEnd?: Date;
             cancelAtPeriodEnd?: boolean;
+            trialEndsAt?: Date | null;
           } = {
             stripeSubscriptionId: subscriptionId,
             stripePriceId: stripeSubscription.items.data[0]?.price.id,
-            status: "active",
+            status: stripeSubscription.status,
             cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
           };
 
-          // Only add dates if they exist and are valid
           if (periodStart && typeof periodStart === "number") {
             subscriptionData.currentPeriodStart = new Date(periodStart * 1000);
           }
           if (periodEnd && typeof periodEnd === "number") {
             subscriptionData.currentPeriodEnd = new Date(periodEnd * 1000);
+          }
+          if (typeof stripeSubscription.trial_end === "number") {
+            subscriptionData.trialEndsAt = new Date(stripeSubscription.trial_end * 1000);
           }
 
           await prisma.subscription.upsert({
@@ -161,15 +167,20 @@ export async function POST(request: Request) {
           });
 
           await notifyAdminPayment({
-            kind: "subscription_new",
-            amountCents: session.amount_total ?? 1000,
+            kind: isTrialing ? "subscription_trial_start" : "subscription_new",
+            // Trial checkouts have amount_total = 0 (Stripe collects a
+            // card but doesn't charge). Reporting 0 accurately is the
+            // right thing — the admin should see "trial started, $0" and
+            // know money isn't in yet.
+            amountCents: session.amount_total ?? (isTrialing ? 0 : 1000),
             currency: session.currency ?? "usd",
             customerEmail: session.customer_details?.email ?? session.customer_email,
             userId,
             stripeCustomerId: session.customer as string | null,
             stripeSubscriptionId: subscriptionId,
             stripeSessionId: session.id,
-            periodEnd: subscriptionData.currentPeriodEnd ?? null,
+            periodEnd:
+              subscriptionData.trialEndsAt ?? subscriptionData.currentPeriodEnd ?? null,
           });
         }
         break;
@@ -181,24 +192,33 @@ export async function POST(request: Request) {
 
         const { start: periodStart, end: periodEnd } = extractPeriod(subscriptionData);
 
-        // Build update data dynamically, only including dates if they exist and are valid
         const updateData: {
           status: string;
           cancelAtPeriodEnd: boolean;
           currentPeriodStart?: Date;
           currentPeriodEnd?: Date;
+          trialEndsAt?: Date | null;
         } = {
-          status: subscriptionData.status === "active" ? "active" : subscriptionData.status,
+          // Preserve Stripe's own status verbatim (active / trialing /
+          // past_due / canceled / etc). The "=== 'active' ? 'active'"
+          // ternary was a no-op left over from before we cared about
+          // trialing.
+          status: subscriptionData.status,
           cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
         };
 
-        // Only add dates if they exist and are valid numbers
         if (periodStart && typeof periodStart === "number") {
           updateData.currentPeriodStart = new Date(periodStart * 1000);
         }
         if (periodEnd && typeof periodEnd === "number") {
           updateData.currentPeriodEnd = new Date(periodEnd * 1000);
         }
+        // Keep trialEndsAt in sync — clears itself to null when Stripe
+        // converts the trial (trial_end becomes null on the subscription).
+        updateData.trialEndsAt =
+          typeof subscriptionData.trial_end === "number"
+            ? new Date(subscriptionData.trial_end * 1000)
+            : null;
 
         await prisma.subscription.updateMany({
           where: { stripeCustomerId: customerId },

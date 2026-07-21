@@ -29,6 +29,7 @@ import AudioPlayer from "@/components/AudioPlayer";
 import TemplatePicker from "@/components/TemplatePicker";
 import PendingDownloadBanner from "@/components/PendingDownloadBanner";
 import PaywallModal from "@/components/PaywallModal";
+import TrialCta from "@/components/TrialCta";
 import { DEFAULT_TEMPLATES } from "@/lib/templateCategories";
 import { savePendingDownload } from "@/lib/pendingDownload";
 import { LogIn } from "lucide-react";
@@ -233,6 +234,10 @@ export default function MasteringTool({
   // User and subscription state
   const user = useUser();
   const [isSubscribed, setIsSubscribed] = useState(false);
+  // Populated from /api/subscription/status. Drives whether the
+  // post-signup trial CTA renders — hide it once they've already
+  // taken the trial once, converted, or are still trialing now.
+  const [hasUsedTrial, setHasUsedTrial] = useState(false);
 
   // Auto-save to Blob storage for subscribers
   const [savedToCloud, setSavedToCloud] = useState(false);
@@ -260,6 +265,7 @@ export default function MasteringTool({
         const res = await fetch("/api/subscription/status");
         const data = await res.json();
         setIsSubscribed(data.isSubscribed || false);
+        setHasUsedTrial(!!data.hasUsedTrial);
         // Non-blocking: pull profile so the paywall modal can show the
         // user's referral code alongside the "refer a friend for a free
         // week" CTA.
@@ -1348,6 +1354,16 @@ export default function MasteringTool({
                 <RefreshCw className="w-5 h-5" />
                 Master Another
               </button>
+
+              {/* Peak-intent trial pitch: they just heard a great result,
+                  they have the file, they're delighted. Hide once they're
+                  already subscribed or have used their one free trial. */}
+              {!isSubscribed && !hasUsedTrial && (
+                <TrialCta
+                  variant="tool"
+                  returnPath={audioType === "music" ? "/audio-mastering" : "/"}
+                />
+              )}
             </div>
           ) : (
             <>

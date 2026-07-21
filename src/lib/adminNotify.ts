@@ -5,12 +5,14 @@ const ADMIN_EMAIL = "teylersf@gmail.com";
 export type PaymentKind =
   | "subscription_new"
   | "subscription_renewal"
+  | "subscription_trial_start"
   | "single_master"
   | "hq_purchase";
 
 const KIND_LABELS: Record<PaymentKind, string> = {
   subscription_new: "New Unlimited subscription",
   subscription_renewal: "Subscription renewal",
+  subscription_trial_start: "7-day trial started (card on file)",
   single_master: "Single master purchase",
   hq_purchase: "HQ credit purchase",
 };

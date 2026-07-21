@@ -2,6 +2,7 @@ import crypto from "crypto";
 import prisma from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { notifyAdminSignup } from "@/lib/adminNotify";
+import { scheduleTrialOfferEmail } from "@/lib/trialEmail";
 
 // Referral codes: 8 chars, uppercase-only. We drop the visually ambiguous
 // glyphs (0/O, 1/I/L) so a code copied off a phone screen still works.
@@ -101,6 +102,17 @@ export async function getOrCreateUserProfile(input: ProfileInitInput) {
     referredByCode: created.referredByCode,
   });
 
+  // Second email — the 7-day trial pitch, scheduled to land ~5 min
+  // after signup via Resend's scheduled_at. Only fires when we have
+  // a real email to send to (Google OAuth signups always provide one;
+  // email/password signups do too — but be defensive).
+  if (created.email) {
+    await scheduleTrialOfferEmail({
+      toEmail: created.email,
+      firstName: firstNameFromEmail(created.email),
+    });
+  }
+
   // Non-fatal: create the Referral row if the user came in with a valid code.
   // A missing/unknown code or a self-referral is silently skipped; a Postgres
   // unique-violation on refereeId means the row already exists (idempotent
@@ -129,6 +141,19 @@ export async function getOrCreateUserProfile(input: ProfileInitInput) {
   }
 
   return created;
+}
+
+// Best-effort first name pluck for email personalization. Falls back
+// to "" so the greeting reads "Hey," rather than "Hey null,".
+function firstNameFromEmail(email: string): string {
+  const local = email.split("@")[0] || "";
+  const cleaned = local
+    .replace(/[._+\-0-9]+/g, " ")
+    .trim()
+    .split(/\s+/)[0]
+    ?? "";
+  if (!cleaned) return "";
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
 }
 
 function isUniqueConstraintError(err: unknown): boolean {
